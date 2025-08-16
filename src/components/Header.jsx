@@ -1,0 +1,142 @@
+import React from "react";
+import { Link, NavLink } from "react-router-dom";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Container from "@mui/material/Container";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Drawer from "@mui/material/Drawer";
+import List from "@mui/material/List";
+import ListItemButton from "@mui/material/ListItemButton";
+import MenuIcon from "@mui/icons-material/Menu";
+
+const nav = [
+  { to: "/", label: "Domů", end: true },
+  { to: "/kontakt", label: "Kontakt" },
+  { to: "/restaurace", label: "Restaurace" },
+  { to: "/ubytovani", label: "Ubytování" },
+  { to: "/svatby", label: "Svatby" },
+  { to: "/pobytove_balicky", label: "Pobytové balíčky" },
+  { to: "/cenik", label: "Ceník" },
+  { to: "/galerie", label: "Galerie" },
+  { to: "/rezervace", label: "Rezervace" },
+];
+
+export default function Header() {
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <AppBar
+      position="sticky"
+      elevation={0}
+      sx={{
+        backgroundColor: "background.paper",
+        color: "text.primary",
+        // ↓↓↓ LEHKÝ STÍN POD NAVIGACÍ
+        boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
+      }}
+    >
+      <Container sx={{ height: "100%" }}>
+        <Toolbar
+          sx={{
+            minHeight: 72, // rozumná výška topnav
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 2,
+          }}
+        >
+          {/* Desktop navigace */}
+          <Box
+            sx={{
+              display: { xs: "none", md: "flex" },
+              alignItems: "stretch",
+              justifyContent: "space-between",
+              flexGrow: 1,
+              height: "100%",
+            }}
+          >
+            {nav.map(({ to, label, end }) => (
+              <NavLink key={to} to={to} end={end} style={{ flexGrow: 1 }}>
+                {({ isActive }) => (
+                  <Button
+                    variant="text"
+                    fullWidth
+                    sx={{
+                      height: "100%",
+                      borderRadius: 0,
+                      textTransform: "none",
+                      fontWeight: isActive ? 700 : 500,
+                      color: isActive ? "#fff" : "text.secondary",
+                      backgroundColor: isActive
+                        ? "primary.main"
+                        : "transparent",
+                      "&:hover": {
+                        backgroundColor: isActive
+                          ? "primary.dark"
+                          : "action.hover",
+                        color: isActive ? "#fff" : "text.primary",
+                      },
+                    }}
+                  >
+                    {label}
+                  </Button>
+                )}
+              </NavLink>
+            ))}
+          </Box>
+
+          {/* Mobilní menu */}
+          <Box sx={{ display: { xs: "flex", md: "none" } }}>
+            <IconButton onClick={() => setOpen(true)} aria-label="Menu">
+              <MenuIcon />
+            </IconButton>
+          </Box>
+        </Toolbar>
+      </Container>
+
+      <Drawer
+        anchor="right"
+        open={open}
+        onClose={() => setOpen(false)}
+        PaperProps={{ sx: { width: 320 } }}
+      >
+        <List
+          sx={{
+            p: 0,
+            "& .MuiListItemButton-root": {
+              borderRadius: 0, // stejně jako na desktopu
+            },
+          }}
+        >
+          {nav.map(({ to, label, end }) => (
+            <NavLink key={to} to={to} end={end}>
+              {({ isActive }) => (
+                <ListItemButton
+                  sx={{
+                    py: 2,
+                    justifyContent: "center",
+                    fontWeight: isActive ? 700 : 500,
+                    textTransform: "none",
+                    color: isActive ? "#fff" : "text.secondary",
+                    backgroundColor: isActive ? "primary.main" : "transparent",
+                    "&:hover": {
+                      backgroundColor: isActive
+                        ? "primary.dark"
+                        : "action.hover",
+                      color: isActive ? "#fff" : "text.primary",
+                    },
+                  }}
+                >
+                  {label}
+                </ListItemButton>
+              )}
+            </NavLink>
+          ))}
+        </List>
+      </Drawer>
+    </AppBar>
+  );
+}
