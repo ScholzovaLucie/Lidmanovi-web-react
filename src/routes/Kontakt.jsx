@@ -16,17 +16,19 @@ export default function Kontakt() {
     zprava: "",
   });
   const [errors, setErrors] = React.useState({});
+  const asset = (path) =>
+    `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
 
   const images = [
-    "/kontakt/DSCN0464.webp",
-    "/kontakt/002_HZ6_3762_Penzion_U_Lidmanu.webp",
-    "/kontakt/9c8f78d411bc1f0228e6.webp",
-    "/kontakt/95f5c4089c2e069cf161.webp",
+    asset("/kontakt/DSCN0464.webp"),
+    asset("/kontakt/002_HZ6_3762_Penzion_U_Lidmanu.webp"),
+    asset("/kontakt/9c8f78d411bc1f0228e6.webp"),
+    asset("/kontakt/95f5c4089c2e069cf161.webp"),
   ];
 
   const blocks = [
     {
-      icon: "/position.webp",
+      icon: asset("/position.webp"),
       title: "Adresa",
       content: (
         <>
@@ -43,7 +45,7 @@ export default function Kontakt() {
       ),
     },
     {
-      icon: "/phone-call.webp",
+      icon: asset("/phone-call.webp"),
       title: "Telefon",
       content: (
         <Link href="tel:+420604341863" underline="hover" color="inherit">
@@ -52,7 +54,7 @@ export default function Kontakt() {
       ),
     },
     {
-      icon: "/mail.webp",
+      icon: asset("/mail.webp"),
       title: "E-mail",
       content: (
         <Link href="mailto:info@ulidmanu.cz" underline="hover" color="inherit">
@@ -61,7 +63,7 @@ export default function Kontakt() {
       ),
     },
     {
-      icon: "/facebook2.webp",
+      icon: asset("/facebook2.webp"),
       title: "Facebook",
       content: (
         <Link
@@ -202,7 +204,7 @@ export default function Kontakt() {
       >
         <Box
           component="img"
-          src="/logo_colour_pantone.webp"
+          src={asset("/logo_colour_pantone.webp")}
           alt="Královéhradecký kraj"
           sx={{ height: 38 }}
         />

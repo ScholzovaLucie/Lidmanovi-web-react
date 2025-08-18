@@ -14,12 +14,15 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import PackageCard from "../components/PackageCard.jsx";
 
+const asset = (path) =>
+  `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
+
 // --- data (můžeš klidně vytáhnout do samostatného JSON) ---
 const BALICKY = [
   {
     id: "b1",
     title: "Prodloužený víkend ve Stolových horách",
-    image: "/pobytoveBalicky/b4387.webp",
+    image: asset("/pobytoveBalicky/b4387.webp"),
     price: "Cena: 4.190 Kč / 2 osoby / pobyt",
     priceNote:
       "(cena nezahrnuje rekreační a ubytovací poplatek 20 Kč / osoba / noc)",
@@ -39,7 +42,7 @@ const BALICKY = [
   {
     id: "b2",
     title: "Pětidenní turisticko-poznávací pobyt na Machovsku",
-    image: "/pobytoveBalicky/b4460.webp",
+    image: asset("/pobytoveBalicky/b4460.webp"),
     price: "Cena: 5.390 Kč / 2 osoby / pobyt",
     priceNote:
       "(cena nezahrnuje rekreační a ubytovací poplatek 20 Kč / osoba / noc)",
@@ -57,7 +60,7 @@ const BALICKY = [
   {
     id: "b3",
     title: "Týdenní dovolená na Broumovsku",
-    image: "/pobytoveBalicky/b4345.webp",
+    image: asset("/pobytoveBalicky/b4345.webp"),
     price: [
       "7.390 Kč / 2 osoby / pokoj",
       "10.490 Kč / 3 osoby / pokoj",

@@ -78,11 +78,14 @@ function ImageTextBand({
 }
 
 export default function PriceList() {
+  const asset = (path) =>
+    `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
+
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
       {/* 1) Ceny pokojů */}
       <ImageTextBand
-        image="/galerie/pokoje/039_HZ6_3852_Penzion_U_Lidmanu.webp"
+        image={asset("/galerie/pokoje/039_HZ6_3852_Penzion_U_Lidmanu.webp")}
         title="Uvedené ceny jsou za osobu a noc na pokojích včetně bufetové snídaně."
         imageLeft={true}
       >
@@ -121,7 +124,7 @@ export default function PriceList() {
 
       {/* 2) Ubytování dětí */}
       <ImageTextBand
-        image="/galerie/pokoje/058_HZ6_3886_Penzion_U_Lidmanu.webp"
+        image={asset("/galerie/pokoje/058_HZ6_3886_Penzion_U_Lidmanu.webp")}
         title="Ubytování dětí"
         imageLeft={false}
       >
@@ -138,7 +141,7 @@ export default function PriceList() {
 
       {/* 3) Příplatky – tabulka, obrázek vpravo */}
       <ImageTextBand
-        image="/galerie/pokoje/081_HZ6_3941_Penzion_U_Lidmanu.webp"
+        image={asset("/galerie/pokoje/081_HZ6_3941_Penzion_U_Lidmanu.webp")}
         title="Příplatky"
         imageLeft={true}
       >
@@ -190,7 +193,7 @@ export default function PriceList() {
 
       {/* 4) Další informace */}
       <ImageTextBand
-        image="/galerie/interier/106_HZ6_3993_Penzion_U_Lidmanu.webp"
+        image={asset("/galerie/interier/106_HZ6_3993_Penzion_U_Lidmanu.webp")}
         title="Další informace"
         imageLeft={false}
       >

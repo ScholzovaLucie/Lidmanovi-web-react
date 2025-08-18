@@ -9,19 +9,22 @@ import HeroCarousel from "../components/HeroCarousel.jsx"; // používáme tvůj
 import Paper from "@mui/material/Paper";
 
 export default function Weddings() {
+  const asset = (path) =>
+    `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
+
   return (
     <>
       {/* HERO – můžeš dát 1+ fotek, auto-rotace jako jinde */}
       <HeroCarousel
         slides={[
-          { src: "/svatba/svatba3.webp" },
-          { src: "/svatba/svatba4.webp" },
-          { src: "/svatba/svatba5.webp" },
-          { src: "/svatba/svatba6.webp" },
-          { src: "/svatba/svatba7.webp" },
-          { src: "/svatba/svatba8.webp" },
-          { src: "/svatba/svatba9.webp" },
-          { src: "/svatba/svatba1.webp" },
+          { src: asset("/svatba/svatba3.webp") },
+          { src: asset("/svatba/svatba4.webp") },
+          { src: asset("/svatba/svatba5.webp") },
+          { src: asset("/svatba/svatba6.webp") },
+          { src: asset("/svatba/svatba7.webp") },
+          { src: asset("/svatba/svatba8.webp") },
+          { src: asset("/svatba/svatba9.webp") },
+          { src: asset("/svatba/svatba1.webp") },
         ]}
         interval={4000}
         transition={600}
@@ -78,7 +81,7 @@ export default function Weddings() {
           {/* Dekorativní srdce uvnitř boxu */}
           <Box
             component="img"
-            src="/two-hearts_roh_hnedy.webp"
+            src={asset("/two-hearts_roh_hnedy.webp")}
             alt=""
             sx={{
               position: "absolute",

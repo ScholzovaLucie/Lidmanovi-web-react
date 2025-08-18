@@ -4,6 +4,9 @@ import IconButton from "@mui/material/IconButton";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
+const asset = (path) =>
+  `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
+
 /**
  * Props:
  * - slides: [{ src, alt? }]
@@ -19,7 +22,7 @@ export default function HeroCarousel({
   interval = 5000,
   transition = 800,
   gradientTop = "#9eb5c9",
-  logoSrc = "/logolidman.webp",
+  logoSrc = asset("/logolidman.webp"),
   logoHeight = { xs: 150, md: 150 },
   fullBleedHack = false,
 }) {
