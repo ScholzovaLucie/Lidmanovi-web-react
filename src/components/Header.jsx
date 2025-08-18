@@ -11,6 +11,7 @@ import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
 import MenuIcon from "@mui/icons-material/Menu";
+import { useTranslation } from "react-i18next";
 
 const nav = [
   { to: "/", label: "Domů", end: true },
@@ -26,6 +27,18 @@ const nav = [
 
 export default function Header() {
   const [open, setOpen] = React.useState(false);
+  const { t, i18n } = useTranslation("global");
+
+  const LangBtn = ({ code, label }) => (
+    <Button
+      onClick={() => i18n.changeLanguage(code)}
+      sx={{ textTransform: "none", mx: 0.5 }}
+      size="small"
+      variant={i18n.language === code ? "contained" : "text"}
+    >
+      {label}
+    </Button>
+  );
 
   return (
     <AppBar
@@ -86,6 +99,12 @@ export default function Header() {
                 )}
               </NavLink>
             ))}
+            <Box sx={{ display: "flex", alignItems: "center", pl: 1 }}>
+              <LangBtn code="cs" label="CZ" />
+              <LangBtn code="en" label="EN" />
+              <LangBtn code="pl" label="PL" />
+              <LangBtn code="de" label="DE" />
+            </Box>
           </Box>
 
           {/* Mobilní menu */}

@@ -130,13 +130,6 @@ export default function Galerie() {
 
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
-      <Typography
-        variant="h4"
-        sx={{ textAlign: "center", fontWeight: 700, mb: { xs: 3, md: 4 } }}
-      >
-        Galerie
-      </Typography>
-
       {/* Dlaždice kategorií */}
       <Grid container spacing={3} justifyContent="center" alignItems="stretch">
         {GALLERIES.map((g) => (
