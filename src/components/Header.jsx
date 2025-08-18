@@ -12,6 +12,7 @@ import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useTranslation } from "react-i18next";
+import { Divider } from "@mui/material";
 
 const nav = [
   { to: "/", label: "Domů", end: true },
@@ -24,6 +25,9 @@ const nav = [
   { to: "/galerie", label: "Galerie" },
   { to: "/rezervace", label: "Rezervace" },
 ];
+
+const asset = (path) =>
+  `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
 
 export default function Header() {
   const [open, setOpen] = React.useState(false);
@@ -79,7 +83,7 @@ export default function Header() {
                     fullWidth
                     sx={{
                       height: "100%",
-                      borderRadius: 0,
+                      borderRadius: 1,
                       textTransform: "none",
                       fontWeight: isActive ? 700 : 500,
                       color: isActive ? "#fff" : "text.secondary",
@@ -99,6 +103,7 @@ export default function Header() {
                 )}
               </NavLink>
             ))}
+            <Divider orientation="vertical" flexItem />
             <Box sx={{ display: "flex", alignItems: "center", pl: 1 }}>
               <LangBtn code="cs" label="CZ" />
               <LangBtn code="en" label="EN" />
@@ -108,11 +113,38 @@ export default function Header() {
           </Box>
 
           {/* Mobilní menu */}
-          <Box sx={{ display: { xs: "flex", md: "none" } }}>
-            <IconButton onClick={() => setOpen(true)} aria-label="Menu">
+          <Toolbar
+            sx={{
+              width: "100vw",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <Box
+              component="img"
+              src={asset("/logolidman.webp")}
+              alt="Logo"
+              loading="lazy"
+              decoding="async"
+              draggable={false}
+              sx={{
+                height: 56, // výška loga (můžeš dát třeba theme.spacing(7))
+                width: "auto",
+                display: "block",
+                flexShrink: 0,
+                filter: "drop-shadow(0 0 3px rgba(255,255,255,0.6))",
+              }}
+            />
+            <IconButton
+              onClick={() => setOpen(true)}
+              aria-label="Menu"
+              edge="start"
+              size="large"
+            >
               <MenuIcon />
             </IconButton>
-          </Box>
+          </Toolbar>
         </Toolbar>
       </Container>
 
@@ -133,12 +165,14 @@ export default function Header() {
           {nav.map(({ to, label, end }) => (
             <NavLink key={to} to={to} end={end}>
               {({ isActive }) => (
-                <ListItemButton
+                <Button
+                  variant="text"
+                  fullWidth
                   sx={{
-                    py: 2,
-                    justifyContent: "center",
-                    fontWeight: isActive ? 700 : 500,
+                    height: "12%",
+                    borderRadius: 0,
                     textTransform: "none",
+                    fontWeight: isActive ? 700 : 500,
                     color: isActive ? "#fff" : "text.secondary",
                     backgroundColor: isActive ? "primary.main" : "transparent",
                     "&:hover": {
@@ -150,10 +184,24 @@ export default function Header() {
                   }}
                 >
                   {label}
-                </ListItemButton>
+                </Button>
               )}
             </NavLink>
           ))}
+          <Divider />
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              flexDirection: "column",
+              pl: 1,
+            }}
+          >
+            <LangBtn code="cs" label="CZ" />
+            <LangBtn code="en" label="EN" />
+            <LangBtn code="pl" label="PL" />
+            <LangBtn code="de" label="DE" />
+          </Box>
         </List>
       </Drawer>
     </AppBar>
