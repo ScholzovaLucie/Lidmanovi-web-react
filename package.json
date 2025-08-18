@@ -5,14 +5,12 @@
   "type": "module",
   "homepage": "https://scholzovalucie.github.io/Lidmanovi-web-react/",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "postbuild": "cp dist/index.html dist/404.html",
-    "lint": "eslint .",
-    "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
-  },
+  "dev": "vite --open /Lidmanovi-web-react/",
+  "build": "vite build",
+  "postbuild": "cp dist/index.html dist/404.html",
+  "predeploy": "npm run build",
+  "deploy": "gh-pages -d dist"
+},
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",

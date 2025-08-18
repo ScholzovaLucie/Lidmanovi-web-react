@@ -3,24 +3,27 @@ import FullBleedTiles from "../components/FullBleedTiles.jsx";
 import HeroCarousel from "../components/HeroCarousel.jsx";
 
 export default function Home() {
+  const asset = (path) =>
+    `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
+
   return (
     <>
       <HeroCarousel
         slides={[
           {
-            src: "/uvod/uvod1.webp",
+            src: asset("/uvod/uvod1.webp"),
           },
           {
-            src: "/uvod/uvod2.webp",
+            src: asset("/uvod/uvod2.webp"),
           },
           {
-            src: "/uvod/uvod3.webp",
+            src: asset("/uvod/uvod3.webp"),
           },
           {
-            src: "/uvod/uvod4.webp",
+            src: asset("/uvod/uvod4.webp"),
           },
           {
-            src: "/uvod/nove5.webp",
+            src: asset("/uvod/nove5.webp"),
           },
         ]}
         interval={2000} // změň třeba na 4000 pro rychlejší střídání
