@@ -68,7 +68,7 @@ export default function Header() {
           {/* Desktop navigace */}
           <Box
             sx={{
-              display: { xs: "none", md: "flex" },
+              display: { xs: "none", md: "flex" }, // OK
               alignItems: "stretch",
               justifyContent: "space-between",
               flexGrow: 1,
@@ -116,7 +116,7 @@ export default function Header() {
           <Toolbar
             sx={{
               width: "100vw",
-              display: "flex",
+              display: { xs: "flex", md: "none" }, // ← DOPLNIT BREAKPOINT
               alignItems: "center",
               justifyContent: "space-between",
             }}
