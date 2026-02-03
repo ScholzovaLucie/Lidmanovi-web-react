@@ -1,6 +1,6 @@
 import React from "react";
-import FullBleedTiles from "../components/FullBleedTiles.jsx";
-import HeroCarousel from "../components/HeroCarousel.jsx";
+import FullBleedTiles from "../../components/FullBleedTiles.jsx";
+import HeroCarousel from "../../components/HeroCarousel.jsx";
 import { useTranslation } from "react-i18next";
 
 export default function Home() {

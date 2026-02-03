@@ -6,16 +6,22 @@ import { ThemeProvider } from "@emotion/react";
 import App from "./App.jsx";
 import theme from "./theme";
 import "./locales";
+import { Provider } from "react-redux";
+import { store } from "./redux/store.js";
+
+import "./fonts.css";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <BrowserRouter basename={import.meta.env.BASE_URL}>
-          <App />
-        </BrowserRouter>
-      </ThemeProvider>
-    </StyledEngineProvider>
-  </React.StrictMode>
+    <Provider store={store}>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <BrowserRouter basename={import.meta.env.BASE_URL}>
+            <App />
+          </BrowserRouter>
+        </ThemeProvider>
+      </StyledEngineProvider>
+    </Provider>
+  </React.StrictMode>,
 );

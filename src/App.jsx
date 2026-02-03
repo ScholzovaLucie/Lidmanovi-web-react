@@ -1,7 +1,7 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout.jsx";
-import Home from "./routes/Home.jsx";
+import Home from "./routes/Home/Home.jsx";
 import Kontakt from "./routes/Kontakt.jsx";
 import Restauration from "./routes/Restauration.jsx";
 import Accommodations from "./routes/Accommodations.jsx";
@@ -10,6 +10,7 @@ import AccommodationPackages from "./routes/AccommodationPackages.jsx";
 import PriceList from "./routes/PriceList.jsx";
 import Galerie from "./routes/Galerie.jsx";
 import ReservationPage from "./routes/Reservation.jsx";
+import { AdminPage } from "./routes/Admin/Admin.jsx";
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
         <Route path="/cenik" element={<PriceList />} />
         <Route path="/galerie" element={<Galerie />} />
         <Route path="/rezervace" element={<ReservationPage />} />
+        <Route path="/admin" element={<AdminPage />} />
       </Route>
     </Routes>
   );

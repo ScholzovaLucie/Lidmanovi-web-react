@@ -9,7 +9,7 @@ const theme = createTheme({
     background: { default: "#fff", paper: "#fff" },
   },
   typography: {
-    fontFamily: `"Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif`,
+    fontFamily: `"Plus Jakarta Sans", "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif`,
     h1: { fontSize: "clamp(28px, 4vw, 42px)", fontWeight: 700 },
     h2: { fontSize: 24, fontWeight: 700, marginBottom: 12 },
     body1: { fontSize: 16, lineHeight: 1.6 },
@@ -23,6 +23,11 @@ const theme = createTheme({
   components: {
     MuiButton: {
       defaultProps: { disableElevation: true },
+      styleOverrides: {
+        root: {
+          textTransform: "none",
+        },
+      },
     },
   },
 });

@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Container from "@mui/material/Container";
@@ -12,7 +12,12 @@ import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useTranslation } from "react-i18next";
-import { Divider } from "@mui/material";
+import { Divider, Modal, Stack, TextField } from "@mui/material";
+import AppModal from "./Modal";
+import CloseIcon from "@mui/icons-material/Close";
+import { useTokenMutation } from "../redux/api/apiApi";
+
+// TODO: předělat do header 2 ještě mobilní navigaci
 
 const nav = [
   { to: "/", label: "Domů", end: true },
@@ -33,6 +38,9 @@ export default function Header() {
   const [open, setOpen] = React.useState(false);
   const { t, i18n } = useTranslation("global");
 
+  const [getToken] = useTokenMutation();
+  const navigate = useNavigate();
+
   const LangBtn = ({ code, label }) => (
     <Button
       onClick={() => i18n.changeLanguage(code)}
@@ -44,6 +52,7 @@ export default function Header() {
     </Button>
   );
 
+  const [modalOpen, setModalOpen] = React.useState(false);
   return (
     <AppBar
       position="sticky"
@@ -110,6 +119,51 @@ export default function Header() {
               <LangBtn code="pl" label="PL" />
               <LangBtn code="de" label="DE" />
             </Box>
+            <Divider orientation="vertical" flexItem />
+            <Button onClick={() => setModalOpen(true)}>Login</Button>
+            <AppModal
+              open={modalOpen}
+              setOpen={setModalOpen}
+              Body={() => {
+                return (
+                  <Stack spacing={2}>
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
+                      <Typography variant="h6" component="h2">
+                        Přihlášení
+                      </Typography>
+                      <IconButton
+                        onClick={() => setModalOpen(false)}
+                        aria-label="Close"
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </Stack>
+                    <TextField label="Uživatelské jméno" />
+                    <TextField label="Heslo" />
+
+                    <Button
+                      onClick={async () => {
+                        const response = await getToken({
+                          username: "admin",
+                          password: "admin",
+                        });
+                        console.log(response); // TODO
+                        navigate("/admin");
+                        setModalOpen(false);
+                      }}
+                      sx={{ mt: 2 }}
+                      variant="contained"
+                    >
+                      Přihlásit
+                    </Button>
+                  </Stack>
+                );
+              }}
+            />
           </Box>
 
           {/* Mobilní menu */}
