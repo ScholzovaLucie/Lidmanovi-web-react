@@ -5,7 +5,13 @@ const theme = createTheme({
     mode: "light",
     primary: { main: "#4b6b85" }, // tmavá z hlavičky/odkazů (případně upravíme)
     secondary: { main: "#9eb5c9" }, // viz přechody v původním CSS
-    text: { primary: "#222", secondary: "#444" },
+    text: { 
+      primary: "#1a1a1a", // velmi tmavě šedá
+      secondary: "#4a4a4a", // světlejší šedá
+      tertiary: "#6a6a6a", // středně světlá šedá
+      quaternary: "#8a8a8a", // světlá šedá
+      disabled: "#b0b0b0" // nejsvětlejší šedá pro disabled stavy
+    },
     background: { default: "#fff", paper: "#fff" },
   },
   typography: {

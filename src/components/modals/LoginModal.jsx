@@ -9,10 +9,13 @@ import AppModal from "../Modal";
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
 import { useTokenMutation } from "../../redux/api/apiApi";
+import { useDispatch } from "react-redux";
+import { setToken } from "../../redux/slices/app/appSlice";
 
 export default function LoginModal({ open, setOpen }) {
   const [getToken] = useTokenMutation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   return (
     <AppModal
@@ -42,7 +45,8 @@ export default function LoginModal({ open, setOpen }) {
                   username: "admin",
                   password: "admin",
                 });
-                console.log(response); // TODO
+                console.log(response);
+                dispatch(setToken(response.data.access));
                 navigate("/admin");
                 setOpen(false);
               }}

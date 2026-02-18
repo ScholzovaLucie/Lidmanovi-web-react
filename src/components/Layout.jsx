@@ -8,7 +8,7 @@ import { Header2 } from "./Header2";
 export default function Layout() {
   return (
     <Box>
-      <Header2 />
+      <Header />
       {/* žádný Container kolem Outletu! */}
       <Box component="main">
         <Outlet />

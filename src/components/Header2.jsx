@@ -49,11 +49,12 @@ export function Header2() {
           <Divider orientation="vertical" flexItem />
 
           <NavButton label={"Restaurace"} navigateTo={"/restaurace"} />
+          <NavButton label={"Obědy"} navigateTo={"/obedy"} />
           <NavButton label={"Svatby"} navigateTo={"/svatby"} />
           <Divider orientation="vertical" flexItem />
           <NavButton label={"Ubytování"} navigateTo={"/ubytovani"} />
           <NavButton
-            label={"Pobytové balíčky"}
+            label={"Pobytové Balíčky"}
             navigateTo={"/pobytove_balicky"}
           />
           <Divider orientation="vertical" flexItem />

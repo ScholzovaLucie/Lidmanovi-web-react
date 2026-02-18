@@ -67,7 +67,7 @@ export default function Header() {
       <Container sx={{ height: "100%" }}>
         <Toolbar
           sx={{
-            minHeight: 72, // rozumná výška topnav
+            //minHeight: 72, // rozumná výška topnav
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",

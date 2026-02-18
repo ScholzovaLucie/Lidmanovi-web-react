@@ -1,9 +1,8 @@
-import React from "react";
 import FullBleedTiles from "../../components/FullBleedTiles.jsx";
 import HeroCarousel from "../../components/HeroCarousel.jsx";
 import { useTranslation } from "react-i18next";
 
-export default function Home() {
+export default function HomePage() {
   const asset = (path) =>
     `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
   const { t } = useTranslation(["home"]);

@@ -1,0 +1,297 @@
+import { useState, useMemo, useCallback } from "react";
+import dayjs from "dayjs";
+import isBetween from "dayjs/plugin/isBetween";
+import weekday from "dayjs/plugin/weekday";
+import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
+import { Box, Tooltip, Typography } from "@mui/material";
+
+dayjs.extend(isBetween);
+dayjs.extend(weekday);
+
+const BORDER_COLOR = "rgba(0, 0, 0, 0.12)";
+const DAY_HEIGHT = 110;
+const WEEK_DAY_HEADER_HEIGHT = 40;
+
+// Paleta barev pro události (cyklicky se přiřadí)
+const EVENT_COLORS = [
+  "#4b6b85",
+  "#e57373",
+  "#81c784",
+  "#ffb74d",
+  "#7986cb",
+  "#4dd0e1",
+  "#ba68c8",
+  "#a1887f",
+];
+
+/**
+ * Spočítá kolik týdenních řádků zabere daný měsíc v kalendáři.
+ * (pondělí = start týdne)
+ */
+function getWeekRowsInMonth(date) {
+  const start = date.startOf("month");
+  const end = date.endOf("month");
+  // Den v týdnu prvního dne (0=neděle v dayjs, převedeme na Po=0)
+  const startDow = (start.day() + 6) % 7; // Po=0, Út=1 ... Ne=6
+  const daysInMonth = end.date();
+  return Math.ceil((startDow + daysInMonth) / 7);
+}
+
+/**
+ * Vlastní komponenta pro den v kalendáři.
+ */
+function EventDay(props) {
+  const {
+    day,
+    outsideCurrentMonth,
+    events = [],
+    eventColorMap,
+    onDaySelect: _onDaySelect,
+    isFirstVisibleCell: _isFirst,
+    isLastVisibleCell: _isLast,
+    selected: _selected,
+    autoFocus: _autoFocus,
+    disableHighlightToday: _disableHT,
+    showDaysOutsideCurrentMonth: _showOutside,
+    today: _today,
+    ...boxProps
+  } = props;
+
+  const dayEvents = useMemo(() => {
+    if (outsideCurrentMonth) return [];
+    return events.filter((event) => {
+      const from = dayjs(event.from).startOf("day");
+      const to = dayjs(event.to).endOf("day");
+      return day.isBetween(from, to, "day", "[]");
+    });
+  }, [day, events, outsideCurrentMonth]);
+
+  if (outsideCurrentMonth) {
+    return (
+      <Box
+        sx={{
+          width: "100%",
+          height: DAY_HEIGHT,
+          borderRight: `1px solid ${BORDER_COLOR}`,
+          borderBottom: `1px solid ${BORDER_COLOR}`,
+          backgroundColor: "rgba(0, 0, 0, 0.02)",
+        }}
+      />
+    );
+  }
+
+  return (
+    <Box
+      {...boxProps}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "stretch",
+        width: "100%",
+        height: DAY_HEIGHT,
+        p: 0,
+        m: 0,
+        borderRight: `1px solid ${BORDER_COLOR}`,
+        borderBottom: `1px solid ${BORDER_COLOR}`,
+        cursor: "default",
+        transition: "background-color 0.12s",
+        "&:hover": {
+          backgroundColor: "rgba(0, 0, 0, 0.04)",
+        },
+      }}
+    >
+      {/* Číslo dne – na střed */}
+      <Typography
+        variant="body2"
+        sx={{
+          fontSize: "0.95rem",
+          fontWeight: 500,
+          textAlign: "center",
+          pt: 0.5,
+          pb: 0.25,
+          lineHeight: 1.4,
+          userSelect: "none",
+          color: "text.primary",
+        }}
+      >
+        {day.date()}
+      </Typography>
+
+      {/* Pruhy událostí */}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "3px",
+          width: "100%",
+          px: "3px",
+          flex: 1,
+          overflow: "hidden",
+        }}
+      >
+        {dayEvents.map((event) => (
+          <Tooltip key={event.name} title={event.name} arrow>
+            <Box
+              onClick={(e) => {
+                e.stopPropagation();
+                console.log(event.text);
+              }}
+              sx={{
+                width: "100%",
+                height: 8,
+                backgroundColor:
+                  eventColorMap?.[event.name] ?? EVENT_COLORS[0],
+                cursor: "pointer",
+                borderRadius: "2px",
+                transition: "opacity 0.15s",
+                "&:hover": {
+                  opacity: 0.65,
+                },
+              }}
+            />
+          </Tooltip>
+        ))}
+      </Box>
+    </Box>
+  );
+}
+
+/**
+ * CustomMuiCalendar
+ *
+ * Props:
+ * - events: Array<{ name: string, from: string | Date | Dayjs, to: string | Date | Dayjs, text: string }>
+ * - value / onChange: Volitelně pro řízený výběr data
+ * - ...rest: Ostatní props se předají do DateCalendar
+ */
+export default function CustomMuiCalendar({
+  events = [],
+  value,
+  onChange,
+  ...rest
+}) {
+  const [internalValue, setInternalValue] = useState(dayjs());
+  // Sledujeme aktuálně zobrazený měsíc (může se lišit od vybraného data)
+  const [displayedMonth, setDisplayedMonth] = useState(dayjs());
+
+  const selectedValue = value !== undefined ? value : internalValue;
+  const handleChange = onChange ?? setInternalValue;
+
+  const handleMonthChange = useCallback((newMonth) => {
+    setDisplayedMonth(newMonth);
+  }, []);
+
+  // Dynamický počet řádků pro aktuální měsíc
+  const weekRows = useMemo(
+    () => getWeekRowsInMonth(displayedMonth),
+    [displayedMonth]
+  );
+  const gridHeight = weekRows * DAY_HEIGHT;
+
+  // Přiřaď každé unikátní události stabilní barvu
+  const eventColorMap = useMemo(() => {
+    const map = {};
+    const uniqueNames = [...new Set(events.map((e) => e.name))];
+    uniqueNames.forEach((name, i) => {
+      map[name] = EVENT_COLORS[i % EVENT_COLORS.length];
+    });
+    return map;
+  }, [events]);
+
+  return (
+    <Box
+      sx={{
+        width: "100%",
+        border: `1px solid ${BORDER_COLOR}`,
+        borderRadius: 0,
+      }}
+    >
+      <DateCalendar
+        value={selectedValue}
+        onChange={handleChange}
+        onMonthChange={handleMonthChange}
+        showDaysOutsideCurrentMonth
+        dayOfWeekFormatter={(date) =>
+          dayjs(date).format("dddd").replace(/^\w/, (c) => c.toUpperCase())
+        }
+        slots={{ day: EventDay }}
+        slotProps={{
+          day: {
+            events,
+            eventColorMap,
+          },
+        }}
+        sx={{
+          width: "100%",
+          maxWidth: "100%",
+          height: "auto !important",
+          maxHeight: "none !important",
+
+          // Vnitřní kontejnery – dynamická výška
+          "& .MuiDateCalendar-viewTransitionContainer": {
+            //height: gridHeight + WEEK_DAY_HEADER_HEIGHT,
+            transition: "height 0.2s ease",
+          },
+
+          // MonthContainer má defaultně overflow: hidden – musíme přebít
+          "& .MuiDayCalendar-monthContainer": {
+            overflow: "visible",
+          },
+
+          // Header s názvem měsíce a šipkami
+          "& .MuiPickersCalendarHeader-root": {
+            px: 2,
+            py: 2,
+            borderBottom: `1px solid ${BORDER_COLOR}`,
+          },
+          "& .MuiPickersCalendarHeader-label": {
+            fontSize: "1.2rem",
+            fontWeight: 600,
+          },
+
+          // Řádek s názvy dnů – celá slova
+          "& .MuiDayCalendar-header": {
+            display: "grid",
+            gridTemplateColumns: "repeat(7, 1fr)",
+            width: "100%",
+          },
+          "& .MuiDayCalendar-weekDayLabel": {
+            width: "100%",
+            height: WEEK_DAY_HEADER_HEIGHT,
+            fontSize: "0.85rem",
+            fontWeight: 600,
+            margin: 0,
+            borderRight: `1px solid ${BORDER_COLOR}`,
+            borderBottom: `1px solid ${BORDER_COLOR}`,
+            "&:last-of-type": {
+              borderRight: "none",
+            },
+          },
+
+          // Slide transition – dynamická výška podle počtu týdnů
+          "& .MuiDayCalendar-slideTransition": {
+            minHeight: 110 * 4, // TODO: if month has more than 28 days its 5 * 110 (or last day is bigger than 28th) otherwise is 4 * 110. 110 is the height of whole day component - this should be calculated based on the actual content of the month, not hardcoded
+            transition: "height 0.2s ease",
+          },
+
+          // Týdenní řádky
+          "& .MuiDayCalendar-weekContainer": {
+            display: "grid",
+            gridTemplateColumns: "repeat(7, 1fr)",
+            margin: 0,
+          },
+
+          // Reset defaultních PickersDay stylů
+          "& .MuiPickersDay-root": {
+            width: "100%",
+            height: "auto",
+            margin: 0,
+            padding: 0,
+            borderRadius: 0,
+          },
+        }}
+        {...rest}
+      />
+    </Box>
+  );
+}

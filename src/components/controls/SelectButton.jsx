@@ -1,7 +1,7 @@
-import { Button, Menu, MenuItem } from "@mui/material";
+import { Button, Menu, MenuItem, TextField } from "@mui/material";
 import { useState } from "react";
 
-export function SelectButton({ label, options, ...props }) {
+export function SelectButton({ label, options, customContent, ...props }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -18,16 +18,19 @@ export function SelectButton({ label, options, ...props }) {
         {label}
       </Button>
       <Menu anchorEl={anchorEl} open={open} onClose={() => handleClose()}>
-        {options.map(({ label, onClick }) => (
-          <MenuItem
-            onClick={() => {
-              onClick();
-              handleClose();
-            }}
-          >
-            {label}
-          </MenuItem>
-        ))}
+        {options &&
+          options.map(({ label, onClick }) => (
+            <MenuItem
+              key={label}
+              onClick={() => {
+                onClick();
+                handleClose();
+              }}
+            >
+              {label}
+            </MenuItem>
+          ))}
+        {customContent}
       </Menu>
     </>
   );
