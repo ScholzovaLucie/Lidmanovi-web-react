@@ -90,8 +90,8 @@ function EventDay(props) {
         height: DAY_HEIGHT,
         p: 0,
         m: 0,
-        borderRight: `1px solid ${BORDER_COLOR}`,
-        borderBottom: `1px solid ${BORDER_COLOR}`,
+        borderRight: `1px solid ${BORDER_COLOR}`, // TODO: last day in row should not have borderRight
+        borderBottom: `1px solid ${BORDER_COLOR}`, // TODO: last row should not have borderBottom
         cursor: "default",
         transition: "background-color 0.12s",
         "&:hover": {
@@ -123,7 +123,6 @@ function EventDay(props) {
           flexDirection: "column",
           gap: "3px",
           width: "100%",
-          px: "3px",
           flex: 1,
           overflow: "hidden",
         }}
@@ -187,8 +186,6 @@ export default function CustomMuiCalendar({
   );
   const gridHeight = weekRows * DAY_HEIGHT;
 
-  console.log(weekRows)
-
   // Přiřaď každé unikátní události stabilní barvu
   const eventColorMap = useMemo(() => {
     const map = {};
@@ -203,7 +200,7 @@ export default function CustomMuiCalendar({
     <Box
       sx={{
         width: "100%",
-        border: `1px solid ${BORDER_COLOR}`,
+        border: `0px solid ${BORDER_COLOR}`,
         borderRadius: 0,
       }}
     >
@@ -291,6 +288,16 @@ export default function CustomMuiCalendar({
             margin: 0,
             padding: 0,
             borderRadius: 0,
+          },
+
+          // YearCalendar / MonthCalendar – roztáhnout na celou šířku
+          "& .MuiYearCalendar-root": {
+            width: "100%",
+            maxHeight: gridHeight,
+            overflowY: "auto",
+          },
+          "& .MuiMonthCalendar-root": {
+            width: "100%",
           },
         }}
         {...rest}

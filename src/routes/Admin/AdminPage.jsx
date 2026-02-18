@@ -1,4 +1,4 @@
-import { Stack, Typography } from "@mui/material";
+import { Card, Stack, Typography } from "@mui/material";
 import AppScheduler from "./components/AppScheduler";
 import AppDataTable from "./components/AppDataTable";
 import CustomMuiCalendar from "./components/CustomMuiCalendar";
@@ -50,11 +50,9 @@ export default function AdminPage() {
       spacing={4}
     >
       <Typography variant="h4">Custom MUI Calendar</Typography>
-      <CustomMuiCalendar events={SAMPLE_EVENTS} />
-      <Typography variant="h4">
-        spíš: https://github.com/schedule-x/schedule-x
-      </Typography>
-      <AppScheduler />
+      <Card variant="outlined">
+        <CustomMuiCalendar events={SAMPLE_EVENTS} />
+      </Card>
       <AppDataTable />
     </Stack>
   );
