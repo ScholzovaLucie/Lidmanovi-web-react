@@ -26,15 +26,14 @@ const EVENT_COLORS = [
 
 /**
  * Spočítá kolik týdenních řádků zabere daný měsíc v kalendáři.
- * (pondělí = start týdne)
+ * Replikuje logiku MUI AdapterDayjs.getWeekArray() –
+ * od startOfWeek(startOfMonth) do endOfWeek(endOfMonth).
  */
 function getWeekRowsInMonth(date) {
-  const start = date.startOf("month");
-  const end = date.endOf("month");
-  // Den v týdnu prvního dne (0=neděle v dayjs, převedeme na Po=0)
-  const startDow = (start.day() + 6) % 7; // Po=0, Út=1 ... Ne=6
-  const daysInMonth = end.date();
-  return Math.ceil((startDow + daysInMonth) / 7);
+  const start = date.startOf("month").startOf("week");
+  const end = date.endOf("month").endOf("week");
+  const totalDays = end.diff(start, "day") + 1;
+  return Math.round(totalDays / 7);
 }
 
 /**
@@ -188,6 +187,8 @@ export default function CustomMuiCalendar({
   );
   const gridHeight = weekRows * DAY_HEIGHT;
 
+  console.log(weekRows)
+
   // Přiřaď každé unikátní události stabilní barvu
   const eventColorMap = useMemo(() => {
     const map = {};
@@ -226,16 +227,17 @@ export default function CustomMuiCalendar({
           maxWidth: "100%",
           height: "auto !important",
           maxHeight: "none !important",
+          overflow: "hidden",
 
           // Vnitřní kontejnery – dynamická výška
           "& .MuiDateCalendar-viewTransitionContainer": {
-            //height: gridHeight + WEEK_DAY_HEADER_HEIGHT,
+            height: gridHeight + WEEK_DAY_HEADER_HEIGHT,
             transition: "height 0.2s ease",
           },
 
-          // MonthContainer má defaultně overflow: hidden – musíme přebít
+          // MonthContainer má defaultně overflow: hidden
           "& .MuiDayCalendar-monthContainer": {
-            overflow: "visible",
+            position: "relative",
           },
 
           // Header s názvem měsíce a šipkami
@@ -268,10 +270,11 @@ export default function CustomMuiCalendar({
             },
           },
 
-          // Slide transition – dynamická výška podle počtu týdnů
+          // Slide transition – dynamická výška podle počtu týdnů v měsíci
           "& .MuiDayCalendar-slideTransition": {
-            minHeight: 110 * 4, // TODO: if month has more than 28 days its 5 * 110 (or last day is bigger than 28th) otherwise is 4 * 110. 110 is the height of whole day component - this should be calculated based on the actual content of the month, not hardcoded
-            transition: "height 0.2s ease",
+            minHeight: gridHeight,
+            height: gridHeight,
+            transition: "height 0.2s ease, min-height 0.2s ease",
           },
 
           // Týdenní řádky
