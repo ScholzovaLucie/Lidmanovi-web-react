@@ -50,9 +50,7 @@ export default function AdminPage() {
       spacing={4}
     >
       <Typography variant="h4">Custom MUI Calendar</Typography>
-      <Card variant="outlined">
         <CustomMuiCalendar events={SAMPLE_EVENTS} />
-      </Card>
       <AppDataTable />
     </Stack>
   );

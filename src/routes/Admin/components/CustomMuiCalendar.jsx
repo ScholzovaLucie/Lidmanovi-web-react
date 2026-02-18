@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback } from "react";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import weekday from "dayjs/plugin/weekday";
+import "dayjs/locale/cs";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { Box, Tooltip, Typography } from "@mui/material";
 
@@ -28,10 +29,12 @@ const EVENT_COLORS = [
  * Spočítá kolik týdenních řádků zabere daný měsíc v kalendáři.
  * Replikuje logiku MUI AdapterDayjs.getWeekArray() –
  * od startOfWeek(startOfMonth) do endOfWeek(endOfMonth).
+ * Používá locale "cs" aby startOfWeek byl pondělí.
  */
 function getWeekRowsInMonth(date) {
-  const start = date.startOf("month").startOf("week");
-  const end = date.endOf("month").endOf("week");
+  const d = date.locale("cs");
+  const start = d.startOf("month").startOf("week");
+  const end = d.endOf("month").endOf("week");
   const totalDays = end.diff(start, "day") + 1;
   return Math.round(totalDays / 7);
 }
@@ -45,6 +48,7 @@ function EventDay(props) {
     outsideCurrentMonth,
     events = [],
     eventColorMap,
+    weekRows,
     onDaySelect: _onDaySelect,
     isFirstVisibleCell: _isFirst,
     isLastVisibleCell: _isLast,
@@ -65,14 +69,23 @@ function EventDay(props) {
     });
   }, [day, events, outsideCurrentMonth]);
 
+  // Neděle (day()=0) je poslední den v týdnu při pondělním startu
+  const isLastInRow = day.day() === 0;
+  // Zjistíme, jestli den patří do posledního řádku kalendáře
+  const endOfMonthWeekEnd = day.endOf("month").endOf("week");
+  const isLastRow = day.isAfter(endOfMonthWeekEnd.subtract(7, "day"));
+
+  const borderRight = isLastInRow ? "none" : `1px solid ${BORDER_COLOR}`;
+  const borderBottom = isLastRow ? "none" : `1px solid ${BORDER_COLOR}`;
+
   if (outsideCurrentMonth) {
     return (
       <Box
         sx={{
           width: "100%",
           height: DAY_HEIGHT,
-          borderRight: `1px solid ${BORDER_COLOR}`,
-          borderBottom: `1px solid ${BORDER_COLOR}`,
+          borderRight,
+          borderBottom,
           backgroundColor: "rgba(0, 0, 0, 0.02)",
         }}
       />
@@ -90,8 +103,8 @@ function EventDay(props) {
         height: DAY_HEIGHT,
         p: 0,
         m: 0,
-        borderRight: `1px solid ${BORDER_COLOR}`, // TODO: last day in row should not have borderRight
-        borderBottom: `1px solid ${BORDER_COLOR}`, // TODO: last row should not have borderBottom
+        borderRight,
+        borderBottom,
         cursor: "default",
         transition: "background-color 0.12s",
         "&:hover": {
@@ -136,11 +149,10 @@ function EventDay(props) {
               }}
               sx={{
                 width: "100%",
-                height: 8,
-                backgroundColor:
-                  eventColorMap?.[event.name] ?? EVENT_COLORS[0],
+                height: 12,
+                backgroundColor: eventColorMap?.[event.name] ?? EVENT_COLORS[0],
                 cursor: "pointer",
-                borderRadius: "2px",
+                //borderRadius: "16px", // border radius pruhu disabled for now - do not edit or remove comment
                 transition: "opacity 0.15s",
                 "&:hover": {
                   opacity: 0.65,
@@ -182,7 +194,7 @@ export default function CustomMuiCalendar({
   // Dynamický počet řádků pro aktuální měsíc
   const weekRows = useMemo(
     () => getWeekRowsInMonth(displayedMonth),
-    [displayedMonth]
+    [displayedMonth],
   );
   const gridHeight = weekRows * DAY_HEIGHT;
 
@@ -200,7 +212,7 @@ export default function CustomMuiCalendar({
     <Box
       sx={{
         width: "100%",
-        border: `0px solid ${BORDER_COLOR}`,
+        //border: `1px solid ${BORDER_COLOR}`,
         borderRadius: 0,
       }}
     >
@@ -210,13 +222,16 @@ export default function CustomMuiCalendar({
         onMonthChange={handleMonthChange}
         showDaysOutsideCurrentMonth
         dayOfWeekFormatter={(date) =>
-          dayjs(date).format("dddd").replace(/^\w/, (c) => c.toUpperCase())
+          dayjs(date)
+            .format("dddd")
+            .replace(/^\w/, (c) => c.toUpperCase())
         }
         slots={{ day: EventDay }}
         slotProps={{
           day: {
             events,
             eventColorMap,
+            weekRows,
           },
         }}
         sx={{
@@ -232,7 +247,7 @@ export default function CustomMuiCalendar({
             transition: "height 0.2s ease",
           },
 
-          // MonthContainer má defaultně overflow: hidden
+          // MonthContainer
           "& .MuiDayCalendar-monthContainer": {
             position: "relative",
           },
@@ -241,6 +256,7 @@ export default function CustomMuiCalendar({
           "& .MuiPickersCalendarHeader-root": {
             px: 2,
             py: 2,
+            m: 0,
             borderBottom: `1px solid ${BORDER_COLOR}`,
           },
           "& .MuiPickersCalendarHeader-label": {

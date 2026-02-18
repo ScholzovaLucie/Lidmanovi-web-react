@@ -10,13 +10,14 @@ import { Provider } from "react-redux";
 import { store } from "./redux/store.js";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import "dayjs/locale/cs";
 
 import "./fonts.css";
 import { AppContextProvider } from "./context/appContextProvider.jsx";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="cs">
       <Provider store={store}>
         <AppContextProvider>
           <StyledEngineProvider injectFirst>
