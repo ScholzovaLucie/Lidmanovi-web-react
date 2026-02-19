@@ -3,6 +3,8 @@ import AppScheduler from "./components/AppScheduler";
 import AppDataTable from "./components/AppDataTable";
 import CustomMuiCalendar from "./components/CustomMuiCalendar";
 import dayjs from "dayjs";
+import Button from "@mui/material/Button";
+import CustomTable from "./components/CustomMuiTable";
 
 const SAMPLE_EVENTS = [
   {
@@ -35,7 +37,27 @@ const SAMPLE_EVENTS = [
     to: dayjs().startOf("month").add(5, "day"),
     text: "Jednodenní regionální konference - projektor, občerstvení, 40 účastníků.",
   },
-  
+];
+
+const columns = [
+  { key: "name", label: "Dessert" },
+  { key: "calories", label: "Calories", align: "right" },
+  { key: "fat", label: "Fat", align: "right" },
+  {
+    key: "action",
+    label: "Action",
+    render: (row) => (
+      <Button variant="contained" size="small">
+        {row.name}
+      </Button>
+    ),
+  },
+];
+
+const rows = [
+  { name: "Frozen yoghurt", calories: 159, fat: 6.0 },
+  { name: "Ice cream sandwich", calories: 237, fat: 9.0 },
+  { name: "Eclair", calories: 262, fat: 16.0 },
 ];
 
 export default function AdminPage() {
@@ -49,9 +71,10 @@ export default function AdminPage() {
       p={3}
       spacing={4}
     >
-      <Typography variant="h4">Custom MUI Calendar</Typography>
+      <Card sx={{ width: "100%" }}>
         <CustomMuiCalendar events={SAMPLE_EVENTS} />
-      <AppDataTable />
+      </Card>
+      <CustomTable columns={columns} data={rows} getRowId={(row) => row.name} />
     </Stack>
   );
 }

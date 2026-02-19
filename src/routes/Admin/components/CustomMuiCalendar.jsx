@@ -49,6 +49,7 @@ function EventDay(props) {
     events = [],
     eventColorMap,
     weekRows,
+    displayedMonth,
     onDaySelect: _onDaySelect,
     isFirstVisibleCell: _isFirst,
     isLastVisibleCell: _isLast,
@@ -71,9 +72,20 @@ function EventDay(props) {
 
   // Neděle (day()=0) je poslední den v týdnu při pondělním startu
   const isLastInRow = day.day() === 0;
-  // Zjistíme, jestli den patří do posledního řádku kalendáře
-  const endOfMonthWeekEnd = day.endOf("month").endOf("week");
-  const isLastRow = day.isAfter(endOfMonthWeekEnd.subtract(7, "day"));
+
+  // Zjistíme, jestli den patří do posledního řádku kalendáře.
+  // Použijeme displayedMonth a weekRows pro správný výpočet –
+  // grid začíná na startOfWeek(startOfMonth(displayedMonth)),
+  // poslední řádek začíná (weekRows - 1) * 7 dní od začátku gridu.
+  const gridStart = useMemo(
+    () => displayedMonth.locale("cs").startOf("month").startOf("week"),
+    [displayedMonth],
+  );
+  const lastRowStart = useMemo(
+    () => gridStart.add((weekRows - 1) * 7, "day"),
+    [gridStart, weekRows],
+  );
+  const isLastRow = !day.isBefore(lastRowStart, "day");
 
   const borderRight = isLastInRow ? "none" : `1px solid ${BORDER_COLOR}`;
   const borderBottom = isLastRow ? "none" : `1px solid ${BORDER_COLOR}`;
@@ -232,6 +244,7 @@ export default function CustomMuiCalendar({
             events,
             eventColorMap,
             weekRows,
+            displayedMonth,
           },
         }}
         sx={{
