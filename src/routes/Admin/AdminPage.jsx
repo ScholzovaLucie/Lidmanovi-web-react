@@ -1,80 +1,157 @@
-import { Card, Stack, Typography } from "@mui/material";
-import AppScheduler from "./components/AppScheduler";
-import AppDataTable from "./components/AppDataTable";
-import CustomMuiCalendar from "./components/CustomMuiCalendar";
+import { useEffect, useMemo } from "react";
+import { Box, Card, Chip, Divider, Stack, Typography } from "@mui/material";
 import dayjs from "dayjs";
-import Button from "@mui/material/Button";
+import CustomMuiCalendar from "./components/CustomMuiCalendar";
 import CustomTable from "./components/CustomMuiTable";
-
-const SAMPLE_EVENTS = [
-  {
-    name: "Svatba Novákovi",
-    from: dayjs().startOf("month").add(4, "day"),
-    to: dayjs().startOf("month").add(6, "day"),
-    text: "Svatba rodiny Novákových - hlavní sál, 80 hostů, catering zajištěn.",
-  },
-  {
-    name: "Firemní teambuilding",
-    from: dayjs().startOf("month").add(10, "day"),
-    to: dayjs().startOf("month").add(12, "day"),
-    text: "Teambuilding firmy Acme s.r.o. - ubytování pro 25 osob, aktivitní program.",
-  },
-  {
-    name: "Oslava narozenin",
-    from: dayjs().startOf("month").add(11, "day"),
-    to: dayjs().startOf("month").add(11, "day"),
-    text: "Narozeniny paní Králové - malý salonek, dort, 15 hostů.",
-  },
-  {
-    name: "Víkendový pobyt",
-    from: dayjs().startOf("month").add(18, "day"),
-    to: dayjs().startOf("month").add(20, "day"),
-    text: "Víkendový relaxační pobyt - 2 pokoje, polopenze, wellness.",
-  },
-  {
-    name: "Konference",
-    from: dayjs().startOf("month").add(5, "day"),
-    to: dayjs().startOf("month").add(5, "day"),
-    text: "Jednodenní regionální konference - projektor, občerstvení, 40 účastníků.",
-  },
-];
-
-const columns = [
-  { key: "name", label: "Dessert" },
-  { key: "calories", label: "Calories", align: "right" },
-  { key: "fat", label: "Fat", align: "right" },
-  {
-    key: "action",
-    label: "Action",
-    render: (row) => (
-      <Button variant="contained" size="small">
-        {row.name}
-      </Button>
-    ),
-  },
-];
-
-const rows = [
-  { name: "Frozen yoghurt", calories: 159, fat: 6.0 },
-  { name: "Ice cream sandwich", calories: 237, fat: 9.0 },
-  { name: "Eclair", calories: 262, fat: 16.0 },
-];
+import { useReservationsQuery } from "../../redux/api/reservationsApi";
+import { useGuestsQuery } from "../../redux/api/guestApi";
+import { HOST_COLUMNS, reservationColumns } from "./constants";
 
 export default function AdminPage() {
+  const { data: reservationsData, isLoading, error } = useReservationsQuery();
+  const {
+    data: guestsData,
+    isLoading: isGuestsLoading,
+    error: guestsError,
+  } = useGuestsQuery();
+
+  useEffect(() => {
+    console.log(guestsData);
+  }, [guestsData, isGuestsLoading, guestsError]);
+
+  const calendarEventsFromApi = useMemo(() => {
+    if (!reservationsData) return [];
+
+    return reservationsData.map((reservation) => ({
+      name: `${reservation.primary_guest.first_name}`,
+      from: dayjs(reservation.check_in_date),
+      to: dayjs(reservation.check_out_date),
+      text: `clicked room`,
+    }));
+  }, [reservationsData]);
+
+  if (isLoading || isGuestsLoading) {
+    return (
+      <Box
+        sx={{
+          minHeight: "calc(100vh - 130px)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Typography variant="h6" color="text.secondary">
+          Loading...
+        </Typography>
+      </Box>
+    );
+  }
+
   return (
     <Stack
+      spacing={3}
       sx={{
         minHeight: "calc(100vh - 130px)",
-        paddingTop: 2,
+        pt: 2,
+        px: { xs: 1, md: 2 },
+        pb: 4,
+        background:
+          "radial-gradient(circle at 12% 0%, rgba(176, 230, 218, 0.35), transparent 38%), radial-gradient(circle at 95% 4%, rgba(250, 227, 199, 0.35), transparent 32%), #f5f8fb",
       }}
-      alignItems={"center"}
-      p={3}
-      spacing={4}
     >
-      <Card sx={{ width: "100%" }}>
-        <CustomMuiCalendar events={SAMPLE_EVENTS} />
-      </Card>
-      <CustomTable columns={columns} data={rows} getRowId={(row) => row.name} />
+      {!isLoading && (
+        <Card
+          sx={{
+            width: "100%",
+            p: { xs: 1.5, sm: 2 },
+            borderRadius: 2,
+            boxShadow: "0 18px 45px rgba(29, 43, 61, 0.12)",
+            backdropFilter: "blur(5px)",
+            border: "1px solid rgba(255, 255, 255, 0.65)",
+          }}
+        >
+          <Stack spacing={1.5} sx={{ mb: 2 }}>
+            <Typography
+              variant="h5"
+              sx={{
+                fontFamily: '"Manrope", "Poppins", sans-serif',
+                fontWeight: 700,
+                color: "#213547",
+                letterSpacing: "0.01em",
+              }}
+            >
+              Reservation Calendar
+            </Typography>
+            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+              <Chip
+                label={`${reservationsData.length} reservations`}
+                color="primary"
+              />
+            </Stack>
+          </Stack>
+          <CustomMuiCalendar events={calendarEventsFromApi} />
+        </Card>
+      )}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", xl: "1fr 1fr" },
+          gap: 2,
+          alignItems: "start",
+        }}
+      >
+        <Card
+          sx={{
+            p: { xs: 1.25, sm: 2 },
+            borderRadius: 2,
+            boxShadow: "0 12px 35px rgba(32, 50, 69, 0.08)",
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{
+              fontFamily: '"Manrope", "Poppins", sans-serif',
+              fontWeight: 700,
+              color: "#243244",
+              mb: 1.5,
+            }}
+          >
+            Hotel Hosts
+          </Typography>
+          <Divider sx={{ mb: 1.5 }} />
+          <CustomTable
+            columns={HOST_COLUMNS}
+            data={guestsData}
+            getRowId={(row) => row.id}
+          />
+        </Card>
+
+        <Card
+          sx={{
+            p: { xs: 1.25, sm: 2 },
+            borderRadius: 2,
+            boxShadow: "0 12px 35px rgba(32, 50, 69, 0.08)",
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{
+              fontFamily: '"Manrope", "Poppins", sans-serif',
+              fontWeight: 700,
+              color: "#243244",
+              mb: 1.5,
+            }}
+          >
+            Reservations
+          </Typography>
+          <Divider sx={{ mb: 1.5 }} />
+          <CustomTable
+            columns={reservationColumns}
+            data={reservationsData}
+            getRowId={(row) => row.id}
+          />
+        </Card>
+      </Box>
     </Stack>
   );
 }

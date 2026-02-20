@@ -16,6 +16,8 @@ import { Divider, Modal, Stack, TextField } from "@mui/material";
 import AppModal from "./Modal";
 import CloseIcon from "@mui/icons-material/Close";
 import { useTokenMutation } from "../redux/api/apiApi";
+import { setToken } from "../redux/slices/app/appSlice";
+import { useDispatch } from "react-redux";
 
 // TODO: předělat do header 2 ještě mobilní navigaci
 
@@ -36,6 +38,7 @@ const asset = (path) =>
 
 export default function Header() {
   const [open, setOpen] = React.useState(false);
+  const dispatch = useDispatch();
   const { t, i18n } = useTranslation("global");
 
   const [getToken] = useTokenMutation();
@@ -147,13 +150,21 @@ export default function Header() {
 
                     <Button
                       onClick={async () => {
-                        const response = await getToken({
-                          username: "admin",
-                          password: "admin",
-                        });
-                        console.log(response); // TODO
-                        navigate("/admin");
-                        setModalOpen(false);
+                        try {
+                          const response = await getToken({
+                            username: "admin",
+                            password: "admin",
+                          });
+                          // Dispatch the token and wait for it to be set
+                          await dispatch(setToken(response.data.access));
+
+                          // Only navigate after token is successfully saved
+                          navigate("/admin");
+                          setModalOpen(false);
+                        } catch (error) {
+                          console.error("Login failed:", error);
+                          // Handle login error here if needed
+                        }
                       }}
                       sx={{ mt: 2 }}
                       variant="contained"

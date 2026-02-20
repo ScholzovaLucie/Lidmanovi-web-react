@@ -224,8 +224,8 @@ export default function CustomMuiCalendar({
     <Box
       sx={{
         width: "100%",
-        //border: `1px solid ${BORDER_COLOR}`,
-        borderRadius: 0,
+        border: `1px solid ${BORDER_COLOR}`,
+        borderRadius: 1,
       }}
     >
       <DateCalendar

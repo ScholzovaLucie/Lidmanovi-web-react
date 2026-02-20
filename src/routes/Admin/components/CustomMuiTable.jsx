@@ -13,6 +13,13 @@ export default function CustomTable({ columns = [], data = [], getRowId, sx }) {
     return index;
   };
 
+  const getNestedValue = (obj, path) => {
+    if (!path) return undefined;
+    return path.split(".").reduce((current, key) => {
+      return current && current[key] !== undefined ? current[key] : undefined;
+    }, obj);
+  };
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650, ...sx }}>
@@ -39,7 +46,7 @@ export default function CustomTable({ columns = [], data = [], getRowId, sx }) {
               }}
             >
               {columns.map((col) => {
-                const value = row[col.key];
+                const value = getNestedValue(row, col.key);
 
                 return (
                   <TableCell

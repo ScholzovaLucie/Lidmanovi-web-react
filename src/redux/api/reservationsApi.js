@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const reservationsApi = createApi({
   reducerPath: "reservationsApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/pension/public/reservations",
+    baseUrl: "http://localhost:8000/pension",
     prepareHeaders: (headers, { getState }) => {
       const token = getState().app.auth.token;
 
@@ -38,12 +38,18 @@ export const reservationsApi = createApi({
      */
     createReservation: builder.mutation({
       query: (payload) => ({
-        url: "/create/",
+        url: "/public/reservations/create/",
         method: "POST",
         body: payload,
       }),
     }),
+
+    reservations: builder.query({
+      query: () => "/admin/reservations/",
+      method: "GET",
+    }),
   }),
 });
 
-export const { useCreateReservationMutation } = reservationsApi;
+export const { useCreateReservationMutation, useReservationsQuery } =
+  reservationsApi;

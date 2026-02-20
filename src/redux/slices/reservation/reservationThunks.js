@@ -17,20 +17,49 @@ export const validateFieldThunk = (fieldName) => (dispatch, getState) => {
   );
 };
 
-// Vrací true/false → hodí se pro submit.
-export const validateFormThunk = () => (dispatch, getState) => {
+export const validateInformationAndConfirmation = () =>
+  validateFormThunk([
+    "primary_guest.first_name",
+    "primary_guest.last_name",
+    "primary_guest.email",
+    "primary_guest.phone",
+    "primary_guest.country",
+  ]);
+
+export const validateTermAndGuests = () =>
+  validateFormThunk([
+    "check_in_date",
+    "check_out_date",
+    "num_adults",
+    "num_children",
+  ]);
+
+export const validateAll = () =>
+  validateFormThunk([
+    "check_in_date",
+    "check_out_date",
+    "num_adults",
+    "num_children",
+    "primary_guest.first_name",
+    "primary_guest.last_name",
+    "primary_guest.email",
+    "primary_guest.phone",
+    "primary_guest.country",
+  ]);
+
+export const validateFormThunk = (fields) => (dispatch, getState) => {
   const state = getState();
   const values = state.reservation.values;
 
-  const errors = validateForm(values);
+  const errors = validateForm(values, fields);
 
   dispatch(setErrors(errors));
 
-  return Object.keys(errors).length === 0;
+  return Object.keys(errors).length === 0; // return true if no errors, false if there are errors
 };
 
 export const submitFormThunk = () => async (dispatch, getState) => {
-  const isValid = await dispatch(validateFormThunk());
+  const isValid = await dispatch(validateAll());
 
   if (!isValid) {
     alert("Formulář obsahuje chyby. Opravte je prosím před odesláním.");
