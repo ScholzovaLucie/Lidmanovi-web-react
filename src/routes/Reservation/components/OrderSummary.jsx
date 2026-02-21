@@ -21,7 +21,7 @@ export function OrderSummary() {
         justifyContent={"center"}
         p={3}
       >
-        <Stack width={{ width: "100%", maxWidth: 600 }} spacing={4}>
+        <Stack width={{ width: "100%", maxWidth: 500 }} spacing={4}>
           <Typography variant="h4" textAlign={{ xs: "start", sm: "center" }}>
             Souhrn rezervace
           </Typography>
@@ -94,7 +94,7 @@ export function OrderSummary() {
                   .fill()
                   .map((_, index) => (
                     <Stack
-                      bgcolor={"background.default"}
+                      bgcolor={"primary.50"}
                       borderRadius={1}
                       p={1}
                       spacing={0.5}
@@ -193,7 +193,7 @@ export function OrderSummary() {
 }
 function HighlightedIcon({ Icon }) {
   return (
-    <Stack padding={1} borderRadius={1} bgcolor={"info.light"}>
+    <Stack padding={1} borderRadius={1} bgcolor={"primary.100"}>
       <Icon color="primary" />
     </Stack>
   );

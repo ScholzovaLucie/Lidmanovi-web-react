@@ -1,47 +1,52 @@
 import { createTheme } from "@mui/material/styles";
 
 // Function to create theme based on mode
-export const createAppTheme = (mode) => createTheme({
-  palette: {
-    mode,
-    primary: { main: "#4b6b85" }, // vaše tmavě modrá barva
-    
-    // Event colors for calendar - pouze základní paleta
-    event: {
-      colors: [
-        "#4b6b85", // primary
-        "#d32f2f", // error
-        "#2e7d32", // success  
-        "#ed6c02", // warning
-        "#1976d2", // info
-      ]
+export const createAppTheme = (mode) =>
+  createTheme({
+    palette: {
+      mode,
+      primary: {
+        main: "#4b6b85",
+        50: mode === "light" ? "#f0f4f8" : "#1a2328",
+        100: mode === "light" ? "#dcebf0" : "#2a3741",
+      },
+
+      // Event colors for calendar - pouze základní paleta
+      event: {
+        colors: [
+          "#4b6b85", // primary
+          "#d32f2f", // error
+          "#2e7d32", // success
+          "#ed6c02", // warning
+          "#1976d2", // info
+        ],
+      },
     },
-  },
-  typography: {
-    fontFamily: `"Plus Jakarta Sans", "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif`,
-    h1: { fontSize: "clamp(28px, 4vw, 42px)", fontWeight: 700 },
-    h2: { fontSize: 24, fontWeight: 700, marginBottom: 12 },
-    body1: { fontSize: 16, lineHeight: 1.6 },
-  },
-  spacing: 8,
-  breakpoints: {
-    // tvůj klíčový breakpoint je 800px → posuneme md
-    values: { xs: 0, sm: 600, md: 800, lg: 1200, xl: 1536 },
-  },
-  shape: { borderRadius: 6 },
-  components: {
-    MuiButton: {
-      defaultProps: { disableElevation: true },
-      styleOverrides: {
-        root: {
-          textTransform: "none",
+    typography: {
+      fontFamily: `"Plus Jakarta Sans", "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif`,
+      h1: { fontSize: "clamp(28px, 4vw, 42px)", fontWeight: 700 },
+      h2: { fontSize: 24, fontWeight: 700, marginBottom: 12 },
+      body1: { fontSize: 16, lineHeight: 1.6 },
+    },
+    spacing: 8,
+    breakpoints: {
+      // tvůj klíčový breakpoint je 800px → posuneme md
+      values: { xs: 0, sm: 600, md: 800, lg: 1200, xl: 1536 },
+    },
+    shape: { borderRadius: 6 },
+    components: {
+      MuiButton: {
+        defaultProps: { disableElevation: true },
+        styleOverrides: {
+          root: {
+            textTransform: "none",
+          },
         },
       },
     },
-  },
-});
+  });
 
 // Default light theme
-const theme = createAppTheme('light');
+const theme = createAppTheme("light");
 
 export default theme;
