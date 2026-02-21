@@ -231,7 +231,7 @@ function CollapsableText({ text }) {
     <Stack spacing={1} alignItems={"center"}>
       <Typography
         fontSize={16}
-        color={"#525252"}
+        color={"text.muted"}
         lineHeight="24px"
         textAlign={"start"}
         sx={{
@@ -253,7 +253,7 @@ function CollapsableText({ text }) {
 function Price({ room }) {
   return (
     <Stack direction={"column"} spacing={0.5} alignItems={"start"}>
-      <Typography fontSize={14} color={"#525252"} lineHeight="16px">
+      <Typography fontSize={14} color={"text.muted"} lineHeight="16px">
         CENA ZA NOC
       </Typography>
 
@@ -266,20 +266,20 @@ function Price({ room }) {
         >
           {room.price_for_adult} Kč
         </Typography>
-        <Typography fontSize={14} color={"#525252"} lineHeight="22px">
+        <Typography fontSize={14} color={"text.muted"} lineHeight="22px">
           / dospělý
         </Typography>
       </Stack>
       <Stack direction={"row"} spacing={0.5} alignItems={"end"}>
         <Typography
           fontSize={20}
-          color={"#525252"}
+          color={"text.muted"}
           fontWeight={"bold"}
           lineHeight="22px"
         >
           {room.price_for_children} Kč
         </Typography>
-        <Typography fontSize={14} color={"#525252"} lineHeight="18px">
+        <Typography fontSize={14} color={"text.muted"} lineHeight="18px">
           / dítě
         </Typography>
       </Stack>

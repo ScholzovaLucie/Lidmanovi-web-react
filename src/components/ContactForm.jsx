@@ -252,7 +252,7 @@ export default function ContactForm({
             width: "100%",
             p: { xs: 2, md: 3 },
             borderRadius: 2,
-            boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+            boxShadow: (theme) => `0 1px 4px ${theme.palette.mode === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(0,0,0,0.2)'}`,
             ...sx,
           }}
         >

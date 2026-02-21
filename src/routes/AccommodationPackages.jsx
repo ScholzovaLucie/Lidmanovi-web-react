@@ -154,9 +154,9 @@ export default function AccommodationPackages() {
                   position: "absolute",
                   top: 8,
                   right: 8,
-                  bgcolor: "rgba(0,0,0,.4)",
-                  color: "#fff",
-                  "&:hover": { bgcolor: "rgba(0,0,0,.6)" },
+                  bgcolor: "background.overlay",
+                  color: "background.paper",
+                  "&:hover": { bgcolor: (theme) => theme.palette.mode === 'light' ? "rgba(0,0,0,.6)" : "rgba(255,255,255,.2)" },
                 }}
                 aria-label="Zavřít"
               >

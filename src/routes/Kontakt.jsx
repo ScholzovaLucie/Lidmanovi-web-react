@@ -117,7 +117,7 @@ export default function Kontakt() {
               sx={{
                 position: "absolute",
                 inset: 0,
-                backgroundColor: "rgba(0,0,0,0.3)",
+                backgroundColor: "background.overlay",
               }}
             />
           </Box>
@@ -169,8 +169,8 @@ export default function Kontakt() {
           marginLeft: "-50vw",
           marginRight: "-50vw",
           width: "100vw",
-          borderTop: "1px solid #eee",
-          borderBottom: "1px solid #eee",
+          borderTop: `1px solid ${theme => theme.palette.divider}`,
+          borderBottom: `1px solid ${theme => theme.palette.divider}`,
         }}
       >
         <Box

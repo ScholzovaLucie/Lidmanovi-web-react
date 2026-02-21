@@ -29,7 +29,7 @@ export default function HomePage() {
         ]}
         interval={2000} // změň třeba na 4000 pro rychlejší střídání
         transition={100} // délka fade
-        gradientTop="#9eb5c9"
+        gradientTop="secondary.main"
       />
 
       <FullBleedTiles

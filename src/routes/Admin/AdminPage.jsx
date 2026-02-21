@@ -55,9 +55,7 @@ export default function AdminPage() {
         pt: 2,
         px: { xs: 1, md: 2 },
         pb: 4,
-        background:
-          "radial-gradient(circle at 12% 0%, rgba(176, 230, 218, 0.35), transparent 38%), radial-gradient(circle at 95% 4%, rgba(250, 227, 199, 0.35), transparent 32%), #f5f8fb",
-      }}
+        }}
     >
       {!isLoading && (
         <Card
@@ -65,9 +63,9 @@ export default function AdminPage() {
             width: "100%",
             p: { xs: 1.5, sm: 2 },
             borderRadius: 2,
-            boxShadow: "0 18px 45px rgba(29, 43, 61, 0.12)",
+            boxShadow: (theme) => `0 18px 45px ${theme.palette.mode === 'light' ? 'rgba(29, 43, 61, 0.12)' : 'rgba(0, 0, 0, 0.4)'}`,
             backdropFilter: "blur(5px)",
-            border: "1px solid rgba(255, 255, 255, 0.65)",
+            border: (theme) => `1px solid ${theme.palette.mode === 'light' ? 'rgba(255, 255, 255, 0.65)' : 'rgba(255, 255, 255, 0.1)'}`,
           }}
         >
           <Stack spacing={1.5} sx={{ mb: 2 }}>
@@ -76,7 +74,7 @@ export default function AdminPage() {
               sx={{
                 fontFamily: '"Manrope", "Poppins", sans-serif',
                 fontWeight: 700,
-                color: "#213547",
+                color: "text.dark",
                 letterSpacing: "0.01em",
               }}
             >
@@ -104,7 +102,7 @@ export default function AdminPage() {
           sx={{
             p: { xs: 1.25, sm: 2 },
             borderRadius: 2,
-            boxShadow: "0 12px 35px rgba(32, 50, 69, 0.08)",
+            boxShadow: (theme) => `0 12px 35px ${theme.palette.mode === 'light' ? 'rgba(32, 50, 69, 0.08)' : 'rgba(0, 0, 0, 0.3)'}`,
           }}
         >
           <Typography
@@ -112,7 +110,7 @@ export default function AdminPage() {
             sx={{
               fontFamily: '"Manrope", "Poppins", sans-serif',
               fontWeight: 700,
-              color: "#243244",
+              color: "text.darker",
               mb: 1.5,
             }}
           >
@@ -130,7 +128,7 @@ export default function AdminPage() {
           sx={{
             p: { xs: 1.25, sm: 2 },
             borderRadius: 2,
-            boxShadow: "0 12px 35px rgba(32, 50, 69, 0.08)",
+            boxShadow: (theme) => `0 12px 35px ${theme.palette.mode === 'light' ? 'rgba(32, 50, 69, 0.08)' : 'rgba(0, 0, 0, 0.3)'}`,
           }}
         >
           <Typography
@@ -138,7 +136,7 @@ export default function AdminPage() {
             sx={{
               fontFamily: '"Manrope", "Poppins", sans-serif',
               fontWeight: 700,
-              color: "#243244",
+              color: "text.darker",
               mb: 1.5,
             }}
           >

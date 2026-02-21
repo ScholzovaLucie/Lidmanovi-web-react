@@ -7,7 +7,7 @@ export default function Hero({
   title,
   subtitle,
   image,
-  gradientTop = "#9eb5c9",
+  gradientTop = "secondary.main",
 }) {
   return (
     <Box
@@ -28,7 +28,7 @@ export default function Hero({
         {title && (
           <Typography
             variant="h1"
-            sx={{ color: "#fff", textShadow: "0 1px 2px rgba(0,0,0,.25)" }}
+            sx={{ color: "white", textShadow: "0 1px 2px rgba(0,0,0,.25)" }}
           >
             {title}
           </Typography>
@@ -36,7 +36,7 @@ export default function Hero({
         {subtitle && (
           <Typography
             variant="body1"
-            sx={{ mt: 2, color: "#fff", maxWidth: 700 }}
+            sx={{ mt: 2, color: "white", maxWidth: 700 }}
           >
             {subtitle}
           </Typography>

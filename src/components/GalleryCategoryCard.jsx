@@ -23,10 +23,10 @@ export default function GalleryCategoryCard({ title, cover, onClick }) {
         borderRadius: 2,
         overflow: "hidden",
         transition: "transform 120ms ease, box-shadow 120ms ease",
-        boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
+        boxShadow: (theme) => `0 1px 4px ${theme.palette.mode === 'light' ? 'rgba(0,0,0,0.05)' : 'rgba(0,0,0,0.2)'}`,
         "&:hover": {
           transform: "translateY(-2px)",
-          boxShadow: "0 10px 24px rgba(0,0,0,0.12)",
+          boxShadow: (theme) => `0 10px 24px ${theme.palette.mode === 'light' ? 'rgba(0,0,0,0.12)' : 'rgba(0,0,0,0.3)'}`,
         },
       }}
     >

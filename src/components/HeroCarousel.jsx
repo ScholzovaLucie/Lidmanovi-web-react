@@ -12,7 +12,7 @@ const asset = (path) =>
  * - slides: [{ src, alt? }]
  * - interval: ms (auto-rotace), default 5000
  * - transition: ms (fade), default 800
- * - gradientTop: barva horního overlaye, default "#9eb5c9"
+ * - gradientTop: barva horního overlaye, default "secondary.main"
  * - logoSrc: cesta k logu (default "/images/logo.png")
  * - logoHeight: { xs, md } výška loga v px (default { xs: 40, md: 60 })
  * - fullBleedHack: pokud je Hero uvnitř Containeru a chceš přes okraj (default false)
@@ -21,7 +21,7 @@ export default function HeroCarousel({
   slides = [],
   interval = 5000,
   transition = 800,
-  gradientTop = "#9eb5c9",
+  gradientTop = "secondary.main",
   logoSrc = asset("/logolidman.webp"),
   logoHeight = { xs: 150, md: 150 },
   fullBleedHack = false,
@@ -157,7 +157,7 @@ export default function HeroCarousel({
               top: "50%",
               transform: "translateY(-50%)",
               zIndex: 3,
-              color: "#fff",
+              color: "white",
               backgroundColor: "rgba(0,0,0,.25)",
               "&:hover": { backgroundColor: "rgba(0,0,0,.4)" },
             }}
@@ -173,7 +173,7 @@ export default function HeroCarousel({
               top: "50%",
               transform: "translateY(-50%)",
               zIndex: 3,
-              color: "#fff",
+              color: "white",
               backgroundColor: "rgba(0,0,0,.25)",
               "&:hover": { backgroundColor: "rgba(0,0,0,.4)" },
             }}

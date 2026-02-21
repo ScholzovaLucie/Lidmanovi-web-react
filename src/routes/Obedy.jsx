@@ -9,7 +9,7 @@ export default function Obedy() {
       <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }} id="obedy">
         <Paper
           variant="outlined"
-          sx={{ p: { xs: 2, md: 3 }, borderRadius: 2, textAlign: "center", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}
+          sx={{ p: { xs: 2, md: 3 }, borderRadius: 2, textAlign: "center", boxShadow: (theme) => `0 1px 4px ${theme.palette.mode === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(0,0,0,0.2)'}` }}
         >
           <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>
             Obědy

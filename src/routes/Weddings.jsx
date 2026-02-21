@@ -28,7 +28,7 @@ export default function Weddings() {
         ]}
         interval={4000}
         transition={600}
-        gradientTop="#9eb5c9"
+        gradientTop="secondary.main"
       />
 
       {/* Sekce v boxu */}

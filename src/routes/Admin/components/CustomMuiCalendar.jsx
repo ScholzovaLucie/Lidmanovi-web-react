@@ -4,26 +4,13 @@ import isBetween from "dayjs/plugin/isBetween";
 import weekday from "dayjs/plugin/weekday";
 import "dayjs/locale/cs";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
-import { Box, Tooltip, Typography } from "@mui/material";
+import { Box, Tooltip, Typography, useTheme } from "@mui/material";
 
 dayjs.extend(isBetween);
 dayjs.extend(weekday);
 
-const BORDER_COLOR = "rgba(0, 0, 0, 0.12)";
 const DAY_HEIGHT = 110;
 const WEEK_DAY_HEADER_HEIGHT = 40;
-
-// Paleta barev pro události (cyklicky se přiřadí)
-const EVENT_COLORS = [
-  "#4b6b85",
-  "#e57373",
-  "#81c784",
-  "#ffb74d",
-  "#7986cb",
-  "#4dd0e1",
-  "#ba68c8",
-  "#a1887f",
-];
 
 /**
  * Spočítá kolik týdenních řádků zabere daný měsíc v kalendáři.
@@ -43,6 +30,7 @@ function getWeekRowsInMonth(date) {
  * Vlastní komponenta pro den v kalendáři.
  */
 function EventDay(props) {
+  const theme = useTheme();
   const {
     day,
     outsideCurrentMonth,
@@ -87,8 +75,12 @@ function EventDay(props) {
   );
   const isLastRow = !day.isBefore(lastRowStart, "day");
 
-  const borderRight = isLastInRow ? "none" : `1px solid ${BORDER_COLOR}`;
-  const borderBottom = isLastRow ? "none" : `1px solid ${BORDER_COLOR}`;
+  const borderRight = isLastInRow
+    ? "none"
+    : `1px solid ${theme.palette.divider}`;
+  const borderBottom = isLastRow
+    ? "none"
+    : `1px solid ${theme.palette.divider}`;
 
   if (outsideCurrentMonth) {
     return (
@@ -98,7 +90,7 @@ function EventDay(props) {
           height: DAY_HEIGHT,
           borderRight,
           borderBottom,
-          backgroundColor: "rgba(0, 0, 0, 0.02)",
+          backgroundColor: "action.hover",
         }}
       />
     );
@@ -120,7 +112,7 @@ function EventDay(props) {
         cursor: "default",
         transition: "background-color 0.12s",
         "&:hover": {
-          backgroundColor: "rgba(0, 0, 0, 0.04)",
+          backgroundColor: "action.selected",
         },
       }}
     >
@@ -162,7 +154,8 @@ function EventDay(props) {
               sx={{
                 width: "100%",
                 height: 12,
-                backgroundColor: eventColorMap?.[event.name] ?? EVENT_COLORS[0],
+                backgroundColor:
+                  eventColorMap?.[event.name] ?? theme.palette.primary.main,
                 cursor: "pointer",
                 //borderRadius: "16px", // border radius pruhu disabled for now - do not edit or remove comment
                 transition: "opacity 0.15s",
@@ -192,6 +185,7 @@ export default function CustomMuiCalendar({
   onChange,
   ...rest
 }) {
+  const theme = useTheme();
   const [internalValue, setInternalValue] = useState(dayjs());
   // Sledujeme aktuálně zobrazený měsíc (může se lišit od vybraného data)
   const [displayedMonth, setDisplayedMonth] = useState(dayjs());
@@ -214,17 +208,24 @@ export default function CustomMuiCalendar({
   const eventColorMap = useMemo(() => {
     const map = {};
     const uniqueNames = [...new Set(events.map((e) => e.name))];
+    const eventColors = theme.palette.event?.colors || [
+      theme.palette.primary.main,
+      theme.palette.error.main,
+      theme.palette.success.main,
+      theme.palette.warning.main,
+      theme.palette.info.main,
+    ];
     uniqueNames.forEach((name, i) => {
-      map[name] = EVENT_COLORS[i % EVENT_COLORS.length];
+      map[name] = eventColors[i % eventColors.length];
     });
     return map;
-  }, [events]);
+  }, [events, theme]);
 
   return (
     <Box
       sx={{
         width: "100%",
-        border: `1px solid ${BORDER_COLOR}`,
+        border: `1px solid ${theme.palette.divider}`,
         borderRadius: 1,
       }}
     >
@@ -270,7 +271,7 @@ export default function CustomMuiCalendar({
             px: 2,
             py: 2,
             m: 0,
-            borderBottom: `1px solid ${BORDER_COLOR}`,
+            borderBottom: `1px solid ${theme.palette.divider}`,
           },
           "& .MuiPickersCalendarHeader-label": {
             fontSize: "1.2rem",
@@ -289,8 +290,8 @@ export default function CustomMuiCalendar({
             fontSize: "0.85rem",
             fontWeight: 600,
             margin: 0,
-            borderRight: `1px solid ${BORDER_COLOR}`,
-            borderBottom: `1px solid ${BORDER_COLOR}`,
+            borderRight: `1px solid ${theme.palette.divider}`,
+            borderBottom: `1px solid ${theme.palette.divider}`,
             "&:last-of-type": {
               borderRight: "none",
             },

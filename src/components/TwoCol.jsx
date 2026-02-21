@@ -18,7 +18,7 @@ export default function TwoCol({
         width: "100%",
         borderRadius: 2,
         overflow: "hidden",
-        border: "1px solid #eaeaea",
+        border: `1px solid ${theme => theme.palette.divider}`,
         backgroundImage: image ? `url(${image})` : "none",
         backgroundSize: "cover",
         backgroundPosition: "center",

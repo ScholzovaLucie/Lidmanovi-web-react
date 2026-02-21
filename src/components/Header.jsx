@@ -10,7 +10,10 @@ import Button from "@mui/material/Button";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
+import Switch from "@mui/material/Switch";
 import MenuIcon from "@mui/icons-material/Menu";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
 import { useTranslation } from "react-i18next";
 import { Divider, Modal, Stack, TextField } from "@mui/material";
 import AppModal from "./Modal";
@@ -18,6 +21,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useTokenMutation } from "../redux/api/apiApi";
 import { setToken } from "../redux/slices/app/appSlice";
 import { useDispatch } from "react-redux";
+import { useAppContext } from "../context/AppContextProvider";
 
 // TODO: předělat do header 2 ještě mobilní navigaci
 
@@ -40,6 +44,7 @@ export default function Header() {
   const [open, setOpen] = React.useState(false);
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation("global");
+  const { themeMode, toggleTheme } = useAppContext();
 
   const [getToken] = useTokenMutation();
   const navigate = useNavigate();
@@ -121,6 +126,18 @@ export default function Header() {
               <LangBtn code="en" label="EN" />
               <LangBtn code="pl" label="PL" />
               <LangBtn code="de" label="DE" />
+            </Box>
+            <Divider orientation="vertical" flexItem />
+            {/* Theme Toggle Switch */}
+            <Box sx={{ display: "flex", alignItems: "center", px: 1 }}>
+              <LightModeIcon sx={{ mr: 1, color: themeMode === 'light' ? 'primary.main' : 'text.disabled' }} />
+              <Switch
+                checked={themeMode === 'dark'}
+                onChange={toggleTheme}
+                color="primary"
+                size="small"
+              />
+              <DarkModeIcon sx={{ ml: 1, color: themeMode === 'dark' ? 'primary.main' : 'text.disabled' }} />
             </Box>
             <Divider orientation="vertical" flexItem />
             <Button onClick={() => setModalOpen(true)}>Login</Button>
@@ -266,6 +283,18 @@ export default function Header() {
             <LangBtn code="en" label="EN" />
             <LangBtn code="pl" label="PL" />
             <LangBtn code="de" label="DE" />
+          </Box>
+          <Divider />
+          {/* Mobile Theme Toggle */}
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", py: 2 }}>
+            <LightModeIcon sx={{ mr: 1, color: themeMode === 'light' ? 'primary.main' : 'text.disabled' }} />
+            <Switch
+              checked={themeMode === 'dark'}
+              onChange={toggleTheme}
+              color="primary"
+              size="medium"
+            />
+            <DarkModeIcon sx={{ ml: 1, color: themeMode === 'dark' ? 'primary.main' : 'text.disabled' }} />
           </Box>
         </List>
       </Drawer>

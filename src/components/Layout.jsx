@@ -17,7 +17,7 @@ export default function Layout() {
       <Box
         component="footer"
         sx={{
-          borderTop: "1px solid #eee",
+          borderTop: (theme) => `1px solid ${theme.palette.divider}`,
           py: 2,
           textAlign: "center",
           color: "text.secondary",

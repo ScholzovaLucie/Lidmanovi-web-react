@@ -84,7 +84,7 @@ export default function GalleryLightbox({
           right: 12,
           zIndex: 3,
           bgcolor: "rgba(255,255,255,.12)",
-          color: "#fff",
+          color: "white",
           "&:hover": { bgcolor: "rgba(255,255,255,.2)" },
         }}
       >
@@ -130,7 +130,7 @@ export default function GalleryLightbox({
               transform: "translateY(-50%)",
               zIndex: 3,
               bgcolor: "rgba(255,255,255,.12)",
-              color: "#fff",
+              color: "white",
               "&:hover": { bgcolor: "rgba(255,255,255,.2)" },
             }}
           >
@@ -146,7 +146,7 @@ export default function GalleryLightbox({
               transform: "translateY(-50%)",
               zIndex: 3,
               bgcolor: "rgba(255,255,255,.12)",
-              color: "#fff",
+              color: "white",
               "&:hover": { bgcolor: "rgba(255,255,255,.2)" },
             }}
           >
@@ -169,7 +169,7 @@ export default function GalleryLightbox({
               mx: "auto",
               bgcolor: "transparent",
               ".MuiMobileStepper-dot": { bgcolor: "rgba(255,255,255,.4)" },
-              ".MuiMobileStepper-dotActive": { bgcolor: "#fff" },
+              ".MuiMobileStepper-dotActive": { bgcolor: "white" },
               zIndex: 2,
             }}
           />

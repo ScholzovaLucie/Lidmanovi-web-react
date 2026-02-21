@@ -94,7 +94,7 @@ export function OrderSummary() {
                   .fill()
                   .map((_, index) => (
                     <Stack
-                      bgcolor={"#f6fbff"}
+                      bgcolor={"background.light"}
                       borderRadius={1}
                       p={1}
                       spacing={0.5}
@@ -193,7 +193,7 @@ export function OrderSummary() {
 }
 function HighlightedIcon({ Icon }) {
   return (
-    <Stack padding={1} borderRadius={1} bgcolor={"#E3F2FD"}>
+    <Stack padding={1} borderRadius={1} bgcolor={"info.light"}>
       <Icon color="primary" />
     </Stack>
   );

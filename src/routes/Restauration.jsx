@@ -42,7 +42,7 @@ export default function Restauration() {
         ]}
         interval={2000} // změň třeba na 4000 pro rychlejší střídání
         transition={100} // délka fade
-        gradientTop="#9eb5c9"
+        gradientTop="secondary.main"
       />
 
       <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }} id="oteviraciDoba">
@@ -51,7 +51,7 @@ export default function Restauration() {
           sx={{
             p: { xs: 2, md: 3 },
             borderRadius: 2,
-            boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+            boxShadow: (theme) => `0 1px 4px ${theme.palette.mode === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(0,0,0,0.2)'}`,
             textAlign: "center",
           }}
         >
