@@ -5,7 +5,7 @@ export const reservationsApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8000/pension",
     prepareHeaders: (headers, { getState }) => {
-      const token = getState().app.auth.token;
+      const token = getState().app.auth.accessToken;
 
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);

@@ -1,6 +1,6 @@
 import { Box, Modal } from "@mui/material";
 
-export default function AppModal({ open, setOpen, Body }) {
+export default function AppModal({ open, setOpen, Body, children }) {
   return (
     <Modal
       open={open}
@@ -21,7 +21,7 @@ export default function AppModal({ open, setOpen, Body }) {
           minWidth: 300,
         }}
       >
-        <Body />
+        {children || <Body />}
       </Box>
     </Modal>
   );

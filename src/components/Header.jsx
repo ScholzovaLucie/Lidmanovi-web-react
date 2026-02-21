@@ -14,14 +14,13 @@ import Switch from "@mui/material/Switch";
 import MenuIcon from "@mui/icons-material/Menu";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { useTranslation } from "react-i18next";
-import { Divider, Modal, Stack, TextField } from "@mui/material";
-import AppModal from "./Modal";
-import CloseIcon from "@mui/icons-material/Close";
-import { useTokenMutation } from "../redux/api/apiApi";
-import { setToken } from "../redux/slices/app/appSlice";
-import { useDispatch } from "react-redux";
+import { Divider } from "@mui/material";
 import { useAppContext } from "../context/AppContextProvider";
+import { useAuth } from "../hooks/useAuth";
+import { useModal } from "../hooks/useModal";
+import { LoginModal } from "./LoginModal";
 
 // TODO: předělat do header 2 ještě mobilní navigaci
 
@@ -42,12 +41,13 @@ const asset = (path) =>
 
 export default function Header() {
   const [open, setOpen] = React.useState(false);
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  
   const { t, i18n } = useTranslation("global");
   const { themeMode, toggleTheme } = useAppContext();
-
-  const [getToken] = useTokenMutation();
-  const navigate = useNavigate();
+  
+  const { isAuthenticated, logout } = useAuth();
+  const loginModal = useModal();
 
   const LangBtn = ({ code, label }) => (
     <Button
@@ -60,7 +60,10 @@ export default function Header() {
     </Button>
   );
 
-  const [modalOpen, setModalOpen] = React.useState(false);
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
   return (
     <AppBar
       position="sticky"
@@ -140,57 +143,21 @@ export default function Header() {
               <DarkModeIcon sx={{ ml: 1, color: themeMode === 'dark' ? 'primary.main' : 'text.disabled' }} />
             </Box>
             <Divider orientation="vertical" flexItem />
-            <Button onClick={() => setModalOpen(true)}>Login</Button>
-            <AppModal
-              open={modalOpen}
-              setOpen={setModalOpen}
-              Body={() => {
-                return (
-                  <Stack spacing={2}>
-                    <Stack
-                      direction="row"
-                      justifyContent="space-between"
-                      alignItems="center"
-                    >
-                      <Typography variant="h6" component="h2">
-                        Přihlášení
-                      </Typography>
-                      <IconButton
-                        onClick={() => setModalOpen(false)}
-                        aria-label="Close"
-                      >
-                        <CloseIcon />
-                      </IconButton>
-                    </Stack>
-                    <TextField label="Uživatelské jméno" />
-                    <TextField label="Heslo" />
+            {isAuthenticated ? (
+              <Button 
+                onClick={handleLogout}
+                startIcon={<LogoutIcon />}
+                color="error"
+              >
+                Odhlásit
+              </Button>
+            ) : (
+              <Button onClick={loginModal.openModal}>Login</Button>
+            )}
 
-                    <Button
-                      onClick={async () => {
-                        try {
-                          const response = await getToken({
-                            username: "admin",
-                            password: "admin",
-                          });
-                          // Dispatch the token and wait for it to be set
-                          await dispatch(setToken(response.data.access));
-
-                          // Only navigate after token is successfully saved
-                          navigate("/admin");
-                          setModalOpen(false);
-                        } catch (error) {
-                          console.error("Login failed:", error);
-                          // Handle login error here if needed
-                        }
-                      }}
-                      sx={{ mt: 2 }}
-                      variant="contained"
-                    >
-                      Přihlásit
-                    </Button>
-                  </Stack>
-                );
-              }}
+            <LoginModal 
+              isOpen={loginModal.isOpen} 
+              onClose={loginModal.closeModal} 
             />
           </Box>
 

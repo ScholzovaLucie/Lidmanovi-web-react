@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { apiApi } from "./api/apiApi";
+import { authApi } from "./api/authApi";
 import { roomsApi } from "./api/roomsApi";
 import { reservationsApi } from "./api/reservationsApi";
 import appReducer from "./slices/app/appSlice";
@@ -28,6 +29,7 @@ export const store = configureStore({
     app: appReducer,
     reservation: reservationReducer,
     [apiApi.reducerPath]: apiApi.reducer,
+    [authApi.reducerPath]: authApi.reducer,
     [roomsApi.reducerPath]: roomsApi.reducer,
     [reservationsApi.reducerPath]: reservationsApi.reducer,
     [guestApi.reducerPath]: guestApi.reducer,
@@ -36,6 +38,7 @@ export const store = configureStore({
     getDefaultMiddleware()
       .concat(
         apiApi.middleware,
+        authApi.middleware,
         roomsApi.middleware,
         reservationsApi.middleware,
         guestApi.middleware,
