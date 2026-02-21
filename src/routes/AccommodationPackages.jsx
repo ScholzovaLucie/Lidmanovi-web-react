@@ -154,7 +154,7 @@ export default function AccommodationPackages() {
                   position: "absolute",
                   top: 8,
                   right: 8,
-                  bgcolor: "background.overlay",
+                  bgcolor: (theme) => theme.palette.mode === 'light' ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.1)",
                   color: "background.paper",
                   "&:hover": { bgcolor: (theme) => theme.palette.mode === 'light' ? "rgba(0,0,0,.6)" : "rgba(255,255,255,.2)" },
                 }}

@@ -94,7 +94,7 @@ export function OrderSummary() {
                   .fill()
                   .map((_, index) => (
                     <Stack
-                      bgcolor={"background.light"}
+                      bgcolor={"background.default"}
                       borderRadius={1}
                       p={1}
                       spacing={0.5}
@@ -126,18 +126,18 @@ export function OrderSummary() {
                       </Stack>
 
                       <Stack direction={"row"} justifyContent={"space-between"}>
-                        <Typography variant="body2" color="text.tertiary">
+                        <Typography variant="body2" color="text.secondary">
                           2x Dosplělý
                         </Typography>
-                        <Typography variant="body2" color="text.tertiary">
+                        <Typography variant="body2" color="text.secondary">
                           345 Kč
                         </Typography>
                       </Stack>
                       <Stack direction={"row"} justifyContent={"space-between"}>
-                        <Typography variant="body2" color="text.tertiary">
+                        <Typography variant="body2" color="text.secondary">
                           1x Dítě
                         </Typography>
-                        <Typography variant="body2" color="text.tertiary">
+                        <Typography variant="body2" color="text.secondary">
                           145 Kč
                         </Typography>
                       </Stack>

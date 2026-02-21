@@ -117,7 +117,7 @@ export default function Kontakt() {
               sx={{
                 position: "absolute",
                 inset: 0,
-                backgroundColor: "background.overlay",
+                backgroundColor: (theme) => theme.palette.mode === 'light' ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.1)",
               }}
             />
           </Box>

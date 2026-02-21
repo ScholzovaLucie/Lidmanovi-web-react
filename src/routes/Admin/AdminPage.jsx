@@ -74,7 +74,7 @@ export default function AdminPage() {
               sx={{
                 fontFamily: '"Manrope", "Poppins", sans-serif',
                 fontWeight: 700,
-                color: "text.dark",
+                color: "text.primary",
                 letterSpacing: "0.01em",
               }}
             >
@@ -110,7 +110,7 @@ export default function AdminPage() {
             sx={{
               fontFamily: '"Manrope", "Poppins", sans-serif',
               fontWeight: 700,
-              color: "text.darker",
+              color: "text.primary",
               mb: 1.5,
             }}
           >
@@ -136,7 +136,7 @@ export default function AdminPage() {
             sx={{
               fontFamily: '"Manrope", "Poppins", sans-serif',
               fontWeight: 700,
-              color: "text.darker",
+              color: "text.primary",
               mb: 1.5,
             }}
           >

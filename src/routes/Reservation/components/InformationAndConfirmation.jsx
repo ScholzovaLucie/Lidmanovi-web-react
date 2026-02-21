@@ -85,7 +85,7 @@ function PersonalInformation() {
     <Stack flex={1} spacing={1}>
       <Box>
         <Typography variant="h5">Osobní údaje</Typography>
-        <Typography variant="body" color={"text.muted"}>
+        <Typography variant="body" color={"text.secondary"}>
           Vyplnte prosím své kontaktní údaje
         </Typography>
       </Box>
@@ -195,7 +195,7 @@ function ArrivalTime() {
     <Stack spacing={1}>
       <Box>
         <Typography variant="h5">Čas příjezdu</Typography>
-        <Typography variant="body" color={"text.muted"}>
+        <Typography variant="body" color={"text.secondary"}>
           Sdlěte nám, v kolik hodin plánujete přijet. Pokud nevíte přesný čas,
           uveďte přibližný čas příjezdu.
         </Typography>
@@ -212,7 +212,7 @@ function SupplementaryServices() {
     <Stack spacing={1}>
       <Box>
         <Typography variant="h5">Doplnkové služby</Typography>
-        <Typography variant="body" color={"text.muted"}>
+        <Typography variant="body" color={"text.secondary"}>
           Pokud máte další přání nebo údaj, uveďte je zde.
         </Typography>
       </Box>
@@ -240,7 +240,7 @@ function SpecialRequests() {
     <Stack spacing={1}>
       <Box>
         <Typography variant="h5">Speciální požadavky</Typography>
-        <Typography variant="body" color={"text.muted"}>
+        <Typography variant="body" color={"text.secondary"}>
           Pokud máte speciální požadavky, uveďte je zde.
         </Typography>
       </Box>
