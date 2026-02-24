@@ -1,12 +1,11 @@
-import { Box, Button, Grid, Stack, Typography } from "@mui/material";
+import { Box, Button, Drawer, Grid, Stack, Typography } from "@mui/material";
 import { useReservationContext } from "../context/ReservationContext";
-import { useRoomsQuery } from "../../../redux/api/roomsApi";
+import { useAvailableRoomsQuery } from "../../../redux/api/roomsApi";
 import { AppCardCustomizable } from "../../../components/containers/AppCard";
 import {
   BathtubOutlined,
   Person,
   PersonOutline,
-  PersonOutlined,
   SpaOutlined,
   Wifi,
 } from "@mui/icons-material";
@@ -14,15 +13,51 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addRoom,
-  removeRoom,
   remainingCapacityToSelectSelector,
+  removeRoom,
 } from "../../../redux/slices/reservation/reservationSlice";
 import IconWithText from "../../../components/IconWithText";
 import ReservationAppBar from "./ReservationAppBar";
+import dayjs from "dayjs";
+import { useSnackbar } from "notistack";
+import { SelectButton } from "../../../components/controls/SelectButton";
 
 export default function RoomSelect() {
   const { step, increaseStep, decreaseStep, setStep } = useReservationContext();
-  const { data: rooms, isLoading, error } = useRoomsQuery();
+  const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
+  const {
+    data: rooms,
+    isLoading,
+    error,
+  } = useAvailableRoomsQuery({
+    checkIn: useSelector((state) =>
+      dayjs(state.reservation.values.check_in_date).format("YYYY-MM-DD"),
+    ),
+    checkOut: useSelector((state) =>
+      dayjs(state.reservation.values.check_out_date).format("YYYY-MM-DD"),
+    ),
+    adults: useSelector((state) => state.reservation.values.num_adults),
+    children: useSelector((state) => state.reservation.values.num_children),
+  });
+
+  /*
+  const {
+    data: availableRoomsData,
+    isLoading: isAvailableRoomsLoading,
+    error: availableRoomsError,
+  } = useAvailableRoomsQuery({
+    checkIn: useSelector((state) =>
+      dayjs(state.reservation.values.check_in_date).format("YYYY-MM-DD"),
+    ),
+    checkOut: useSelector((state) =>
+      dayjs(state.reservation.values.check_out_date).format("YYYY-MM-DD"),
+    ),
+    adults: useSelector((state) => state.reservation.values.num_adults),
+    children: useSelector((state) => state.reservation.values.num_children),
+  });
+  */
+
   const [availableRooms, setAvailableRooms] = useState([]);
   const remainingCapacityToSelect = useSelector(
     remainingCapacityToSelectSelector,
@@ -70,36 +105,27 @@ export default function RoomSelect() {
   useEffect(() => {
     if (isLoading || error || !rooms) return;
     console.log("RECALCULATE");
-    const available = filterOutSelectedRooms(rooms, values.rooms);
+    const available = filterOutSelectedRooms(rooms.rooms, values.rooms);
     const sorted = sortRooms(available);
     setAvailableRooms((prev) => (prev = sorted));
   }, [rooms, isLoading, error, remainingCapacityToSelect, values.rooms]);
 
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error</div>;
+
 
   return (
     <>
       <ReservationAppBar
         Component={() => {
-          return (
-            <Grid
-              container
-              spacing={1}
-              alignItems="center"
-              justifyContent="center"
-            >
-              {Array.from({ length: allHostsCount }).map((_, index) => (
-                <Grid item key={index}>
-                  {index >= actuallySelectedCapacity ? (
-                    <PersonOutline fontSize="medium" color="disabled" />
-                  ) : (
-                    <Person fontSize="medium" />
-                  )}
-                </Grid>
-              ))}
-            </Grid>
-          );
+          return SelectButton({
+            variant: "text",
+            color: "white",
+            label: "Vybrané pokoje",
+            onClick: () => setDrawerOpen(true),
+          });
         }}
       />
       <Stack
@@ -114,6 +140,18 @@ export default function RoomSelect() {
       >
         <Typography variant="h4">Dostupné pokoje</Typography>
         <Typography variant="h6">Vyberte pokoje pro všechny hosty</Typography>
+
+        <Grid container spacing={1} alignItems="center" justifyContent="center">
+          {Array.from({ length: allHostsCount }).map((_, index) => (
+            <Grid item key={index}>
+              {index >= actuallySelectedCapacity ? (
+                <PersonOutline fontSize="medium" color="disabled" />
+              ) : (
+                <Person fontSize="medium" />
+              )}
+            </Grid>
+          ))}
+        </Grid>
 
         <Grid container spacing={2} justifyContent={"center"}>
           {availableRooms.map((room, index) => (

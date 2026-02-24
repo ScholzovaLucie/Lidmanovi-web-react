@@ -13,13 +13,17 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import "dayjs/locale/cs";
 
 import "./fonts.css";
-import { AppContextProvider, useAppContext } from "./context/AppContextProvider.jsx";
+import {
+  AppContextProvider,
+  useAppContext,
+} from "./context/AppContextProvider.jsx";
+import { SnackbarProvider } from "notistack";
 
 // Component that provides dynamic theme
 function ThemedApp() {
   const { themeMode } = useAppContext();
   const theme = createAppTheme(themeMode);
-  
+
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>
@@ -37,7 +41,15 @@ createRoot(document.getElementById("root")).render(
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="cs">
       <Provider store={store}>
         <AppContextProvider>
-          <ThemedApp />
+          <SnackbarProvider
+            maxSnack={3}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+          >
+            <ThemedApp />
+          </SnackbarProvider>
         </AppContextProvider>
       </Provider>
     </LocalizationProvider>

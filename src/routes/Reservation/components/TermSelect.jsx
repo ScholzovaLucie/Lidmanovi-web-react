@@ -16,16 +16,40 @@ import {
   updatePrimaryGuest,
   updateReservation,
 } from "../../../redux/slices/reservation/reservationSlice";
-import { validateFieldThunk } from "../../../redux/slices/reservation/reservationThunks";
+import {
+  validateFieldThunk,
+  validateTermAndGuests,
+} from "../../../redux/slices/reservation/reservationThunks";
 import dayjs from "dayjs";
 import ReservationAppBar from "./ReservationAppBar";
+import { useSnackbar } from "notistack";
 
 export default function TermSelect() {
   const { step, increaseStep, decreaseStep, setStep } = useReservationContext();
+  const { enqueueSnackbar } = useSnackbar();
   const reservationState = useSelector((state) => state.reservation);
   const dispatch = useDispatch();
   const values = reservationState.values;
   const errors = reservationState.errors;
+
+  const handleButtonShowAvailableRooms = async () => {
+    const { isValid, validationErrors } = await dispatch(
+      validateTermAndGuests(),
+    );
+
+    console.log(validationErrors);
+
+    if (isValid) {
+      increaseStep();
+    } else {
+      validationErrors.map((error) => {
+        enqueueSnackbar(error, {
+          variant: "error",
+          autoHideDuration: 5000,
+        });
+      });
+    }
+  };
 
   return (
     <>
@@ -180,7 +204,7 @@ export default function TermSelect() {
           variant="contained"
           size="large"
           sx={{ maxWidth: "300px" }}
-          onClick={increaseStep}
+          onClick={handleButtonShowAvailableRooms}
         >
           Zobrazit dostupné pokoje
         </Button>

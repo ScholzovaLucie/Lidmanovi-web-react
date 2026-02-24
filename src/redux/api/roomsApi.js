@@ -4,21 +4,16 @@ export const roomsApi = createApi({
   reducerPath: "roomsApi",
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8000/pension/public",
-    prepareHeaders: (headers, { getState }) => {
-      const token = getState().app.auth.accessToken;
-
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-
-      return headers;
-    },
   }),
   endpoints: (builder) => ({
     rooms: builder.query({
       query: () => "/rooms/",
     }),
+    availableRooms: builder.query({
+      query: ({ checkIn, checkOut, adults, children }) =>
+        `/rooms/available-rooms/?adults=${adults}&children=${children}&from_date=${checkIn}&to_date=${checkOut}`,
+    }),
   }),
 });
 
-export const { useRoomsQuery, useCreateReservationMutation } = roomsApi;
+export const { useRoomsQuery, useAvailableRoomsQuery } = roomsApi;

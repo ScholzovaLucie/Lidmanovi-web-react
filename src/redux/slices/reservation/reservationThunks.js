@@ -52,14 +52,15 @@ export const validateFormThunk = (fields) => (dispatch, getState) => {
   const values = state.reservation.values;
 
   const errors = validateForm(values, fields);
+  dispatch(setErrors(errors)); // Maybe not necessary to save errors - i am not using it for now.
 
-  dispatch(setErrors(errors));
-
-  return Object.keys(errors).length === 0; // return true if no errors, false if there are errors
+  const isValid = Object.keys(errors).length === 0; // return true if no errors, false if there are errors
+  const validationErrors = Object.values(errors);
+  return { isValid, validationErrors };
 };
 
 export const submitFormThunk = () => async (dispatch, getState) => {
-  const isValid = await dispatch(validateAll());
+  const { isValid } = await dispatch(validateAll());
 
   if (!isValid) {
     alert("Formulář obsahuje chyby. Opravte je prosím před odesláním.");

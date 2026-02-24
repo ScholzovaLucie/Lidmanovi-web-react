@@ -38,15 +38,24 @@ export const validateField = (values, field) => {
     case "primary_guest.phone":
       return isEmpty(values.primary_guest.phone) ? "Phone is required" : null;
 
-    case "num_adults":
-      return values.num_adults < 0
-        ? "Number of adults cannot be negative"
-        : null;
+    case "num_adults": {
+      const cantBeNegative = values.num_adults < 0;
+      const atLeastOneAdult = values.num_adults >= 1;
 
-    case "num_children":
-      return values.num_children < 0
-        ? "Number of children cannot be negative"
-        : null;
+      if (cantBeNegative) return "Number of adults cannot be negative";
+      if (!atLeastOneAdult) return "At least one adult is required";
+      return null;
+    }
+
+    case "num_children": {
+      const cantBeNegative = values.num_children < 0;
+      const noAloneChildren =
+        values.num_adults === 0 && values.num_children > 0;
+
+      if (cantBeNegative) return "Number of children cannot be negative";
+      if (noAloneChildren) return "Children cannot be alone without adults";
+      return null;
+    }
 
     default:
       return null;

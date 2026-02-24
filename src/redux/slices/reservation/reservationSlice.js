@@ -1,11 +1,12 @@
 import { createSlice, createSelector } from "@reduxjs/toolkit";
+import dayjs from "dayjs";
 
 const reservationSlice = createSlice({
   name: "reservation",
   initialState: {
     values: {
-      check_in_date: "12.24.2024",
-      check_out_date: "12.26.2024",
+      check_in_date: dayjs(Date.now()).format("YYYY-MM-DD"),
+      check_out_date: dayjs().add(1, "day").format("YYYY-MM-DD"),
       num_adults: 2,
       num_children: 2,
       currency: "CZK",
