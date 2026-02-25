@@ -7,7 +7,6 @@ import Weddings from "./routes/Weddings.jsx";
 import AccommodationPackages from "./routes/AccommodationPackages.jsx";
 import PriceList from "./routes/PriceList.jsx";
 import Galerie from "./routes/Galerie.jsx";
-import Obedy from "./routes/Obedy.jsx";
 import ReservationPage from "./routes/Reservation.jsx";
 import AdminPage from "./routes/Admin/AdminPage.jsx";
 import HomePage from "./routes/Home/HomePage.jsx";
@@ -26,7 +25,6 @@ export default function App() {
         <Route path="/cenik" element={<PriceList />} />
         <Route path="/galerie" element={<Galerie />} />
         <Route path="/rezervace" element={<ReservationPage2 />} />
-        <Route path="/obedy" element={<Obedy />} />
         <Route path="/admin" element={<AdminPage />} />
       </Route>
     </Routes>
