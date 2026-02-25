@@ -204,16 +204,18 @@ export default function CustomMuiCalendar({
   );
   const gridHeight = weekRows * DAY_HEIGHT;
 
-  // Přiřaď každé unikátní události stabilní barvu
+  // Přiřaď každé unikátní události stabilní barvu z odstínů modré
   const eventColorMap = useMemo(() => {
     const map = {};
     const uniqueNames = [...new Set(events.map((e) => e.name))];
-    const eventColors = theme.palette.event?.colors || [
-      theme.palette.primary.main,
-      theme.palette.error.main,
-      theme.palette.success.main,
-      theme.palette.warning.main,
-      theme.palette.info.main,
+    const eventColors = [
+      '#1976d2',  // primary blue
+      '#1565c0',  // darker blue
+      '#42a5f5',  // lighter blue
+      '#64b5f6',  // light blue
+      '#90caf9',  // very light blue
+      '#5e35b1',  // purple blue
+      '#7e57c2',  // light purple
     ];
     uniqueNames.forEach((name, i) => {
       map[name] = eventColors[i % eventColors.length];

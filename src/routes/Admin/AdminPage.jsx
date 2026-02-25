@@ -1,25 +1,61 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   Box,
-  Card,
-  Chip,
-  Divider,
-  Modal,
+  Container,
+  Paper,
   Stack,
+  Tab,
+  Tabs,
   Typography,
-} from "@mui/material";
-import dayjs from "dayjs";
-import { useNavigate } from "react-router-dom";
-import CustomMuiCalendar from "./components/CustomMuiCalendar";
-import CustomTable from "./components/CustomMuiTable";
-import { useReservationsQuery } from "../../redux/api/reservationsApi";
-import { useGuestsQuery } from "../../redux/api/guestApi";
-import { HOST_COLUMNS, reservationColumns } from "./constants";
-import { useAuth } from "../../hooks/useAuth";
+  AppBar,
+  Toolbar,
+  IconButton,
+  Avatar,
+  Menu,
+  MenuItem,
+  Badge,
+} from '@mui/material';
+import { 
+  CalendarMonth, 
+  People, 
+  BookOnline, 
+  AdminPanelSettings,
+  Notifications,
+  AccountCircle,
+  ExitToApp 
+} from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
+
+// Import section components
+import { CalendarSection, GuestsSection, ReservationsSection } from './sections';
+
+const TAB_CONFIG = [
+  {
+    value: 'calendar',
+    label: 'Kalendář',
+    icon: CalendarMonth,
+    component: CalendarSection,
+  },
+  {
+    value: 'reservations',
+    label: 'Rezervace',
+    icon: BookOnline,
+    component: ReservationsSection,
+  },
+  {
+    value: 'guests',
+    label: 'Hosté',
+    icon: People,
+    component: GuestsSection,
+  },
+];
 
 export default function AdminPage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const [currentTab, setCurrentTab] = useState('calendar');
+  const [anchorEl, setAnchorEl] = useState(null);
   
   // Protect this route - redirect to home if not authenticated
   useEffect(() => {
@@ -36,168 +72,159 @@ export default function AdminPage() {
       </Box>
     );
   }
-  const { data: reservationsData, isLoading, error } = useReservationsQuery();
-  const {
-    data: guestsData,
-    isLoading: isGuestsLoading,
-    error: guestsError,
-  } = useGuestsQuery();
 
-  useEffect(() => {
-    console.log(guestsData);
-  }, [guestsData, isGuestsLoading, guestsError]);
-
-  const calendarEventsFromApi = useMemo(() => {
-    if (!reservationsData) return [];
-
-    return reservationsData.map((reservation) => ({
-      name: `${reservation.primary_guest.first_name}`,
-      from: dayjs(reservation.check_in_date),
-      to: dayjs(reservation.check_out_date),
-      text: `clicked room`,
-    }));
-  }, [reservationsData]);
-
-  const style = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 400,
-    bgcolor: "background.paper",
-    border: "2px solid #000",
-    boxShadow: 24,
-    p: 4,
+  const handleTabChange = (event, newValue) => {
+    setCurrentTab(newValue);
   };
 
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    // TODO: Implement logout logic
+    handleMenuClose();
+    navigate('/', { replace: true });
+  };
+
+  const activeTabConfig = TAB_CONFIG.find(tab => tab.value === currentTab);
+  const ActiveComponent = activeTabConfig?.component;
 
   return (
-    <>
-      <Stack
-        spacing={3}
-        sx={{
-          minHeight: "calc(100vh - 130px)",
-          pt: 2,
-          px: { xs: 1, md: 2 },
-          pb: 4,
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      {/* Admin Header */}
+      <AppBar 
+        position="sticky" 
+        elevation={0}
+        sx={{ 
+          bgcolor: 'background.paper',
+          color: 'text.primary',
+          borderBottom: '1px solid',
+          borderColor: 'divider'
         }}
       >
-        {!isLoading && (
-          <Card
-            sx={{
-              width: "100%",
-              p: { xs: 1.5, sm: 2 },
-              borderRadius: 2,
-              boxShadow: (theme) =>
-                `0 18px 45px ${theme.palette.mode === "light" ? "rgba(29, 43, 61, 0.12)" : "rgba(0, 0, 0, 0.4)"}`,
-              backdropFilter: "blur(5px)",
-              border: (theme) =>
-                `1px solid ${theme.palette.mode === "light" ? "rgba(255, 255, 255, 0.65)" : "rgba(255, 255, 255, 0.1)"}`,
-            }}
-          >
-            <Stack spacing={1.5} sx={{ mb: 2 }}>
-              <Typography
-                variant="h5"
-                sx={{
-                  fontFamily: '"Manrope", "Poppins", sans-serif',
-                  fontWeight: 700,
-                  color: "text.primary",
-                  letterSpacing: "0.01em",
+        <Container maxWidth="xl">
+          <Toolbar sx={{ px: { xs: 0 } }}>
+            <AdminPanelSettings sx={{ mr: 2, color: 'primary.main' }} />
+            <Typography
+              variant="h6"
+              sx={{
+                flexGrow: 1,
+                fontWeight: 700,
+                fontFamily: '"Manrope", "Poppins", sans-serif',
+                color: 'text.primary'
+              }}
+            >
+              Admin Dashboard - Penzion Lidmanovi
+            </Typography>
+
+            <Stack direction="row" spacing={1} alignItems="center">
+              <IconButton color="inherit">
+                <Badge badgeContent={3} color="error">
+                  <Notifications />
+                </Badge>
+              </IconButton>
+              
+              <IconButton
+                onClick={handleMenuOpen}
+                color="inherit"
+              >
+                <Avatar sx={{ width: 32, height: 32 }}>
+                  <AccountCircle />
+                </Avatar>
+              </IconButton>
+
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
                 }}
               >
-                Reservation Calendar
-              </Typography>
-              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                <Chip
-                  label={`${reservationsData?.length ?? "null"} reservations`}
-                  color="primary"
-                />
-              </Stack>
+                <MenuItem onClick={handleLogout}>
+                  <ExitToApp sx={{ mr: 1 }} />
+                  Odhlásit se
+                </MenuItem>
+              </Menu>
             </Stack>
-            <CustomMuiCalendar events={calendarEventsFromApi} />
-          </Card>
-        )}
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: { xs: "1fr", xl: "1fr 1fr" },
-            gap: 2,
-            alignItems: "start",
+          </Toolbar>
+        </Container>
+      </AppBar>
+
+      {/* Navigation Tabs */}
+      <Container maxWidth="xl" sx={{ mt: 3 }}>
+        <Box 
+          sx={{ 
+            mb: 4,
+            display: 'flex',
+            justifyContent: 'center'
           }}
         >
-          <Card
+          <Stack 
+            direction="row" 
+            spacing={0}
             sx={{
-              p: { xs: 1.25, sm: 2 },
+              bgcolor: 'background.paper',
               borderRadius: 2,
-              boxShadow: (theme) =>
-                `0 12px 35px ${theme.palette.mode === "light" ? "rgba(32, 50, 69, 0.08)" : "rgba(0, 0, 0, 0.3)"}`,
+              p: 0.5,
+              border: '1px solid',
+              borderColor: 'divider',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
             }}
           >
-            <Typography
-              variant="h6"
-              sx={{
-                fontFamily: '"Manrope", "Poppins", sans-serif',
-                fontWeight: 700,
-                color: "text.primary",
-                mb: 1.5,
-              }}
-            >
-              Hotel Hosts
-            </Typography>
-            <Divider sx={{ mb: 1.5 }} />
-            <CustomTable
-              columns={HOST_COLUMNS}
-              data={guestsData}
-              getRowId={(row) => row.id}
-            />
-          </Card>
+            {TAB_CONFIG.map((tab) => {
+              const IconComponent = tab.icon;
+              const isActive = currentTab === tab.value;
+              return (
+                <Box
+                  key={tab.value}
+                  onClick={() => setCurrentTab(tab.value)}
+                  sx={{
+                    px: 3,
+                    py: 1.5,
+                    borderRadius: 1.5,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    bgcolor: isActive ? 'primary.main' : 'transparent',
+                    color: isActive ? 'primary.contrastText' : 'text.primary',
+                    '&:hover': {
+                      bgcolor: isActive ? 'primary.dark' : 'action.hover',
+                    }
+                  }}
+                >
+                  <Stack direction="row" alignItems="center" spacing={1.5}>
+                    <IconComponent sx={{ fontSize: 18 }} />
+                    <Typography 
+                      sx={{ 
+                        fontWeight: isActive ? 600 : 500,
+                        fontSize: '0.9rem',
+                        fontFamily: '"Manrope", "Poppins", sans-serif',
+                      }}
+                    >
+                      {tab.label}
+                    </Typography>
+                  </Stack>
+                </Box>
+              );
+            })}
+          </Stack>
+        </Box>
 
-          <Card
-            sx={{
-              p: { xs: 1.25, sm: 2 },
-              borderRadius: 2,
-              boxShadow: (theme) =>
-                `0 12px 35px ${theme.palette.mode === "light" ? "rgba(32, 50, 69, 0.08)" : "rgba(0, 0, 0, 0.3)"}`,
-            }}
-          >
-            <Typography
-              variant="h6"
-              sx={{
-                fontFamily: '"Manrope", "Poppins", sans-serif',
-                fontWeight: 700,
-                color: "text.primary",
-                mb: 1.5,
-              }}
-            >
-              Reservations
-            </Typography>
-            <Divider sx={{ mb: 1.5 }} />
-            <CustomTable
-              columns={reservationColumns}
-              data={reservationsData}
-              getRowId={(row) => row.id}
-            />
-          </Card>
+        {/* Active Section Content */}
+        <Box sx={{ pb: 4 }}>
+          {ActiveComponent && <ActiveComponent />}
         </Box>
-      </Stack>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Text in a modal
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-          </Typography>
-        </Box>
-      </Modal>
-    </>
+      </Container>
+    </Box>
   );
 }
