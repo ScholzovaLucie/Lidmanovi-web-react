@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 export const isEmpty = (value) => {
   if (value === null || value === undefined) return true;
 
@@ -10,8 +12,15 @@ export const isEmpty = (value) => {
 
 export const validateField = (values, field) => {
   switch (field) {
-    case "check_in_date":
-      return isEmpty(values.check_in_date) ? "Check-in date is required" : null;
+    case "check_in_date": {
+      const checkInIsInThePast = dayjs(values.check_in_date).isBefore(
+        dayjs(),
+        "day",
+      );
+      if (isEmpty(values.check_in_date)) return "Check-in date is required";
+      if (checkInIsInThePast) return "Check-in date cannot be in the past";
+      return null;
+    }
 
     case "check_out_date":
       if (isEmpty(values.check_out_date)) return "Check-out date is required";

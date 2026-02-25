@@ -21,58 +21,61 @@ import {
   validateFieldThunk,
   validateInformationAndConfirmation,
 } from "../../../redux/slices/reservation/reservationThunks";
-import ReservationAppBar from "./ReservationAppBar";
+import ReservationAppBar from "../components/ReservationAppBar";
+import { useSnackbar } from "notistack";
 
 export default function InformationAndConfirmation() {
   const { step, increaseStep, decreaseStep, setStep } = useReservationContext();
+  const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
 
+  const handleButtonContinueToSummary = async () => {
+    const { isValid, validationErrors } = await dispatch(
+      validateInformationAndConfirmation(),
+    );
+
+    if (isValid) {
+      increaseStep();
+    } else {
+      validationErrors.map((error) => {
+        enqueueSnackbar(error, {
+          variant: "error",
+          autoHideDuration: 5000,
+        });
+      });
+    }
+  };
+
   return (
-    <>
-      <ReservationAppBar />
-      <Stack
-        sx={{
-          minHeight: "calc(100vh - 190px)",
-          paddingTop: 2, // Přidá mezeru pod sticky AppBar
-        }}
-        alignItems={"center"}
-        justifyContent={"center"}
-        p={3}
-      >
-        <Stack spacing={4} width={{ xs: "100%", md: 700 }}>
-          <Typography variant="h4">Informace a potvrzení</Typography>
+    <Stack
+      sx={{
+        minHeight: "calc(100vh - 190px)",
+        paddingTop: 2, // Přidá mezeru pod sticky AppBar
+      }}
+      alignItems={"center"}
+      justifyContent={"center"}
+      p={3}
+    >
+      <Stack spacing={4} width={{ xs: "100%", md: 700 }}>
+        <Typography variant="h4">Informace a potvrzení</Typography>
 
-          <PersonalInformation />
+        <PersonalInformation />
 
-          <ArrivalTime />
+        <ArrivalTime />
 
-          <SupplementaryServices />
+        <SupplementaryServices />
 
-          <SpecialRequests />
+        <SpecialRequests />
 
-          <Button
-            variant="contained"
-            size="large"
-            onClick={async () => {
-              const isValid = await dispatch(
-                validateInformationAndConfirmation(),
-              );
-
-              if (!isValid) {
-                alert(
-                  "Formulář obsahuje chyby. Opravte je prosím před odesláním.",
-                );
-                return;
-              }
-
-              increaseStep();
-            }}
-          >
-            Pokračovat na souhrn
-          </Button>
-        </Stack>
+        <Button
+          variant="contained"
+          size="large"
+          onClick={handleButtonContinueToSummary}
+        >
+          Pokračovat na souhrn
+        </Button>
       </Stack>
-    </>
+    </Stack>
   );
 }
 function PersonalInformation() {

@@ -60,11 +60,11 @@ export const validateFormThunk = (fields) => (dispatch, getState) => {
 };
 
 export const submitFormThunk = () => async (dispatch, getState) => {
-  const { isValid } = await dispatch(validateAll());
+  const { isValid, validationErrors } = await dispatch(validateAll());
 
   if (!isValid) {
     alert("Formulář obsahuje chyby. Opravte je prosím před odesláním.");
-    return false;
+    return { isValid, validationErrors };
   }
 
   const { reservation } = getState();
@@ -72,19 +72,24 @@ export const submitFormThunk = () => async (dispatch, getState) => {
   console.log("Submitting reservation:", payload);
 
   try {
-    await dispatch(
+    const data = await dispatch(
       reservationsApi.endpoints.createReservation.initiate(payload),
     ).unwrap();
-    console.log("Submitting reservation:", payload);
 
-    return true;
+    return { isValid: true, validationErrors: [], response: data };
   } catch (e) {
     dispatch(
       setErrors({
         global: `Submission failed: ${e.message}`,
       }),
     );
-    return false;
+    return {
+      isValid: false,
+      validationErrors: [
+        `Nepodařilo se odeslat rezervaci, zkuste to prosím znovu později,
+         nebo nás kontaktujte emailem nebo telefonicky.`,
+      ],
+    };
   }
 };
 

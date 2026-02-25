@@ -42,7 +42,7 @@ createRoot(document.getElementById("root")).render(
       <Provider store={store}>
         <AppContextProvider>
           <SnackbarProvider
-            maxSnack={3}
+            maxSnack={5}
             anchorOrigin={{
               vertical: "top",
               horizontal: "right",

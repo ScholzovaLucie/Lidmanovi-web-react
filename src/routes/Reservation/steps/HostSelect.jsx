@@ -14,7 +14,7 @@ import { AppCardCustomizable } from "../../../components/containers/AppCard";
 import { useReservationContext } from "../context/ReservationContext";
 import { updateRoom } from "../../../redux/slices/reservation/reservationSlice";
 import useClickSound from "../../../hooks/useClickSound";
-import ReservationAppBar from "./ReservationAppBar";
+import ReservationAppBar from "../components/ReservationAppBar";
 
 /*
  TODO: kolika hostům zbyvá přiřadit pokoj? (bez tohoto nepustit dál) 
@@ -29,38 +29,49 @@ export default function HostSelect() {
   const reservationState = useSelector((state) => state.reservation.values);
   const { step, increaseStep, decreaseStep, setStep } = useReservationContext();
 
+  const remainingAdultsToAssign =
+    reservationState.num_adults -
+    reservationState.rooms.reduce((sum, room) => sum + room.num_adults, 0);
+  const remainingChildrenToAssign =
+    reservationState.num_children -
+    reservationState.rooms.reduce((sum, room) => sum + room.num_children, 0);
+
   return (
-    <>
-      <ReservationAppBar />
-      <Stack
-        sx={{ 
-          minHeight: "calc(100vh - 190px)",
-          paddingTop: 2 // Přidá mezeru pod sticky AppBar
-        }}
-        alignItems={"center"}
-        justifyContent={"center"}
-        p={2}
-        spacing={4}
-      >
+    <Stack
+      sx={{
+        minHeight: "calc(100vh - 190px)",
+        paddingTop: 2, // Přidá mezeru pod sticky AppBar
+      }}
+      alignItems={"center"}
+      justifyContent={"center"}
+      p={2}
+      spacing={4}
+    >
       <Typography variant="h4">Rozdělení hostů</Typography>
       <Stack spacing={1}>
         <Typography variant="h6" textAlign={"center"}>
           Zbývá přiřadit lůžko pro&nbsp;
-          <Typography
-            component="span"
-            variant="h6"
-            sx={{ fontWeight: "bold", color: "primary.main" }}
-          >
-            1&nbsp;dospělý
-          </Typography>
-          &nbsp;a&nbsp;
-          <Typography
-            component="span"
-            variant="h6"
-            sx={{ fontWeight: "bold", color: "primary.main" }}
-          >
-            2&nbsp;dítě
-          </Typography>
+          {remainingAdultsToAssign > 0 && (
+            <Typography
+              component="span"
+              variant="h6"
+              sx={{ fontWeight: "bold", color: "primary.main" }}
+            >
+              {remainingAdultsToAssign}&nbsp;dospělý
+            </Typography>
+          )}
+          {remainingAdultsToAssign > 0 && remainingChildrenToAssign > 0 && (
+            <>&nbsp;a&nbsp;</>
+          )}
+          {remainingChildrenToAssign > 0 && (
+            <Typography
+              component="span"
+              variant="h6"
+              sx={{ fontWeight: "bold", color: "primary.main" }}
+            >
+              {remainingChildrenToAssign}&nbsp;dítě
+            </Typography>
+          )}
         </Typography>
       </Stack>
 
@@ -75,17 +86,18 @@ export default function HostSelect() {
         variant="contained"
         size="large"
         sx={{ maxWidth: "300px" }}
+        disabled={remainingAdultsToAssign > 0 || remainingChildrenToAssign > 0}
         onClick={increaseStep}
       >
         Pokračovat na údaje
       </Button>
     </Stack>
-    </>
   );
 }
 
 export function RoomHostCard({ room, index }) {
   const dispatch = useDispatch();
+  const values = useSelector((state) => state.reservation.values);
   const roomState = useSelector(
     (state) => state.reservation.values.rooms[index],
   );
@@ -96,24 +108,60 @@ export function RoomHostCard({ room, index }) {
     roomState.num_adults * room.price_for_adult +
     roomState.num_children * room.price_for_children;
 
+  // Pomocné hodnoty pro výpočty
+  const totalAssignedAdults = values.rooms.reduce(
+    (sum, room) => sum + room.num_adults,
+    0,
+  );
+  const totalAssignedChildren = values.rooms.reduce(
+    (sum, room) => sum + room.num_children,
+    0,
+  );
+  const roomCapacity =
+    room.capacity || Math.max(room.max_adults || 0, room.max_children || 0);
+
   const updateGuestCount = (field, increment) => {
-    // Současná hodnota pro daný typ hosta
     const currentValue = roomState[field];
-    // Celkový počet už přiřazených hostů
-    const totalAssigned = roomState.num_adults + roomState.num_children;
+    const isAdults = field === "num_adults";
 
-    // Maximální kapacita pokoje
-    const roomCapacity = Math.max(room.max_adults, room.max_children);
+    // Vypočítat limity
+    const minValue = 0;
+    const maxByTotal = isAdults
+      ? values.num_adults - (totalAssignedAdults - currentValue)
+      : values.num_children - (totalAssignedChildren - currentValue);
+    const maxByRoomCapacity =
+      roomCapacity - (numOfSelectedGuests - currentValue);
 
-    // Vypočítat novou hodnotu s omezeními (min 0, max volná kapacita + současná hodnota)
-    const availableSlots = roomCapacity - totalAssigned + currentValue;
-    const newValue = Math.min(
-      availableSlots,
-      Math.max(0, currentValue + increment),
+    // Použít nejstriktnější limit
+    const maxValue = Math.min(maxByTotal, maxByRoomCapacity);
+    const newValue = Math.max(
+      minValue,
+      Math.min(maxValue, currentValue + increment),
     );
 
-    dispatch(updateRoom({ index, data: { [field]: newValue } }));
+    // Actualizovat pouze pokud se hodnota změnila
+    if (newValue !== currentValue) {
+      dispatch(updateRoom({ index, data: { [field]: newValue } }));
+    }
   };
+
+  // Zjednodušené kontroly pro disable tlačítek
+  const canAddAdults = () => {
+    return (
+      totalAssignedAdults < values.num_adults &&
+      numOfSelectedGuests < roomCapacity
+    );
+  };
+
+  const canAddChildren = () => {
+    return (
+      totalAssignedChildren < values.num_children &&
+      numOfSelectedGuests < roomCapacity
+    );
+  };
+
+  const canRemoveAdults = () => roomState.num_adults > 0;
+  const canRemoveChildren = () => roomState.num_children > 0;
 
   return (
     <AppCardCustomizable>
@@ -160,15 +208,29 @@ export function RoomHostCard({ room, index }) {
             <BedSelect
               title="Dospělý"
               price={room.price_for_adult}
-              onMinus={() => updateGuestCount("num_adults", -1)}
-              onPlus={() => updateGuestCount("num_adults", 1)}
+              onMinus={
+                canRemoveAdults()
+                  ? () => updateGuestCount("num_adults", -1)
+                  : null
+              }
+              onPlus={
+                canAddAdults() ? () => updateGuestCount("num_adults", 1) : null
+              }
               value={roomState.num_adults}
             />
             <BedSelect
               title="Dítě"
               price={room.price_for_children}
-              onMinus={() => updateGuestCount("num_children", -1)}
-              onPlus={() => updateGuestCount("num_children", 1)}
+              onMinus={
+                canRemoveChildren()
+                  ? () => updateGuestCount("num_children", -1)
+                  : null
+              }
+              onPlus={
+                canAddChildren()
+                  ? () => updateGuestCount("num_children", 1)
+                  : null
+              }
               value={roomState.num_children}
             />
           </Stack>
@@ -216,7 +278,8 @@ function AppSpinner({ value, onMinus, onPlus }) {
   return (
     <Stack direction={"row"} spacing={2} alignItems={"center"}>
       <IconButton
-        sx={{ backgroundColor: "lightgray", borderRadius: 1 }}
+        sx={{ backgroundColor: "primary.main", borderRadius: 1 }}
+        disabled={onMinus === null}
         onClick={() => {
           playClickSound();
           onMinus();
@@ -229,6 +292,7 @@ function AppSpinner({ value, onMinus, onPlus }) {
       </Box>
       <IconButton
         sx={{ backgroundColor: "primary.main", borderRadius: 1 }}
+        disabled={onPlus === null}
         onClick={() => {
           playClickSound();
           onPlus();

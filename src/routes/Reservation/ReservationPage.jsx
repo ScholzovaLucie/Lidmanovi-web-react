@@ -1,13 +1,13 @@
-import Layout from "./components/Layout";
-import TermSelect from "./components/TermSelect";
+import Layout from "./Layout";
+import TermSelect from "./steps/TermSelect";
 import {
   ReservationContextProvider,
   useReservationContext,
 } from "./context/ReservationContext";
-import RoomSelect from "./components/RoomSelect";
-import InformationAndConfirmation from "./components/InformationAndConfirmation";
-import HostSelect from "./components/HostSelect";
-import { OrderSummary } from "./components/OrderSummary";
+import RoomSelect from "./steps/RoomSelect";
+import InformationAndConfirmation from "./steps/InformationAndConfirmation";
+import HostSelect from "./steps/HostSelect";
+import { OrderSummary } from "./steps/OrderSummary";
 
 export default function ReservationPage2() {
   return (

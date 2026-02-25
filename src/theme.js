@@ -10,6 +10,9 @@ export const createAppTheme = (mode) =>
         50: mode === "light" ? "#f0f4f8" : "#1a2328",
         100: mode === "light" ? "#dcebf0" : "#2a3741",
       },
+      success: {
+        main: "#2e7d32",
+      },
 
       // Event colors for calendar - pouze základní paleta
       event: {
