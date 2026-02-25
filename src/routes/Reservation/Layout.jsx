@@ -2,22 +2,15 @@ import {
   AppBar,
   Badge,
   Box,
-  Button,
   Divider,
   Drawer,
-  Grid,
   IconButton,
   Stack,
-  Step,
-  StepLabel,
-  Stepper,
   Typography,
 } from "@mui/material";
 import { useReservationContext } from "./context/ReservationContext";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { ArrowBackIos, ArrowForwardIos, Height } from "@mui/icons-material";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { RoomCartCompactCard } from "./components/RoomCardCompact";
 import dayjs from "dayjs";
 import ReservationStepper from "./components/ReservationStepper";
