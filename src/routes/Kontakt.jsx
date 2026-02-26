@@ -6,16 +6,10 @@ import Divider from "@mui/material/Divider";
 import Link from "@mui/material/Link";
 import InfoBlock from "../components/InfoBlock";
 import ContactForm from "../components/ContactForm";
+import { useTranslation } from "react-i18next";
 
 export default function Kontakt() {
-  // lokální stav – můžeš ho případně použít pro napojení na backend
-  const [form, setForm] = React.useState({
-    userName: "",
-    userEmail: "",
-    subject: "",
-    zprava: "",
-  });
-  const [errors, setErrors] = React.useState({});
+  const { t } = useTranslation("kontakt");
   const asset = (path) =>
     `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
 
@@ -29,24 +23,24 @@ export default function Kontakt() {
   const blocks = [
     {
       icon: asset("/position.webp"),
-      title: "Adresa",
+      title: t("info.address.title"),
       content: (
         <>
           <Typography>
-            Machovská Lhota 40
+            {t("info.address.lines.0")}
             <br />
-            Machov 549 31
+            {t("info.address.lines.1")}
           </Typography>
           <Divider sx={{ my: 1.5 }} />
           <Typography variant="body2" color="text.secondary">
-            50.4975831 N, 16.2934947 E
+            {t("info.address.coords")}
           </Typography>
         </>
       ),
     },
     {
       icon: asset("/phone-call.webp"),
-      title: "Telefon",
+      title: t("info.phone.title"),
       content: (
         <Link href="tel:+420604341863" underline="hover" color="inherit">
           +420&nbsp;604&nbsp;341&nbsp;863
@@ -55,7 +49,7 @@ export default function Kontakt() {
     },
     {
       icon: asset("/mail.webp"),
-      title: "E-mail",
+      title: t("info.email.title"),
       content: (
         <Link href="mailto:info@ulidmanu.cz" underline="hover" color="inherit">
           info@ulidmanu.cz
@@ -64,24 +58,24 @@ export default function Kontakt() {
     },
     {
       icon: asset("/facebook2.webp"),
-      title: "Facebook",
+      title: t("info.facebook.title"),
       content: (
         <Link
           href="https://www.facebook.com/Pension-a-restaurace-U-Lidman%C5%AF-945259918825167"
           underline="hover"
           color="inherit"
         >
-          Facebook
+          {t("info.facebook.label")}
         </Link>
       ),
     },
     {
-      title: "Majitel a provozovatel",
+      title: t("info.owner.title"),
       content: (
         <Typography>
-          Petr Šturm
+          {t("info.owner.lines.0")}
           <br />
-          IČ: 71143416
+          {t("info.owner.lines.1")}
         </Typography>
       ),
     },
@@ -104,7 +98,7 @@ export default function Kontakt() {
             <Box
               component="img"
               src={src}
-              alt={`Úvodní obrázek ${i + 1}`}
+              alt={t(`heroAlt.${i}`)}
               sx={{
                 width: "100%",
                 height: 250,
@@ -175,7 +169,7 @@ export default function Kontakt() {
       >
         <Box
           component="iframe"
-          title="Mapa"
+          title={t("map.title")}
           src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d2537.9674639711725!2d16.2889786!3d50.4975633!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x470e686d9f1caccd%3A0x5443aff885131f52!2sPension%20-%20Restaurace%20U%20Lidman%C5%AF!5e0!3m2!1scs!2scz!4v1662476744005!5m2!1scs!2scz"
           sx={{
             display: "block",
@@ -190,7 +184,11 @@ export default function Kontakt() {
       </Box>
 
       {/* Formulář – široký na mobilu, max 720 px a centrovaný */}
-      <ContactForm title="Kontaktujte nás" mailto="info@ulidmanu.cz" />
+      <ContactForm
+        title={t("form.title")}
+        translationNamespace="kontakt"
+        mailto="info@ulidmanu.cz"
+      />
 
       {/* KRAJ – kredit */}
       <Box
@@ -205,14 +203,14 @@ export default function Kontakt() {
         <Box
           component="img"
           src={asset("/logo_colour_pantone.webp")}
-          alt="Královéhradecký kraj"
+          alt={t("credit.alt")}
           sx={{ height: 38 }}
         />
         <Typography
           id="kraj_text"
           sx={{ color: "text.secondary", textAlign: "center" }}
         >
-          Realizováno za finanční podpory Královéhradeckého kraje
+          {t("credit.text")}
         </Typography>
       </Box>
     </Box>

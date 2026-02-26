@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { withLanguageHeader } from "./language";
 
 const baseQueryWithAuth = fetchBaseQuery({
   baseUrl: "http://localhost:8000/api",
@@ -8,7 +9,7 @@ const baseQueryWithAuth = fetchBaseQuery({
     if (token) {
       headers.set('authorization', `Bearer ${token}`);
     }
-    return headers;
+    return withLanguageHeader(headers);
   },
 });
 

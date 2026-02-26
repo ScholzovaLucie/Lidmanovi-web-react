@@ -1,6 +1,7 @@
 import { reservationsApi } from "../../api/reservationsApi";
 import { setErrors, setFieldError } from "./reservationSlice";
 import { validateField, validateForm } from "./reservationValidation";
+import i18n from "../../../locales";
 
 // onBlur={() => dispatch(validateFieldThunk("primary_guest.email"))}
 export const validateFieldThunk = (fieldName) => (dispatch, getState) => {
@@ -60,10 +61,11 @@ export const validateFormThunk = (fields) => (dispatch, getState) => {
 };
 
 export const submitFormThunk = () => async (dispatch, getState) => {
+  const t = i18n.t.bind(i18n);
   const { isValid, validationErrors } = await dispatch(validateAll());
 
   if (!isValid) {
-    alert("Formulář obsahuje chyby. Opravte je prosím před odesláním.");
+    alert(t("rezervace:validation.formHasErrors"));
     return { isValid, validationErrors };
   }
 
@@ -86,8 +88,7 @@ export const submitFormThunk = () => async (dispatch, getState) => {
     return {
       isValid: false,
       validationErrors: [
-        `Nepodařilo se odeslat rezervaci, zkuste to prosím znovu později,
-         nebo nás kontaktujte emailem nebo telefonicky.`,
+        t("rezervace:validation.submitFailed"),
       ],
     };
   }

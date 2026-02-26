@@ -19,14 +19,20 @@ import {
 } from "../../../redux/slices/reservation/reservationThunks";
 import dayjs from "dayjs";
 import { useSnackbar } from "notistack";
+import { useTranslation } from "react-i18next";
 
 export default function TermSelect() {
+  const { t } = useTranslation("rezervace");
   const { step, increaseStep, decreaseStep, setStep } = useReservationContext();
   const { enqueueSnackbar } = useSnackbar();
   const reservationState = useSelector((state) => state.reservation);
   const dispatch = useDispatch();
   const values = reservationState.values;
   const errors = reservationState.errors;
+  const checkInDate = values.check_in_date ? dayjs(values.check_in_date) : null;
+  const checkOutDate = values.check_out_date
+    ? dayjs(values.check_out_date)
+    : null;
 
   const handleNextStep = async () => {
     const { isValid, validationErrors } = await dispatch(
@@ -56,28 +62,40 @@ export default function TermSelect() {
       p={3}
       spacing={4}
     >
-      <Typography variant="h4">Vyberte termín a hosty</Typography>
+      <Typography variant="h4">{t("term.title")}</Typography>
 
       <AppCard>
         <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
           <DatePicker
-            label="Datum příjezdu"
-            value={values.check_in_date ? dayjs(values.check_in_date) : null}
-            onChange={(value) =>
-              dispatch(
-                updateReservation({
-                  check_in_date: value ? value.format("YYYY-MM-DD") : null,
-                }),
-              )
-            }
+            label={t("term.labels.checkIn")}
+            value={checkInDate}
+            onChange={(value) => {
+              const formattedCheckIn = value ? value.format("YYYY-MM-DD") : null;
+              const nextPayload = { check_in_date: formattedCheckIn };
+
+              if (!formattedCheckIn) {
+                nextPayload.check_out_date = null;
+              } else {
+                const currentCheckOut = values.check_out_date
+                  ? dayjs(values.check_out_date)
+                  : null;
+
+                if (!currentCheckOut || !currentCheckOut.isAfter(value, "day")) {
+                  nextPayload.check_out_date = formattedCheckIn;
+                }
+              }
+
+              dispatch(updateReservation(nextPayload));
+            }}
             onBlur={() => dispatch(validateFieldThunk("check_in_date"))}
             error={!!errors["check_in_date"]}
             helperText={errors["check_in_date"]}
           />
 
           <DatePicker
-            label="Datum odjezdu"
-            value={values.check_out_date ? dayjs(values.check_out_date) : null}
+            label={t("term.labels.checkOut")}
+            value={checkOutDate}
+            referenceDate={checkInDate || undefined}
             onChange={(value) =>
               dispatch(
                 updateReservation({
@@ -100,7 +118,7 @@ export default function TermSelect() {
                   justifyContent="space-between"
                   spacing={1}
                 >
-                  <Typography>Dospělí</Typography>
+                  <Typography>{t("common.adults")}</Typography>
                   <Stack direction={"row"} alignItems="center" spacing={1}>
                     <IconButton
                       onClick={() =>
@@ -137,7 +155,7 @@ export default function TermSelect() {
                   justifyContent="space-between"
                   spacing={1}
                 >
-                  <Typography>Děti</Typography>
+                  <Typography>{t("common.children")}</Typography>
                   <Stack direction={"row"} alignItems="center" spacing={1}>
                     <IconButton
                       onClick={() =>
@@ -171,8 +189,11 @@ export default function TermSelect() {
             }
           >
             <TextField
-              label="Přidat hosty"
-              value={`${values.num_adults || 0} dospělí, ${values.num_children || 0} děti`}
+              label={t("term.labels.addGuests")}
+              value={t("term.labels.guestsValue", {
+                adults: values.num_adults || 0,
+                children: values.num_children || 0,
+              })}
               InputProps={{
                 readOnly: true,
               }}
@@ -196,7 +217,7 @@ export default function TermSelect() {
         sx={{ maxWidth: "300px" }}
         onClick={handleNextStep}
       >
-        Zobrazit dostupné pokoje
+        {t("term.cta")}
       </Button>
     </Stack>
   );

@@ -1,10 +1,7 @@
 import {
   Box,
   Button,
-  Checkbox,
   FormControl,
-  FormControlLabel,
-  FormGroup,
   InputLabel,
   MenuItem,
   Select,
@@ -23,8 +20,10 @@ import {
 } from "../../../redux/slices/reservation/reservationThunks";
 import ReservationAppBar from "../components/ReservationAppBar";
 import { useSnackbar } from "notistack";
+import { useTranslation } from "react-i18next";
 
 export default function InformationAndConfirmation() {
+  const { t } = useTranslation("rezervace");
   const { step, increaseStep, decreaseStep, setStep } = useReservationContext();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
@@ -57,13 +56,11 @@ export default function InformationAndConfirmation() {
       p={3}
     >
       <Stack spacing={4} width={{ xs: "100%", md: 700 }}>
-        <Typography variant="h4">Informace a potvrzení</Typography>
+        <Typography variant="h4">{t("info.title")}</Typography>
 
         <PersonalInformation />
 
         <ArrivalTime />
-
-        <SupplementaryServices />
 
         <SpecialRequests />
 
@@ -72,13 +69,14 @@ export default function InformationAndConfirmation() {
           size="large"
           onClick={handleButtonContinueToSummary}
         >
-          Pokračovat na souhrn
+          {t("info.cta")}
         </Button>
       </Stack>
     </Stack>
   );
 }
 function PersonalInformation() {
+  const { t } = useTranslation("rezervace");
   const dispatch = useDispatch();
   const reservationState = useSelector((state) => state.reservation);
   const values = reservationState.values;
@@ -89,14 +87,14 @@ function PersonalInformation() {
       <Box>
         <Typography variant="h5">Osobní údaje</Typography>
         <Typography variant="body" color={"text.secondary"}>
-          Vyplnte prosím své kontaktní údaje
+          {t("info.personalHint")}
         </Typography>
       </Box>
       <AppCardCustomizable>
         <Stack p={3} spacing={2} sx={{ width: "100%" }}>
           <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
             <TextField
-              label="Jméno"
+              label={t("info.labels.firstName")}
               fullWidth
               value={values.primary_guest.first_name}
               onBlur={() =>
@@ -114,7 +112,7 @@ function PersonalInformation() {
               }
             />
             <TextField
-              label="Příjmení"
+              label={t("info.labels.lastName")}
               fullWidth
               value={values.primary_guest.last_name}
               onBlur={() =>
@@ -133,7 +131,7 @@ function PersonalInformation() {
             />
           </Stack>
           <TextField
-            label="Email"
+            label={t("info.labels.email")}
             fullWidth
             value={values.primary_guest.email}
             onBlur={() => dispatch(validateFieldThunk("primary_guest.email"))}
@@ -149,7 +147,7 @@ function PersonalInformation() {
             }
           />
           <TextField
-            label="Telefon"
+            label={t("info.labels.phone")}
             fullWidth
             value={values.primary_guest.phone}
             onBlur={() => dispatch(validateFieldThunk("primary_guest.phone"))}
@@ -166,12 +164,14 @@ function PersonalInformation() {
           />
 
           <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Stát</InputLabel>
+            <InputLabel id="demo-simple-select-label">
+              {t("info.labels.country")}
+            </InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               value={values.primary_guest.country}
-              label="Stát"
+              label={t("info.labels.country")}
               onChange={(e) =>
                 dispatch(
                   updatePrimaryGuest({
@@ -181,10 +181,14 @@ function PersonalInformation() {
                 )
               }
             >
-              <MenuItem value={"Česká republika"}>Česká republika</MenuItem>
-              <MenuItem value={"Slovensko"}>Slovensko</MenuItem>
-              <MenuItem value={"Polsko"}>Polsko</MenuItem>
-              <MenuItem value={"Německo"}>Německo</MenuItem>
+              <MenuItem value={"Česká republika"}>
+                {t("info.countries.cz")}
+              </MenuItem>
+              <MenuItem value={"Slovensko"}>
+                {t("info.countries.sk")}
+              </MenuItem>
+              <MenuItem value={"Polsko"}>{t("info.countries.pl")}</MenuItem>
+              <MenuItem value={"Německo"}>{t("info.countries.de")}</MenuItem>
             </Select>
           </FormControl>
         </Stack>
@@ -194,47 +198,24 @@ function PersonalInformation() {
 }
 
 function ArrivalTime() {
+  const { t } = useTranslation("rezervace");
   return (
     <Stack spacing={1}>
       <Box>
-        <Typography variant="h5">Čas příjezdu</Typography>
+        <Typography variant="h5">{t("info.arrivalTitle")}</Typography>
         <Typography variant="body" color={"text.secondary"}>
-          Sdlěte nám, v kolik hodin plánujete přijet. Pokud nevíte přesný čas,
-          uveďte přibližný čas příjezdu.
+          {t("info.arrivalHint")}
         </Typography>
       </Box>
       <AppCardCustomizable props={{ p: 3 }}>
-        <TimePicker label="Čas příjezdu" fullWidth />
-      </AppCardCustomizable>
-    </Stack>
-  );
-}
-
-function SupplementaryServices() {
-  return (
-    <Stack spacing={1}>
-      <Box>
-        <Typography variant="h5">Doplnkové služby</Typography>
-        <Typography variant="body" color={"text.secondary"}>
-          Pokud máte další přání nebo údaj, uveďte je zde.
-        </Typography>
-      </Box>
-      <AppCardCustomizable>
-        <Stack p={3} spacing={2}>
-          <FormGroup>
-            <FormControlLabel
-              control={<Checkbox defaultChecked disableRipple />}
-              label="Bufetová snídaně"
-            />
-            <FormControlLabel control={<Checkbox />} label="Parkování" />
-          </FormGroup>
-        </Stack>
+        <TimePicker label={t("info.labels.arrivalTime")} fullWidth />
       </AppCardCustomizable>
     </Stack>
   );
 }
 
 function SpecialRequests() {
+  const { t } = useTranslation("rezervace");
   const dispatch = useDispatch();
   const reservationState = useSelector((state) => state.reservation);
   const values = reservationState.values;
@@ -242,15 +223,15 @@ function SpecialRequests() {
   return (
     <Stack spacing={1}>
       <Box>
-        <Typography variant="h5">Speciální požadavky</Typography>
+        <Typography variant="h5">{t("info.specialTitle")}</Typography>
         <Typography variant="body" color={"text.secondary"}>
-          Pokud máte speciální požadavky, uveďte je zde.
+          {t("info.specialHint")}
         </Typography>
       </Box>
       <AppCardCustomizable>
         <Stack p={3}>
           <TextField
-            label="Speciální požadavky"
+            label={t("info.labels.specialRequests")}
             multiline
             rows={4}
             value={values.primary_guest.note}

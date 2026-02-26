@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { withLanguageHeader } from "./language";
 
 export const guestApi = createApi({
   reducerPath: "guestApi",
@@ -11,7 +12,7 @@ export const guestApi = createApi({
         headers.set("Authorization", `Bearer ${token}`);
       }
 
-      return headers;
+      return withLanguageHeader(headers);
     },
   }),
   endpoints: (builder) => ({

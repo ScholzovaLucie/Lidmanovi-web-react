@@ -1,8 +1,10 @@
 // translations_global.js
 export const translations_global = {
   cs: {
+    language: "Jazyk",
     nav: {
       home: "Domů",
+      about: "O nás",
       contact: "Kontakt",
       restaurant: "Restaurace",
       accommodation: "Ubytování",
@@ -12,8 +14,13 @@ export const translations_global = {
       gallery: "Galerie",
       reservation: "Rezervace",
     },
+    auth: {
+      login: "Přihlášení",
+      logout: "Odhlásit",
+      admin: "Admin",
+    },
     footer: {
-      copyright: "© 2025 Penzion U Lidmanů. Všechna práva vyhrazena.",
+      copyright: "© {{year}} Lidmanovi",
     },
     buttons: {
       readMore: "Více informací",
@@ -24,8 +31,10 @@ export const translations_global = {
     },
   },
   en: {
+    language: "Language",
     nav: {
       home: "Home",
+      about: "About us",
       contact: "Contact",
       restaurant: "Restaurant",
       accommodation: "Accommodation",
@@ -35,8 +44,13 @@ export const translations_global = {
       gallery: "Gallery",
       reservation: "Reservation",
     },
+    auth: {
+      login: "Login",
+      logout: "Logout",
+      admin: "Admin",
+    },
     footer: {
-      copyright: "© 2025 Pension U Lidmanů. All rights reserved.",
+      copyright: "© {{year}} Lidmanovi",
     },
     buttons: {
       readMore: "Read more",
@@ -47,8 +61,10 @@ export const translations_global = {
     },
   },
   de: {
+    language: "Sprache",
     nav: {
       home: "Startseite",
+      about: "Über uns",
       contact: "Kontakt",
       restaurant: "Restaurant",
       accommodation: "Unterkunft",
@@ -58,8 +74,13 @@ export const translations_global = {
       gallery: "Galerie",
       reservation: "Reservierung",
     },
+    auth: {
+      login: "Anmelden",
+      logout: "Abmelden",
+      admin: "Admin",
+    },
     footer: {
-      copyright: "© 2025 Pension U Lidmanů. Alle Rechte vorbehalten.",
+      copyright: "© {{year}} Lidmanovi",
     },
     buttons: {
       readMore: "Mehr erfahren",
@@ -70,8 +91,10 @@ export const translations_global = {
     },
   },
   pl: {
+    language: "Język",
     nav: {
       home: "Strona główna",
+      about: "O nas",
       contact: "Kontakt",
       restaurant: "Restauracja",
       accommodation: "Noclegi",
@@ -81,8 +104,13 @@ export const translations_global = {
       gallery: "Galeria",
       reservation: "Rezerwacja",
     },
+    auth: {
+      login: "Logowanie",
+      logout: "Wyloguj",
+      admin: "Admin",
+    },
     footer: {
-      copyright: "© 2025 Pensjonat U Lidmanów. Wszelkie prawa zastrzeżone.",
+      copyright: "© {{year}} Lidmanovi",
     },
     buttons: {
       readMore: "Więcej informacji",
@@ -93,3 +121,8 @@ export const translations_global = {
     },
   },
 };
+
+export const cs = translations_global.cs;
+export const en = translations_global.en;
+export const de = translations_global.de;
+export const pl = translations_global.pl;

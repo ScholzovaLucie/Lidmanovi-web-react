@@ -7,8 +7,10 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import HeroCarousel from "../components/HeroCarousel.jsx"; // používáme tvůj existující
 import Paper from "@mui/material/Paper";
+import { useTranslation } from "react-i18next";
 
 export default function Weddings() {
+  const { t } = useTranslation("svatby");
   const asset = (path) =>
     `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
 
@@ -50,8 +52,7 @@ export default function Weddings() {
               mb: { xs: 3, md: 4 },
             }}
           >
-            Naše restaurace je ideální k uspořádání Vaší svatby – nejen díky
-            romantické okolní krajině, ale i díky dispozicím našich prostor.
+            {t("intro")}
           </Typography>
 
           {/* Seznam výhod */}
@@ -65,16 +66,21 @@ export default function Weddings() {
             }}
           >
             <ListItem disableGutters>
-              <ListItemText primary="Velký společenský sál – svatební tabule až pro 70 osob" />
+              <ListItemText
+                primary={`${t("ceremonyTitle")} - ${t("ceremonyText")}`}
+              />
             </ListItem>
             <ListItem disableGutters>
-              <ListItemText primary="Celková kapacita svatby až 90 osob" />
+              <ListItemText
+                primary={`${t("cateringTitle")} - ${t("cateringText")}`}
+              />
             </ListItem>
             <ListItem disableGutters>
-              <ListItemText primary="Svatební menu a raut dle Vašich představ a požadavků" />
-            </ListItem>
-            <ListItem disableGutters>
-              <ListItemText primary="Pro menší svatby salónek restaurace s kapacitou 20 osob" />
+              <ListItemText
+                primary={`${t("accommodationTitle")} - ${t(
+                  "accommodationText",
+                )}`}
+              />
             </ListItem>
           </List>
 

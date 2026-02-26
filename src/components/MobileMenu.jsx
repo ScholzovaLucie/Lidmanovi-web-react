@@ -1,15 +1,19 @@
 import React from "react";
 import { Box, Collapse, Stack, Button, Switch } from "@mui/material";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { LightMode as LightModeIcon, DarkMode as DarkModeIcon, Logout as LogoutIcon } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../context/AppContextProvider";
 import { useAuth } from "../hooks/useAuth";
 
 export function MobileMenu({ isOpen, onClose, navItems, langOptions, onLogin }) {
-  const { i18n } = useTranslation("global");
+  const navigate = useNavigate();
+  const { i18n, t } = useTranslation("global");
   const { themeMode, toggleTheme } = useAppContext();
   const { isAuthenticated, logout } = useAuth();
+  const activeLang = String(i18n.resolvedLanguage || i18n.language || "cs").split(
+    "-",
+  )[0];
 
   const handleLogout = () => {
     logout();
@@ -47,18 +51,18 @@ export function MobileMenu({ isOpen, onClose, navItems, langOptions, onLogin }) 
           {/* Languages */}
           <Box sx={{ textAlign: "center", width: "100%" }}>
             <Box sx={{ color: "text.secondary", fontSize: "0.875rem", mb: 1.5 }}>
-              Jazyk
+              {t("language")}
             </Box>
             <Stack direction="row" spacing={1} justifyContent="center" flexWrap="wrap">
               {langOptions.map(({ code, label }) => (
                 <Button
                   key={code}
                   onClick={() => i18n.changeLanguage(code)}
-                  variant={i18n.language === code ? "contained" : "text"}
+                  variant={activeLang === code ? "contained" : "text"}
                   size="small"
                   sx={{ 
                     textTransform: "none",
-                    fontWeight: i18n.language === code ? 600 : 400,
+                    fontWeight: activeLang === code ? 600 : 400,
                     minWidth: "auto"
                   }}
                 >
@@ -87,17 +91,32 @@ export function MobileMenu({ isOpen, onClose, navItems, langOptions, onLogin }) 
 
           {/* Login/Logout */}
           {isAuthenticated ? (
-            <Button 
-              onClick={handleLogout}
-              startIcon={<LogoutIcon />}
-              color="error"
-              sx={{ 
-                textTransform: "none",
-                fontWeight: 500
-              }}
-            >
-              Odhlásit
-            </Button>
+            <Stack direction="row" spacing={1.5}>
+              <Button
+                onClick={() => {
+                  navigate("/admin");
+                  onClose();
+                }}
+                variant="outlined"
+                sx={{
+                  textTransform: "none",
+                  fontWeight: 500,
+                }}
+              >
+                {t("auth.admin")}
+              </Button>
+              <Button 
+                onClick={handleLogout}
+                startIcon={<LogoutIcon />}
+                color="error"
+                sx={{ 
+                  textTransform: "none",
+                  fontWeight: 500
+                }}
+                >
+                {t("auth.logout")}
+              </Button>
+            </Stack>
           ) : (
             <Button 
               onClick={() => {
@@ -109,8 +128,8 @@ export function MobileMenu({ isOpen, onClose, navItems, langOptions, onLogin }) 
                 textTransform: "none",
                 fontWeight: 500
               }}
-            >
-              Login
+              >
+              {t("auth.login")}
             </Button>
           )}
         </Stack>

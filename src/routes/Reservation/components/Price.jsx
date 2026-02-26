@@ -1,10 +1,12 @@
 import { Stack, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 export default function Price({ room }) {
+  const { t } = useTranslation("rezervace");
   return (
     <Stack direction={"column"} spacing={0.5} alignItems={"start"}>
       <Typography fontSize={14} color={"text.secondary"} lineHeight="16px">
-        CENA ZA NOC
+        {t("price.title")}
       </Typography>
 
       <Stack direction={"row"} spacing={0.5} alignItems={"end"}>
@@ -14,10 +16,10 @@ export default function Price({ room }) {
           fontWeight={"bold"}
           lineHeight="30px"
         >
-          {room.price_for_adult} Kč
+          {t("common.priceCzk", { amount: room.price_for_adult })}
         </Typography>
         <Typography fontSize={14} color={"text.secondary"} lineHeight="22px">
-          / dospělý
+          {t("price.perAdult")}
         </Typography>
       </Stack>
       <Stack direction={"row"} spacing={0.5} alignItems={"end"}>
@@ -27,10 +29,10 @@ export default function Price({ room }) {
           fontWeight={"bold"}
           lineHeight="22px"
         >
-          {room.price_for_children} Kč
+          {t("common.priceCzk", { amount: room.price_for_children })}
         </Typography>
         <Typography fontSize={14} color={"text.secondary"} lineHeight="18px">
-          / dítě
+          {t("price.perChild")}
         </Typography>
       </Stack>
     </Stack>

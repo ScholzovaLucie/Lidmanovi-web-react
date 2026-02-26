@@ -1,7 +1,9 @@
 import { Button, Stack, Typography } from "@mui/material";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function CollapsableText({ text }) {
+  const { t } = useTranslation("rezervace");
   const [expanded, setExpanded] = useState(false);
   const toggleExpanded = () => setExpanded((prev) => !prev);
 
@@ -22,7 +24,7 @@ export default function CollapsableText({ text }) {
         {text}
       </Typography>
       <Button onClick={toggleExpanded} size="small">
-        {expanded ? "Zobrazit méně" : "Zobrazit více"}
+        {expanded ? t("roomCard.showLess") : t("roomCard.showMore")}
       </Button>
     </Stack>
   );

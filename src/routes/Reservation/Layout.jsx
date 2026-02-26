@@ -15,8 +15,10 @@ import { RoomCartCompactCard } from "./components/RoomCardCompact";
 import dayjs from "dayjs";
 import ReservationStepper from "./components/ReservationStepper";
 import BedroomParentIcon from "@mui/icons-material/BedroomParent";
+import { useTranslation } from "react-i18next";
 
 export default function Layout({ children }) {
+  const { t } = useTranslation("rezervace");
   const { step, increaseStep, decreaseStep, setStep } = useReservationContext();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const values = useSelector((state) => state.reservation.values);
@@ -30,11 +32,11 @@ export default function Layout({ children }) {
       >
         <Stack p={3} spacing={2} width={300} alignItems={"center"}>
           <Typography variant="h6" fontWeight={"bold"}>
-            Vybrané pokoje
+            {t("layout.selectedRooms")}
           </Typography>
           {values.rooms.length === 0 ? (
             <Typography variant="body1">
-              Zatím jste nevybrali žádný pokoj.
+              {t("layout.noRoomSelected")}
             </Typography>
           ) : (
             <Stack spacing={1.5}>
@@ -73,7 +75,10 @@ export default function Layout({ children }) {
             />
 
             <Typography variant="body1">
-              {values.num_adults} dospělý {values.num_children} děti
+              {t("layout.guestsSummary", {
+                adults: values.num_adults,
+                children: values.num_children,
+              })}
             </Typography>
 
             <Divider

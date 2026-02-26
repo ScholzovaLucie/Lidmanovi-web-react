@@ -13,78 +13,28 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import PackageCard from "../components/PackageCard.jsx";
+import { useTranslation } from "react-i18next";
 
 const asset = (path) =>
   `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
 
-// --- data (můžeš klidně vytáhnout do samostatného JSON) ---
-const BALICKY = [
-  {
-    id: "b1",
-    title: "Prodloužený víkend ve Stolových horách",
-    image: asset("/pobytoveBalicky/b4387.webp"),
-    price: "Cena: 4.190 Kč / 2 osoby / pobyt",
-    priceNote:
-      "(cena nezahrnuje rekreační a ubytovací poplatek 20 Kč / osoba / noc)",
-    description: [
-      "(pro 2 osoby, čtvrtek–neděle) v termínu od března do června, od září do listopadu",
-      "Vyražte na turistický prodloužený víkend do Stolových hor.",
-    ],
-    obsah: [
-      "3× ubytování",
-      "3× bufetová snídaně",
-      "1× zapůjčení piknikového batohu s vydatným občerstvením na celý den",
-      "1× tříchodová večeře s lahví moravského vína",
-    ],
-    aktivity:
-      "Národní park Stolové hory (Hejšovina, Bílé skály, Bludné skály), Broumovské stěny (Signál, Machovský kříž, Hvězda), stolová hora Ostaš, Adršpašské a Teplické skály, Muzeum Merkur, Muzeum papírových modelů – Police n. Metují, lázně Kudowa Zdrój (PL), poutní místo Vambeřice (PL), zámky Náchod a Nové Město n. M., pevnost Dobrošov, klášter Broumov, Broumovská skupina kostelů, Kłodzko (PL), Wrocław (PL), cykloturistika.",
-  },
-  {
-    id: "b2",
-    title: "Pětidenní turisticko-poznávací pobyt na Machovsku",
-    image: asset("/pobytoveBalicky/b4460.webp"),
-    price: "Cena: 5.390 Kč / 2 osoby / pobyt",
-    priceNote:
-      "(cena nezahrnuje rekreační a ubytovací poplatek 20 Kč / osoba / noc)",
-    description: [
-      "(pro 2 osoby, neděle–pátek) v termínu květen, červen, září.",
-    ],
-    obsah: [
-      "5× ubytování",
-      "5× bufetová snídaně",
-      "3× balíček s občerstvením na cesty",
-    ],
-    aktivity:
-      "Národní park Stolové hory (Hejšovina, Bílé skály, Bludné skály), Broumovské stěny (Signál, Machovský kříž, Hvězda), stolová hora Ostaš, Adršpašské a Teplické skály, Muzeum Merkur, Muzeum papírových modelů – Police n. Metují, lázně Kudowa Zdrój (PL), poutní místo Vambeřice (PL), zámky Náchod a Nové Město n. M., pevnost Dobrošov, klášter Broumov, Broumovská skupina kostelů, Kłodzko (PL), Wrocław (PL), cykloturistika.",
-  },
-  {
-    id: "b3",
-    title: "Týdenní dovolená na Broumovsku",
-    image: asset("/pobytoveBalicky/b4345.webp"),
-    price: [
-      "7.390 Kč / 2 osoby / pokoj",
-      "10.490 Kč / 3 osoby / pokoj",
-      "11.990 Kč / 4 osoby / pokoj",
-    ],
-    priceNote:
-      "(cena nezahrnuje rekreační a ubytovací poplatek 20 Kč / osoba / noc)",
-    description: [
-      "(pro 2–4 osoby, sobota–sobota) v termínu od července do srpna",
-      "(pro 2–4 osoby, neděle–neděle) v termínu od dubna do června a od září do října",
-    ],
-    obsah: [
-      "7× ubytování",
-      "7× bufetová snídaně",
-      "1× balíček s občerstvením na cesty",
-    ],
-    aktivity:
-      "Národní park Stolové hory (Hejšovina, Bílé skály, Bludné skály), Broumovské stěny (Signál, Machovský kříž, Hvězda), stolová hora Ostaš, Adršpašské a Teplické skály, Muzeum Merkur, Muzeum papírových modelů – Police n. Metují, lázně Kudowa Zdrój (PL), poutní místo Vambeřice (PL), zámky Náchod a Nové Město n. M., pevnost Dobrošov, klášter Broumov, Broumovská skupina kostelů, Kłodzko (PL), Wrocław (PL), cykloturistika.",
-  },
-];
-
 export default function AccommodationPackages() {
+  const { t } = useTranslation("balicky");
   const [open, setOpen] = React.useState(false);
   const [active, setActive] = React.useState(null);
+  const BALICKY = [
+    { id: "b1", image: asset("/pobytoveBalicky/b4387.webp") },
+    { id: "b2", image: asset("/pobytoveBalicky/b4460.webp") },
+    { id: "b3", image: asset("/pobytoveBalicky/b4345.webp") },
+  ].map((pkg) => ({
+    ...pkg,
+    title: t(`cards.${pkg.id}.title`),
+    price: t(`packages.${pkg.id}.price`, { returnObjects: true }),
+    priceNote: t("dialog.priceNoteSuffix"),
+    description: t(`packages.${pkg.id}.description`, { returnObjects: true }),
+    obsah: t(`packages.${pkg.id}.obsah`, { returnObjects: true }),
+    aktivity: t(`packages.${pkg.id}.aktivity`),
+  }));
 
   const handleOpen = (pkg) => {
     setActive(pkg);
@@ -158,7 +108,7 @@ export default function AccommodationPackages() {
                   color: "background.paper",
                   "&:hover": { bgcolor: (theme) => theme.palette.mode === 'light' ? "rgba(0,0,0,.6)" : "rgba(255,255,255,.2)" },
                 }}
-                aria-label="Zavřít"
+                aria-label={t("dialog.closeAria")}
               >
                 <CloseIcon />
               </IconButton>
@@ -226,7 +176,7 @@ export default function AccommodationPackages() {
               {/* Obsah balíčku */}
               <Box sx={{ textAlign: "center", mb: 2 }}>
                 <Chip
-                  label="Balíček obsahuje"
+                  label={t("dialog.sections.obsah")}
                   color="primary"
                   variant="outlined"
                   sx={{ mb: 1 }}
@@ -246,7 +196,7 @@ export default function AccommodationPackages() {
                   <Divider sx={{ my: 2 }} />
                   <Box sx={{ textAlign: "center" }}>
                     <Chip
-                      label="Doporučené aktivity"
+                      label={t("dialog.sections.aktivity")}
                       color="primary"
                       variant="outlined"
                       sx={{ mb: 1 }}

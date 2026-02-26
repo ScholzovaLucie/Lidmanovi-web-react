@@ -36,6 +36,7 @@ function EventDay(props) {
     outsideCurrentMonth,
     events = [],
     eventColorMap,
+    onEventClick,
     weekRows,
     displayedMonth,
     onDaySelect: _onDaySelect,
@@ -145,11 +146,19 @@ function EventDay(props) {
         }}
       >
         {dayEvents.map((event) => (
-          <Tooltip key={event.name} title={event.name} arrow>
+          <Tooltip
+            key={`${event.name}-${event.number ?? "no-number"}-${day.format("YYYY-MM-DD")}`}
+            title={
+              event.number
+                ? `Číslo rezervace: ${event.number}`
+                : event.name
+            }
+            arrow
+          >
             <Box
               onClick={(e) => {
                 e.stopPropagation();
-                console.log(event.text);
+                onEventClick?.(event);
               }}
               sx={{
                 width: "100%",
@@ -183,6 +192,7 @@ export default function CustomMuiCalendar({
   events = [],
   value,
   onChange,
+  onEventClick,
   ...rest
 }) {
   const theme = useTheme();
@@ -246,6 +256,7 @@ export default function CustomMuiCalendar({
           day: {
             events,
             eventColorMap,
+            onEventClick,
             weekRows,
             displayedMonth,
           },

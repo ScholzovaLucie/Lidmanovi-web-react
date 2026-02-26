@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import i18n from "../../../locales";
 
 export const isEmpty = (value) => {
   if (value === null || value === undefined) return true;
@@ -11,48 +12,58 @@ export const isEmpty = (value) => {
 };
 
 export const validateField = (values, field) => {
+  const t = i18n.t.bind(i18n);
+
   switch (field) {
     case "check_in_date": {
       const checkInIsInThePast = dayjs(values.check_in_date).isBefore(
         dayjs(),
         "day",
       );
-      if (isEmpty(values.check_in_date)) return "Check-in date is required";
-      if (checkInIsInThePast) return "Check-in date cannot be in the past";
+      if (isEmpty(values.check_in_date)) return t("rezervace:form.errors.dateFrom");
+      if (checkInIsInThePast)
+        return t("rezervace:validation.checkInPast");
       return null;
     }
 
     case "check_out_date":
-      if (isEmpty(values.check_out_date)) return "Check-out date is required";
+      if (isEmpty(values.check_out_date)) return t("rezervace:form.errors.dateTo");
       if (values.check_out_date <= values.check_in_date)
-        return "Check-out must be after check-in";
+        return t("rezervace:form.errors.dateOrder");
 
       return null;
 
     case "primary_guest.first_name":
       return isEmpty(values.primary_guest.first_name)
-        ? "First name is required"
+        ? t("rezervace:validation.firstNameRequired")
         : null;
 
     case "primary_guest.last_name":
       return isEmpty(values.primary_guest.last_name)
-        ? "Last name is required"
+        ? t("rezervace:validation.lastNameRequired")
         : null;
 
     case "primary_guest.email":
-      if (isEmpty(values.primary_guest.email)) return "Email is required";
-      if (!values.primary_guest.email.includes("@")) return "Invalid email";
+      if (isEmpty(values.primary_guest.email)) return t("rezervace:form.errors.emailRequired");
+      if (!values.primary_guest.email.includes("@")) return t("rezervace:form.errors.emailInvalid");
       return null;
 
     case "primary_guest.phone":
-      return isEmpty(values.primary_guest.phone) ? "Phone is required" : null;
+      return isEmpty(values.primary_guest.phone)
+        ? t("rezervace:form.errors.phoneRequired")
+        : null;
+
+    case "primary_guest.country":
+      return isEmpty(values.primary_guest.country)
+        ? t("rezervace:validation.countryRequired")
+        : null;
 
     case "num_adults": {
       const cantBeNegative = values.num_adults < 0;
       const atLeastOneAdult = values.num_adults >= 1;
 
-      if (cantBeNegative) return "Number of adults cannot be negative";
-      if (!atLeastOneAdult) return "At least one adult is required";
+      if (cantBeNegative) return t("rezervace:validation.adultsNegative");
+      if (!atLeastOneAdult) return t("rezervace:validation.adultsRequired");
       return null;
     }
 
@@ -61,8 +72,8 @@ export const validateField = (values, field) => {
       const noAloneChildren =
         values.num_adults === 0 && values.num_children > 0;
 
-      if (cantBeNegative) return "Number of children cannot be negative";
-      if (noAloneChildren) return "Children cannot be alone without adults";
+      if (cantBeNegative) return t("rezervace:validation.childrenNegative");
+      if (noAloneChildren) return t("rezervace:validation.childrenWithoutAdult");
       return null;
     }
 

@@ -14,11 +14,13 @@ import { useState } from "react";
 import { useSnackbar } from "notistack";
 import { IconButton } from "@mui/material";
 import { Close } from "@mui/icons-material";
+import { alpha, useTheme } from "@mui/material/styles";
+import { useTranslation } from "react-i18next";
 
-function formatGuestsText(numAdults, numChildren) {
+function formatGuestsText(numAdults, numChildren, t) {
   const guestParts = [
-    numAdults > 0 && `${numAdults} dospělí`,
-    numChildren > 0 && `${numChildren} děti`,
+    numAdults > 0 && t("summary.adultsCount", { count: numAdults }),
+    numChildren > 0 && t("summary.childrenCount", { count: numChildren }),
   ].filter(Boolean);
 
   return guestParts.join(", ");
@@ -42,10 +44,12 @@ function calculateTotalPrice(rooms) {
 }
 
 export function OrderSummary() {
+  const { t } = useTranslation("rezervace");
   const [loading, setLoading] = useState(false);
   const [reservationNumber, setReservationNumber] = useState(null);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const dispatch = useDispatch();
+  const theme = useTheme();
   const values = useSelector((state) => state.reservation.values);
 
   const checkInFormatted = dayjs(values.check_in_date).format("D.MM");
@@ -81,7 +85,9 @@ export function OrderSummary() {
       return;
     }
 
-    setReservationNumber("123456789"); // TODO: nevrací se mi z BE číslo rezervace
+    setReservationNumber(
+      response?.number ?? response?.reservation?.number ?? null,
+    );
     setLoading(false);
   }
 
@@ -97,13 +103,20 @@ export function OrderSummary() {
     >
       <Stack width={{ width: "100%", maxWidth: 500 }} spacing={4}>
         <Typography variant="h4" textAlign={{ xs: "start", sm: "center" }}>
-          Souhrn rezervace
+          {t("summary.title")}
         </Typography>
 
         <AppCardCustomizable
           props={{
-            border: `2px solid ${reservationNumber ? "#86c94e" : null}`,
-            backgroundColor: reservationNumber ? "#f7fcf3" : null,
+            border: reservationNumber
+              ? `2px solid ${theme.palette.success.main}`
+              : undefined,
+            backgroundColor: reservationNumber
+              ? alpha(
+                  theme.palette.success.main,
+                  theme.palette.mode === "dark" ? 0.14 : 0.06,
+                )
+              : undefined,
           }}
         >
           <Stack p={2} spacing={2} sx={{ width: "100%" }}>
@@ -114,7 +127,7 @@ export function OrderSummary() {
               component={Box}
               paddingX={1}
             >
-              Penzion u Lidmanů
+              {t("summary.property")}
             </Typography>
 
             <Divider />
@@ -124,14 +137,14 @@ export function OrderSummary() {
               <HighlightedIcon Icon={CalendarIcon} />
 
               <Stack alignItems={"start"}>
-                <Typography variant="body1" fontWeight={"bold"} color="primary">
-                  Termín pobytu
+                <Typography variant="body1" fontWeight={"bold"} color="text.primary">
+                  {t("summary.stayTerm")}
                 </Typography>
                 <Typography variant="body1">
                   <strong>
                     {checkInFormatted} - {checkOutFormatted}
                   </strong>
-                  &nbsp;({numberOfNights} noci)
+                  &nbsp;({t("summary.nightsCount", { count: numberOfNights })})
                 </Typography>
               </Stack>
             </Stack>
@@ -146,15 +159,17 @@ export function OrderSummary() {
               <HighlightedIcon Icon={Bed} />
 
               <Stack alignItems={"start"}>
-                <Typography variant="body1" fontWeight={"bold"} color="primary">
-                  Počet hostů
+                <Typography variant="body1" fontWeight={"bold"} color="text.primary">
+                  {t("summary.guestCount")}
                 </Typography>
                 <Typography variant="body1">
                   <strong>
-                    {values.num_adults + values.num_children} hosté
+                    {t("summary.guestsTotal", {
+                      count: values.num_adults + values.num_children,
+                    })}
                   </strong>
                   &nbsp;(
-                  {formatGuestsText(values.num_adults, values.num_children)})
+                  {formatGuestsText(values.num_adults, values.num_children, t)})
                 </Typography>
               </Stack>
             </Stack>
@@ -183,12 +198,14 @@ export function OrderSummary() {
                       <Typography
                         variant="body1"
                         fontWeight={"bold"}
-                        color="primary"
+                        color="text.primary"
                       >
                         {room.name}
                       </Typography>
                       <Typography variant="body1" fontWeight={"bold"}>
-                        {calculateTotalPriceForRoom(room)} Kč
+                        {t("common.priceCzk", {
+                          amount: calculateTotalPriceForRoom(room),
+                        })}
                       </Typography>
                     </Stack>
                   </Stack>
@@ -196,10 +213,10 @@ export function OrderSummary() {
                   {room.num_adults > 0 && (
                     <Stack direction={"row"} justifyContent={"space-between"}>
                       <Typography variant="body2" color="text.secondary">
-                        {room.num_adults}x Dosplělý
+                        {t("summary.adultRow", { count: room.num_adults })}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        {room.price_for_adult} Kč
+                        {t("common.priceCzk", { amount: room.price_for_adult })}
                       </Typography>
                     </Stack>
                   )}
@@ -207,10 +224,10 @@ export function OrderSummary() {
                   {room.num_children > 0 && (
                     <Stack direction={"row"} justifyContent={"space-between"}>
                       <Typography variant="body2" color="text.secondary">
-                        {room.num_children}x Dítě
+                        {t("summary.childRow", { count: room.num_children })}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        {room.price_for_children} Kč
+                        {t("common.priceCzk", { amount: room.price_for_children })}
                       </Typography>
                     </Stack>
                   )}
@@ -228,11 +245,11 @@ export function OrderSummary() {
               direction={"row"}
               px={1}
             >
-              <Typography variant="h6" color="primary">
-                Celková cena:
+              <Typography variant="h6" color="text.primary">
+                {t("summary.totalPrice")}
               </Typography>
               <Typography variant="h5" fontWeight="bold">
-                {calculateTotalPrice(values.rooms)} Kč
+                {t("common.priceCzk", { amount: calculateTotalPrice(values.rooms) })}
               </Typography>
             </Stack>
 
@@ -244,20 +261,19 @@ export function OrderSummary() {
                 onClick={handleSubmit}
                 disabled={loading || reservationNumber !== null}
               >
-                ZÁVAZNĚ REZERVOVAT
+                {t("summary.submit")}
               </Button>
             </Box>
           </Stack>
         </AppCardCustomizable>
         {reservationNumber && (
           <>
-            <Typography variant="h5" align="center" color={"#6ca63c"}>
-              Rezervace proběhla úspěšně!
+            <Typography variant="h5" align="center" color="success.main">
+              {t("summary.success")}
             </Typography>
-            <Typography variant="h4" align="center" color={"#6ca63c"}>
-              Číslo rezervace: <strong>{reservationNumber}</strong>
+            <Typography variant="h4" align="center" color="success.main">
+              {t("summary.reservationNumber")} <strong>{reservationNumber}</strong>
             </Typography>
-            // TODO: nevrací se mi z BE číslo rezervace
           </>
         )}
       </Stack>
