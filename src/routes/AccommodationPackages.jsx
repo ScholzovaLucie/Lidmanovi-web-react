@@ -27,6 +27,7 @@ export default function AccommodationPackages() {
     isAuthenticated,
     isInlineEditing,
     getInlineValue,
+    listContentKeys,
     setInlineValue,
   } = useEditorialEditor();
   const [open, setOpen] = React.useState(false);
@@ -51,11 +52,12 @@ export default function AccommodationPackages() {
   const resolvedPackageIds = packageIds.length
     ? packageIds
     : (() => {
-        const cards = t("cards", { returnObjects: true });
-        const keys = cards && typeof cards === "object" ? Object.keys(cards) : [];
+        const keys = listContentKeys("balicky.cards.")
+          .map((key) => key.match(/^balicky\.cards\.(b\d+)\./)?.[1])
+          .filter(Boolean);
         const filtered = keys.filter((id) => /^b\d+$/.test(id));
         if (!filtered.length) return ["b1", "b2", "b3"];
-        return filtered.sort((a, b) => Number(a.slice(1)) - Number(b.slice(1)));
+        return Array.from(new Set(filtered)).sort((a, b) => Number(a.slice(1)) - Number(b.slice(1)));
       })();
 
   const BALICKY = resolvedPackageIds.map((id, index) => ({

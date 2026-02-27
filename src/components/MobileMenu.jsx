@@ -66,7 +66,12 @@ export function MobileMenu({ isOpen, onClose, navItems, langOptions, onLogin }) 
               {langOptions.map(({ code, label }) => (
                 <Button
                   key={code}
-                  onClick={() => i18n.changeLanguage(code)}
+                  onClick={() => {
+                    if (typeof window !== "undefined") {
+                      window.localStorage.setItem("appLanguage", code);
+                    }
+                    i18n.changeLanguage(code);
+                  }}
                   variant={activeLang === code ? "contained" : "text"}
                   size="small"
                   sx={{ 

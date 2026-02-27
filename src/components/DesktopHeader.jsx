@@ -93,7 +93,12 @@ export function DesktopHeader({ onLogin, navItems }) {
           label={currentLang.label}
           options={langOptions.map((lang) => ({
             ...lang,
-            onClick: () => i18n.changeLanguage(lang.code),
+            onClick: () => {
+              if (typeof window !== "undefined") {
+                window.localStorage.setItem("appLanguage", lang.code);
+              }
+              i18n.changeLanguage(lang.code);
+            },
             isActive: activeLang === lang.code,
           }))}
         />

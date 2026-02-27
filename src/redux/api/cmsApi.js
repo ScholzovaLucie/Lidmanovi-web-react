@@ -81,14 +81,35 @@ export const cmsApi = createApi({
 
           const targetPath = normalizePath(arg?.path);
           const targetLang = String(arg?.lang || "").toLowerCase();
+          const exactPath = items.find((item) => {
+            const itemPath = normalizePath(item?.path);
+            return itemPath === targetPath;
+          });
+          if (!targetLang) return exactPath || null;
+
           const exact = items.find((item) => {
             const itemPath = normalizePath(item?.path);
             const itemLang = String(item?.lang || "").toLowerCase();
             return itemPath === targetPath && itemLang === targetLang;
           });
-          return exact || null;
+          return exact || exactPath || null;
         };
 
+        // Preferred: backend returns one route record with all translations in content_json.
+        const byPathResult = await baseQuery(
+          {
+            url: "/editorial_system/pages/",
+            params: { path: arg.path },
+          },
+          api,
+          extraOptions,
+        );
+        if (!byPathResult.error) {
+          const byPathPick = pickMatching(byPathResult.data);
+          if (byPathPick) return { data: byPathPick };
+        }
+
+        // Compatibility: older backend variants filtering by path + lang.
         const filteredResult = await baseQuery(
           {
             url: "/editorial_system/pages/",
@@ -97,10 +118,10 @@ export const cmsApi = createApi({
           api,
           extraOptions,
         );
-        if (filteredResult.error) return { error: filteredResult.error };
-
-        const filteredPick = pickMatching(filteredResult.data);
-        if (filteredPick) return { data: filteredPick };
+        if (!filteredResult.error) {
+          const filteredPick = pickMatching(filteredResult.data);
+          if (filteredPick) return { data: filteredPick };
+        }
 
         const fallbackResult = await baseQuery(
           { url: "/editorial_system/pages/" },
@@ -111,19 +132,19 @@ export const cmsApi = createApi({
 
         return { data: pickMatching(fallbackResult.data) };
       },
-      providesTags: (result, error, { path, lang }) => [
-        { type: "CmsPage", id: `${path}:${lang}` },
+      providesTags: (result, error, { path }) => [
+        { type: "CmsPage", id: path },
       ],
     }),
     upsertCmsPage: builder.mutation({
       query: ({ path, lang, content_json }) => ({
         url: "/editorial_system/pages/upsert/",
         method: "PUT",
-        params: { path, lang },
-        body: { path, lang, content_json },
+        params: lang ? { path, lang } : { path },
+        body: lang ? { path, lang, content_json } : { path, content_json },
       }),
-      invalidatesTags: (result, error, { path, lang }) => [
-        { type: "CmsPage", id: `${path}:${lang}` },
+      invalidatesTags: (result, error, { path }) => [
+        { type: "CmsPage", id: path },
       ],
     }),
   }),
