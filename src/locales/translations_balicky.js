@@ -2,6 +2,7 @@
 export const translations_balicky = {
   cs: {
     pageTitle: "Pobytové balíčky",
+    packagesOrder: ["b1", "b2", "b3"],
     cards: {
       b1: {
         title: "Prodloužený víkend ve Stolových horách",
@@ -77,6 +78,7 @@ export const translations_balicky = {
 
   en: {
     pageTitle: "Accommodation Packages",
+    packagesOrder: ["b1", "b2", "b3"],
     cards: {
       b1: {
         title: "Extended Weekend in the Table Mountains",
@@ -152,6 +154,7 @@ export const translations_balicky = {
 
   de: {
     pageTitle: "Aufenthaltspakete",
+    packagesOrder: ["b1", "b2", "b3"],
     cards: {
       b1: {
         title: "Verlängertes Wochenende im Heuscheuergebirge",
@@ -225,6 +228,7 @@ export const translations_balicky = {
 
   pl: {
     pageTitle: "Pakiety pobytowe",
+    packagesOrder: ["b1", "b2", "b3"],
     cards: {
       b1: {
         title: "Przedłużony weekend w Górach Stołowych",

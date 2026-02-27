@@ -6,23 +6,21 @@ import { reservationsApi } from "./api/reservationsApi";
 import appReducer from "./slices/app/appSlice";
 import reservationReducer from "./slices/reservation/reservationSlice";
 import { guestApi } from "./api/guestApi";
+import { cmsApi } from "./api/cmsApi";
 
-// Logger middleware pro výpis stavu do konzole
-const loggerMiddleware = (store) => (next) => (action) => {
-  const prevState = store.getState();
-
+// Logger middleware only for explicit debug sessions.
+const loggerMiddleware = () => (next) => (action) => {
   console.group(`🔄 Action: ${action.type}`);
   console.log("📋 Payload:", action.payload);
-  //console.log('⬅️ Previous State:', prevState);
 
   const result = next(action);
-
-  const nextState = store.getState();
-  console.log("➡️ Next State:", nextState);
   console.groupEnd();
 
   return result;
 };
+
+const isReduxLoggerEnabled =
+  import.meta.env.DEV && import.meta.env.VITE_ENABLE_REDUX_LOGGER === "true";
 
 export const store = configureStore({
   reducer: {
@@ -33,6 +31,7 @@ export const store = configureStore({
     [roomsApi.reducerPath]: roomsApi.reducer,
     [reservationsApi.reducerPath]: reservationsApi.reducer,
     [guestApi.reducerPath]: guestApi.reducer,
+    [cmsApi.reducerPath]: cmsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -42,6 +41,7 @@ export const store = configureStore({
         roomsApi.middleware,
         reservationsApi.middleware,
         guestApi.middleware,
+        cmsApi.middleware,
       )
-      .concat(loggerMiddleware),
+      .concat(isReduxLoggerEnabled ? loggerMiddleware : []),
 });

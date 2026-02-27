@@ -1,5 +1,7 @@
 import React from "react";
 import { Paper, Box, Typography, Button } from "@mui/material";
+import { useSelector } from "react-redux";
+import { selectIsAuthenticated } from "../redux/slices/app/appSlice";
 
 export default function InfoBlock({
   icon,
@@ -11,10 +13,13 @@ export default function InfoBlock({
   minHeight = { xs: 220, sm: 240, md: 240 },
   minWidth = { xs: 220, sm: 240, md: 240 },
 }) {
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+
   return (
     <Paper
       variant="outlined"
       sx={{
+        position: "relative",
         borderRadius: 2,
         p: 2,
         width: "100%", // <<< sjednocená šířka
@@ -27,9 +32,30 @@ export default function InfoBlock({
         alignItems: "center", // <<< horizontální střed
         textAlign: "center",
         boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+        borderColor: isAuthenticated ? "secondary.main" : undefined,
+        outline: isAuthenticated ? "1px dashed" : "none",
+        outlineColor: isAuthenticated ? "secondary.main" : "transparent",
         ...sx,
       }}
     >
+      {isAuthenticated && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: 8,
+            right: 8,
+            px: 1,
+            py: 0.25,
+            borderRadius: 1,
+            bgcolor: "secondary.main",
+            color: "secondary.contrastText",
+            fontSize: 11,
+            fontWeight: 700,
+          }}
+        >
+          Editovatelný blok
+        </Box>
+      )}
       {/* Header */}
       <Box
         sx={{

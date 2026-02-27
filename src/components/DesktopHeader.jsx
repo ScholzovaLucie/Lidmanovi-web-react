@@ -19,21 +19,28 @@ const langOptions = [
 ];
 
 const NavButton = ({ to, label, end }) => (
-  <NavLink to={to} end={end}>
-    {({ isActive }) => (
-      <Button
-        variant={isActive ? "contained" : "text"}
-        sx={{
-          textTransform: "none",
-          fontWeight: isActive ? 600 : 500,
-          px: 2,
-          py: 1,
-        }}
-      >
-        {label}
-      </Button>
-    )}
-  </NavLink>
+  <Button
+    component={NavLink}
+    to={to}
+    end={end}
+    sx={{
+      textTransform: "none",
+      fontWeight: 500,
+      px: 2,
+      py: 1,
+      color: "text.primary",
+      "&.active": {
+        fontWeight: 600,
+        bgcolor: "primary.main",
+        color: "primary.contrastText",
+        "&:hover": {
+          bgcolor: "primary.dark",
+        },
+      },
+    }}
+  >
+    {label}
+  </Button>
 );
 
 export function DesktopHeader({ onLogin, navItems }) {

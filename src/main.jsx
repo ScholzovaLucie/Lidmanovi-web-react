@@ -18,6 +18,7 @@ import {
   useAppContext,
 } from "./context/AppContextProvider.jsx";
 import { SnackbarProvider } from "notistack";
+import { EditorialEditorProvider } from "./context/EditorialEditorProvider.jsx";
 
 // Component that provides dynamic theme
 function ThemedApp() {
@@ -29,7 +30,9 @@ function ThemedApp() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <BrowserRouter basename={import.meta.env.BASE_URL}>
-          <App />
+          <EditorialEditorProvider>
+            <App />
+          </EditorialEditorProvider>
         </BrowserRouter>
       </ThemeProvider>
     </StyledEngineProvider>
