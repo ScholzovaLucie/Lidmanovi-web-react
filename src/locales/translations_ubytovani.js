@@ -25,22 +25,40 @@ export const translations_ubytovani = {
       sun: "Ne 8:00-9:30 a 11:30 - 20:00",
       note: "Mimo otevírací dobu mohou naši hosté od pondělí do čtvrtku využívat naši restauraci také jako samoobslužný bar - vše vysvětlíme a zaučíme na místě.",
     },
+    additionalInfo: {
+      title: "Další informace k pobytu",
+      item1:
+        "Pokoje včetně sociálního zařízení jsou vybaveny ručníky a osušky, hotelovou kosmetikou, TV, ledničkou, varnou konvicí a wi-fi.",
+      item2:
+        "Domácí zvíře po dohodě.",
+      item3:
+        "Všem hostům je k dispozici dětský koutek, velká společenská místnost, lounge room, letní zahrádka a samoobslužný bar.",
+      item4:
+        "U pensionu je velké neplacené parkoviště.",
+      item5:
+        "Všechny prostory pensionu jsou nekuřácké.",
+    },
+    catering: {
+      title: "Stravování",
+      text:
+        "Pobyt se snídaní. Večeře zajišťujeme pouze pro ubytované hosty. Obědy dle otevírací doby restaurace.",
+    },
     tiles: [
       {
-        alt: "Lokál",
-        text: "V lokálu s krbem a kapacitou 40 osob podáváme formou denní nabídky klasická jídla české kuchyně a domácí moučníky. Na našem baru najdete moravská vína, regionální pivo, nealkoholické, alkoholické a teplé nápoje.",
+        alt: "Pokoj v přízemí",
+        text: "V přízemí jsou dva dvoulůžkové pokoje s vlastním sociálním zařízením.",
       },
       {
-        alt: "Zahrada",
-        text: "Při pěkném počasí můžete posedět na naší letní zahrádce s vítěznou jabloní, stromem roku ČR 2020. Vychutnáte si klid venkova a krásné výhledy na okolní kopce. Děti si mohou pohrát na pískovišti nebo se zhoupnout na houpačce.",
+        alt: "Podkrovní pokoje",
+        text: "V podkroví jsou dva čtyřlůžkové pokoje s vlastním sociálním zařízením.",
       },
       {
-        alt: "Salonek",
-        text: "Salónek restaurace s kapacitou 20 osob slouží k pořádání menších oslav, jako školicí místnost, společenská místnost pro ubytované hosty nebo při větším množství hostů k rozšíření služeb lokálu.",
+        alt: "Výhled z pensionu",
+        text: "Kapacita pensionu je 18 osob v klidném prostředí Machovské Lhoty.",
       },
       {
-        alt: "Sál",
-        text: "Velký společenský sál s kapacitou 70 osob je určen k pořádání větších společenských akcí - svatby, oslavy, školení, přednášky, výstavy apod.",
+        alt: "Společné prostory",
+        text: "Hostům je k dispozici lounge room, společenská místnost, dětský koutek a letní zahrádka.",
       },
     ],
   },
@@ -69,6 +87,21 @@ export const translations_ubytovani = {
       sat: "Sat 8:00-9:30 and 11:30 - 21:00",
       sun: "Sun 8:00-9:30 and 11:30 - 20:00",
       note: "Outside regular opening hours, from Monday to Thursday our accommodated guests can also use the restaurant as a self-service bar - we will explain everything on site.",
+    },
+    additionalInfo: {
+      title: "Additional stay information",
+      item1:
+        "Rooms (including private bathroom) are equipped with towels, hotel toiletries, TV, fridge, kettle and Wi-Fi.",
+      item2: "Pets on request.",
+      item3:
+        "Guests can use the kids corner, large common room, lounge room, summer terrace and self-service bar.",
+      item4: "Free parking is available directly at the pension.",
+      item5: "All pension areas are non-smoking.",
+    },
+    catering: {
+      title: "Board",
+      text:
+        "Stays include breakfast. Dinners are provided for accommodated guests only. Lunch according to restaurant opening hours.",
     },
     tiles: [
       {
@@ -115,6 +148,21 @@ export const translations_ubytovani = {
       sun: "So 8:00-9:30 und 11:30 - 20:00",
       note: "Außerhalb der Öffnungszeiten können unsere Hausgäste von Montag bis Donnerstag das Restaurant auch als Selbstbedienungsbar nutzen - alles wird vor Ort erklärt.",
     },
+    additionalInfo: {
+      title: "Weitere Informationen zum Aufenthalt",
+      item1:
+        "Die Zimmer (inkl. Bad) sind mit Handtüchern, Hotelkosmetik, TV, Kühlschrank, Wasserkocher und WLAN ausgestattet.",
+      item2: "Haustiere nach Vereinbarung.",
+      item3:
+        "Zur Verfügung stehen Kinderecke, großer Gemeinschaftsraum, Lounge Room, Sommerterrasse und Selbstbedienungsbar.",
+      item4: "Direkt an der Pension gibt es kostenlose Parkplätze.",
+      item5: "Alle Bereiche der Pension sind Nichtraucherbereiche.",
+    },
+    catering: {
+      title: "Verpflegung",
+      text:
+        "Aufenthalt mit Frühstück. Abendessen bieten wir nur für Hausgäste an. Mittagessen nach den Öffnungszeiten des Restaurants.",
+    },
     tiles: [
       {
         alt: "Gastraum",
@@ -159,6 +207,21 @@ export const translations_ubytovani = {
       sat: "Sob 8:00-9:30 oraz 11:30 - 21:00",
       sun: "Nd 8:00-9:30 oraz 11:30 - 20:00",
       note: "Poza godzinami otwarcia, od poniedziałku do czwartku, nasi goście nocujący mogą korzystać z restauracji także jako baru samoobsługowego - wszystko wyjaśnimy na miejscu.",
+    },
+    additionalInfo: {
+      title: "Dodatkowe informacje o pobycie",
+      item1:
+        "Pokoje (z prywatną łazienką) są wyposażone w ręczniki, kosmetyki hotelowe, TV, lodówkę, czajnik i Wi-Fi.",
+      item2: "Zwierzęta domowe po uzgodnieniu.",
+      item3:
+        "Do dyspozycji gości: kącik dziecięcy, duża sala wspólna, lounge room, ogródek letni i bar samoobsługowy.",
+      item4: "Przy pensjonacie znajduje się bezpłatny parking.",
+      item5: "Wszystkie pomieszczenia pensjonatu są dla niepalących.",
+    },
+    catering: {
+      title: "Wyżywienie",
+      text:
+        "Pobyt obejmuje śniadanie. Kolacje zapewniamy tylko dla gości nocujących. Obiady zgodnie z godzinami otwarcia restauracji.",
     },
     tiles: [
       {

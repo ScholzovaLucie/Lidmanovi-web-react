@@ -26,23 +26,32 @@ export function MobileMenu({ isOpen, onClose, navItems, langOptions, onLogin }) 
         {/* Navigation */}
         <Stack spacing={1} sx={{ mb: 3 }}>
           {navItems.map(({ to, label, end }) => (
-            <NavLink key={to} to={to} end={end} onClick={onClose}>
-              {({ isActive }) => (
-                <Button
-                  variant={isActive ? "contained" : "text"}
-                  fullWidth
-                  sx={{
-                    justifyContent: "center",
-                    textTransform: "none",
-                    fontWeight: isActive ? 600 : 400,
-                    py: 1.5,
-                    fontSize: "1rem"
-                  }}
-                >
-                  {label}
-                </Button>
-              )}
-            </NavLink>
+            <Button
+              key={to}
+              component={NavLink}
+              to={to}
+              end={end}
+              onClick={onClose}
+              fullWidth
+              sx={{
+                justifyContent: "center",
+                textTransform: "none",
+                fontWeight: 400,
+                py: 1.5,
+                fontSize: "1rem",
+                color: "text.primary",
+                "&.active": {
+                  fontWeight: 600,
+                  bgcolor: "primary.main",
+                  color: "primary.contrastText",
+                  "&:hover": {
+                    bgcolor: "primary.dark",
+                  },
+                },
+              }}
+            >
+              {label}
+            </Button>
           ))}
         </Stack>
 

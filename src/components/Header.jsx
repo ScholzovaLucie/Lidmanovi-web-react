@@ -15,7 +15,7 @@ import { MobileMenu } from "./MobileMenu";
 import { useTranslation } from "react-i18next";
 
 const navConfig = [
-  { to: "/", key: "home", end: true },
+  { to: "/o-nas", key: "about" },
   { to: "/restaurace", key: "restaurant" },
   { to: "/svatby", key: "weddings" },
   { to: "/ubytovani", key: "accommodation" },
@@ -52,6 +52,7 @@ export default function Header() {
         backgroundColor: "background.paper",
         color: "text.primary",
         boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+        zIndex: (theme) => theme.zIndex.appBar + 20,
       }}
     >
       <Box>
