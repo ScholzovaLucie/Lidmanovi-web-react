@@ -13,25 +13,7 @@ import { LoginModal } from "./LoginModal";
 import { DesktopHeader } from "./DesktopHeader";
 import { MobileMenu } from "./MobileMenu";
 import { useTranslation } from "react-i18next";
-
-const navConfig = [
-  { to: "/o-nas", key: "about" },
-  { to: "/restaurace", key: "restaurant" },
-  { to: "/svatby", key: "weddings" },
-  { to: "/ubytovani", key: "accommodation" },
-  { to: "/pobytove_balicky", key: "packages" },
-  { to: "/galerie", key: "gallery" },
-  { to: "/kontakt", key: "contact" },
-  { to: "/cenik", key: "priceList" },
-  { to: "/rezervace", key: "reservation" },
-];
-
-const langOptions = [
-  { code: "cs", label: "Čeština" },
-  { code: "en", label: "English" },
-  { code: "pl", label: "Polski" },
-  { code: "de", label: "Deutsch" },
-];
+import { langOptions, navConfig } from "./headerConfig";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);

@@ -10,42 +10,29 @@ import { MenuButton } from "./controls/MenuButton";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../context/AppContextProvider";
 import { useAuth } from "../hooks/useAuth";
-
-const langOptions = [
-  { code: "cs", label: "Čeština" },
-  { code: "en", label: "English" },
-  { code: "pl", label: "Polski" },
-  { code: "de", label: "Deutsch" },
-];
+import { langOptions } from "./headerConfig";
 
 const NavButton = ({ to, label, end }) => (
-  <Button
-    component={NavLink}
-    to={to}
-    end={end}
-    sx={{
-      textTransform: "none",
-      fontWeight: 500,
-      px: 2,
-      py: 1,
-      color: "text.primary",
-      "&.active": {
-        fontWeight: 600,
-        bgcolor: "primary.main",
-        color: "primary.contrastText",
-        "&:hover": {
-          bgcolor: "primary.dark",
-        },
-      },
-    }}
-  >
-    {label}
-  </Button>
+  <NavLink to={to} end={end}>
+    {({ isActive }) => (
+      <Button
+        variant={isActive ? "contained" : "text"}
+        sx={{
+          textTransform: "none",
+          fontWeight: isActive ? 600 : 500,
+          px: 2,
+          py: 1,
+        }}
+      >
+        {label}
+      </Button>
+    )}
+  </NavLink>
 );
 
-export function DesktopHeader({ onLogin, navItems }) {
+export function DesktopHeader({ onLogin, navItems = [] }) {
   const navigate = useNavigate();
-  const { i18n, t } = useTranslation("global");
+  const { i18n } = useTranslation("global");
   const { themeMode, toggleTheme } = useAppContext();
   const { isAuthenticated, logout } = useAuth();
 
@@ -54,12 +41,8 @@ export function DesktopHeader({ onLogin, navItems }) {
     navigate("/");
   };
 
-  const activeLang = String(i18n.resolvedLanguage || i18n.language || "cs").split(
-    "-",
-  )[0];
   const currentLang =
-    langOptions.find((lang) => lang.code === activeLang) || langOptions[0];
-  const primaryNavItems = navItems.filter(({ to }) => to !== "/");
+    langOptions.find((lang) => lang.code === i18n.language) || langOptions[0];
 
   return (
     <Box
@@ -79,7 +62,7 @@ export function DesktopHeader({ onLogin, navItems }) {
           sx={{ height: 40, cursor: "pointer", mr: 1 }}
         />
 
-        {primaryNavItems.map(({ to, label, end }) => (
+        {navItems.map(({ to, label, end }) => (
           <NavButton key={to} to={to} label={label} end={end} />
         ))}
       </Stack>
@@ -93,13 +76,8 @@ export function DesktopHeader({ onLogin, navItems }) {
           label={currentLang.label}
           options={langOptions.map((lang) => ({
             ...lang,
-            onClick: () => {
-              if (typeof window !== "undefined") {
-                window.localStorage.setItem("appLanguage", lang.code);
-              }
-              i18n.changeLanguage(lang.code);
-            },
-            isActive: activeLang === lang.code,
+            onClick: () => i18n.changeLanguage(lang.code),
+            isActive: i18n.language === lang.code,
           }))}
         />
 
@@ -116,30 +94,21 @@ export function DesktopHeader({ onLogin, navItems }) {
         </IconButton>
 
         {isAuthenticated ? (
-          <>
-            <Button
-              onClick={() => navigate("/admin")}
-              variant="outlined"
-              sx={{ textTransform: "none" }}
-            >
-              {t("auth.admin")}
-            </Button>
-            <Button
-              onClick={handleLogout}
-              startIcon={<LogoutIcon />}
-              color="error"
-              sx={{ textTransform: "none" }}
-            >
-              {t("auth.logout")}
-            </Button>
-          </>
+          <Button
+            onClick={handleLogout}
+            startIcon={<LogoutIcon />}
+            color="error"
+            sx={{ textTransform: "none" }}
+          >
+            Odhlásit
+          </Button>
         ) : (
           <Button
             onClick={onLogin}
             variant="outlined"
             sx={{ textTransform: "none" }}
           >
-            {t("auth.login")}
+            Login
           </Button>
         )}
       </Stack>
