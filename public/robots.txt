@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://scholzovalucie.github.io/Lidmanovi-web-react/sitemap.xml
