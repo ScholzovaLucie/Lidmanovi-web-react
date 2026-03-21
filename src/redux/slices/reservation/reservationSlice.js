@@ -6,7 +6,7 @@ const reservationSlice = createSlice({
   initialState: {
     values: {
       check_in_date: dayjs(Date.now()).format("YYYY-MM-DD"),
-      check_out_date: dayjs().add(1, "day").format("YYYY-MM-DD"),
+      check_out_date: dayjs(Date.now()).format("YYYY-MM-DD"),
       num_adults: 0,
       num_children: 0,
       currency: "CZK",

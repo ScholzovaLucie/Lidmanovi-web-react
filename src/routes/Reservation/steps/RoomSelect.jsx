@@ -15,6 +15,7 @@ import { AppCardCustomizable } from "../../../components/containers/AppCard";
 import {
   BathtubOutlined,
   Close,
+  CheckCircleOutline,
   Person,
   PersonOutline,
   SpaOutlined,
@@ -36,11 +37,17 @@ import { useSnackbar } from "notistack";
 import { SelectButton } from "../../../components/controls/SelectButton";
 import RoomCard from "../components/RoomCard";
 import ReservationStepper from "../components/ReservationStepper";
+import { useTranslation } from "react-i18next";
 
 export default function RoomSelect() {
+  const { t, i18n } = useTranslation("rezervace");
   const { step, increaseStep, decreaseStep, setStep } = useReservationContext();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
+  const activeLang = String(i18n.resolvedLanguage || i18n.language || "cs").split(
+    "-",
+  )[0];
+
   const {
     data: rooms,
     isLoading,
@@ -54,6 +61,7 @@ export default function RoomSelect() {
     ),
     adults: useSelector((state) => state.reservation.values.num_adults),
     children: useSelector((state) => state.reservation.values.num_children),
+    language: activeLang,
   });
 
   const [availableRooms, setAvailableRooms] = useState([]);
@@ -63,13 +71,17 @@ export default function RoomSelect() {
   const reservationState = useSelector((state) => state.reservation);
   const values = reservationState.values;
   const allHostsCount = values.num_adults + values.num_children;
+  const roomsList = getRoomsList(rooms);
+  const hasNoAvailableRooms = !isLoading && !error && rooms && roomsList.length === 0;
+  const hasEnoughCapacity =
+    values.rooms.length > 0 && remainingCapacityToSelect <= 0;
 
   const actuallySelectedCapacity = values.rooms.reduce((sum, room) => {
     const capacity = Math.max(room.max_adults, room.max_children);
     return sum + capacity;
   }, 0);
 
-  function sortRooms(rooms) {
+  function sortRooms(rooms = []) {
     const sorted = [...rooms].sort((a, b) => {
       const aCapacity = Math.max(a.max_adults, a.max_children);
       const bCapacity = Math.max(b.max_adults, b.max_children);
@@ -95,15 +107,22 @@ export default function RoomSelect() {
     return sorted;
   }
 
-  function filterOutSelectedRooms(rooms, selectedRooms) {
+  function filterOutSelectedRooms(rooms = [], selectedRooms = []) {
     const selectedIds = selectedRooms.map((room) => room.id);
     return rooms.filter((room) => !selectedIds.includes(room.id));
+  }
+
+  function getRoomsList(data) {
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data?.rooms)) return data.rooms;
+    if (Array.isArray(data?.results)) return data.results;
+    return [];
   }
 
   useEffect(() => {
     if (isLoading || error || !rooms) return;
     console.log("RECALCULATE");
-    const available = filterOutSelectedRooms(rooms.rooms, values.rooms);
+    const available = filterOutSelectedRooms(roomsList, values.rooms);
     const sorted = sortRooms(available);
     setAvailableRooms((prev) => (prev = sorted));
   }, [rooms, isLoading, error, remainingCapacityToSelect, values.rooms]);
@@ -111,7 +130,7 @@ export default function RoomSelect() {
   function handleNextStep() {
     if (remainingCapacityToSelect > 0) {
       enqueueSnackbar(
-        `${remainingCapacityToSelect} hosté nejsou přiřazeni. Prosím vyberte další pokoj.`,
+        t("rooms.notAssignedError", { count: remainingCapacityToSelect }),
         {
           variant: "error",
           autoHideDuration: 5000,
@@ -123,8 +142,8 @@ export default function RoomSelect() {
     increaseStep();
   }
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error</div>;
+  if (isLoading) return <div>{t("common.loading")}</div>;
+  if (error) return <div>{t("common.error")}</div>;
 
   return (
     <>
@@ -138,8 +157,8 @@ export default function RoomSelect() {
         p={3}
         spacing={4}
       >
-        <Typography variant="h4">Dostupné pokoje</Typography>
-        <Typography variant="h6">Vyberte pokoje pro všechny hosty</Typography>
+        <Typography variant="h4">{t("rooms.title")}</Typography>
+        <Typography variant="h6">{t("rooms.subtitle")}</Typography>
 
         <Grid container spacing={1} alignItems="center" justifyContent="center">
           {Array.from({ length: allHostsCount }).map((_, index) => (
@@ -153,22 +172,67 @@ export default function RoomSelect() {
           ))}
         </Grid>
 
-        <Grid container spacing={2} justifyContent={"center"}>
-          {availableRooms.map((room, index) => (
-            <Grid key={index}>
-              <RoomCard room={room} />
-            </Grid>
-          ))}
-        </Grid>
+        {hasEnoughCapacity && (
+          <AppCardCustomizable
+            props={{
+              width: "100%",
+              maxWidth: 620,
+              border: "1px solid",
+              borderColor: "success.light",
+              backgroundColor: "success.50",
+            }}
+          >
+            <Stack direction="row" spacing={1.5} p={2} alignItems="center">
+              <CheckCircleOutline color="success" />
+              <Typography variant="body1" color="success.dark">
+                {t("rooms.allSelected")}
+              </Typography>
+            </Stack>
+          </AppCardCustomizable>
+        )}
 
-        <Button
-          variant="contained"
-          size="large"
-          sx={{ maxWidth: "300px" }}
-          onClick={handleNextStep}
-        >
-          Pokračovat na konfiguraci pokojů
-        </Button>
+        {hasNoAvailableRooms ? (
+          <AppCardCustomizable
+            props={{
+              width: "100%",
+              maxWidth: 620,
+              border: "1px solid",
+              borderColor: "warning.light",
+              backgroundColor: "warning.50",
+            }}
+          >
+            <Stack spacing={2.5} p={3} alignItems="center">
+              <Typography variant="h6" textAlign="center" color="warning.dark">
+                {t("rooms.noRoomTitle")}
+              </Typography>
+              <Typography variant="body1" color="text.secondary" textAlign="center">
+                {t("rooms.noRoomText")}
+              </Typography>
+              <Button variant="contained" size="large" onClick={() => setStep(0)}>
+                {t("rooms.backToTerm")}
+              </Button>
+            </Stack>
+          </AppCardCustomizable>
+        ) : (
+          <Grid container spacing={2} justifyContent={"center"}>
+            {availableRooms.map((room, index) => (
+              <Grid key={index}>
+                <RoomCard room={room} />
+              </Grid>
+            ))}
+          </Grid>
+        )}
+
+        {!hasNoAvailableRooms && (
+          <Button
+            variant="contained"
+            size="large"
+            sx={{ maxWidth: "300px" }}
+            onClick={handleNextStep}
+          >
+            {t("rooms.cta")}
+          </Button>
+        )}
       </Stack>
     </>
   );

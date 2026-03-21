@@ -1,9 +1,15 @@
 import React from "react";
 import FullBleedTiles from "../components/FullBleedTiles.jsx";
 import HeroCarousel from "../components/HeroCarousel.jsx";
-import { Container, Paper, Typography, Box, Divider } from "@mui/material";
+import { Container, Paper, Box, Divider } from "@mui/material";
+import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { selectIsAuthenticated } from "../redux/slices/app/appSlice";
+import EditableTranslationText from "../components/EditableTranslationText";
 
 export default function Accommodations() {
+  const { t } = useTranslation("ubytovani");
+  const isAuthenticated = useSelector(selectIsAuthenticated);
   const asset = (path) =>
     `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
 
@@ -42,68 +48,155 @@ export default function Accommodations() {
         <Paper
           variant="outlined"
           sx={{
+            position: "relative",
             p: { xs: 2, md: 3 },
             borderRadius: 2,
             boxShadow: (theme) => `0 1px 4px ${theme.palette.mode === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(0,0,0,0.2)'}`,
             textAlign: "center",
+            borderColor: isAuthenticated ? "secondary.main" : undefined,
+            outline: isAuthenticated ? "1px dashed" : "none",
+            outlineColor: isAuthenticated ? "secondary.main" : "transparent",
           }}
         >
+          {isAuthenticated && (
+            <Box
+              sx={{
+                position: "absolute",
+                top: 8,
+                right: 8,
+                px: 1,
+                py: 0.25,
+                borderRadius: 1,
+                bgcolor: "secondary.main",
+                color: "secondary.contrastText",
+                fontSize: 11,
+                fontWeight: 700,
+              }}
+            >
+              Editovatelný blok
+            </Box>
+          )}
           {/* Nadpis */}
-          <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
-            Otevírací doba pensionu: denně dle objednávek
-          </Typography>
-          <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>
-            Otevírací doba restaurace pro UBYTOVANÉ HOSTY:
-          </Typography>
+          <EditableTranslationText
+            ns="ubytovani"
+            i18nKey="openingHours.pension"
+            variant="h5"
+            sx={{ fontWeight: 700, mb: 1 }}
+            align="center"
+          />
+          <EditableTranslationText
+            ns="ubytovani"
+            i18nKey="openingHours.restaurantTitle"
+            variant="h5"
+            sx={{ fontWeight: 700, mb: 2 }}
+            align="center"
+          />
 
           <Box sx={{ mb: 3 }}>
-            <Typography variant="h6" sx={{ fontWeight: 600 }}>
-              Po - Čt 8:00-9:30 a 18:00-20:00
-            </Typography>
-            <Typography>Pá 8:00-9:30 a 11:30 - 21:00</Typography>
-            <Typography>So 8:00-9:30 a 11:30 - 21:00</Typography>
-            <Typography>Ne 8:00-9:30 a 11:30 - 20:00</Typography>
+            <EditableTranslationText ns="ubytovani" i18nKey="openingHours.monThu" variant="h6" sx={{ fontWeight: 600 }} align="center" />
+            <EditableTranslationText ns="ubytovani" i18nKey="openingHours.fri" align="center" />
+            <EditableTranslationText ns="ubytovani" i18nKey="openingHours.sat" align="center" />
+            <EditableTranslationText ns="ubytovani" i18nKey="openingHours.sun" align="center" />
           </Box>
 
           <Divider sx={{ my: 2 }} />
 
           {/* Nabídka speciálních akcí */}
-          <Typography variant="body1" sx={{ mt: 2, fontStyle: "italic" }}>
-            Mimo otevírací dobu mohou naši hosté od pondělí do čtvrtku využívat
-            naši restauraci též jako SAMOOBSLUŽNÝ BAR - vše vysvětlíme a zaučíme
-            na místě
-          </Typography>
+          <EditableTranslationText
+            ns="ubytovani"
+            i18nKey="openingHours.note"
+            variant="body1"
+            sx={{ mt: 2, fontStyle: "italic" }}
+            align="center"
+          />
+        </Paper>
+      </Container>
+
+      <Container maxWidth="md" sx={{ pb: { xs: 4, md: 6 } }}>
+        <Paper
+          variant="outlined"
+          sx={{
+            position: "relative",
+            p: { xs: 2, md: 3 },
+            borderRadius: 2,
+            boxShadow: (theme) =>
+              `0 1px 4px ${
+                theme.palette.mode === "light"
+                  ? "rgba(0,0,0,0.04)"
+                  : "rgba(0,0,0,0.2)"
+              }`,
+            borderColor: isAuthenticated ? "secondary.main" : undefined,
+            outline: isAuthenticated ? "1px dashed" : "none",
+            outlineColor: isAuthenticated ? "secondary.main" : "transparent",
+          }}
+        >
+          {isAuthenticated && (
+            <Box
+              sx={{
+                position: "absolute",
+                top: 8,
+                right: 8,
+                px: 1,
+                py: 0.25,
+                borderRadius: 1,
+                bgcolor: "secondary.main",
+                color: "secondary.contrastText",
+                fontSize: 11,
+                fontWeight: 700,
+              }}
+            >
+              Editovatelný blok
+            </Box>
+          )}
+          <EditableTranslationText
+            ns="ubytovani"
+            i18nKey="additionalInfo.title"
+            variant="h5"
+            sx={{ fontWeight: 700, mb: 2, textAlign: "center" }}
+            align="center"
+          />
+          <EditableTranslationText ns="ubytovani" i18nKey="additionalInfo.item1" sx={{ mb: 1 }} />
+          <EditableTranslationText ns="ubytovani" i18nKey="additionalInfo.item2" sx={{ mb: 1 }} />
+          <EditableTranslationText ns="ubytovani" i18nKey="additionalInfo.item3" sx={{ mb: 1 }} />
+          <EditableTranslationText ns="ubytovani" i18nKey="additionalInfo.item4" sx={{ mb: 1 }} />
+          <EditableTranslationText ns="ubytovani" i18nKey="additionalInfo.item5" />
+
+          <Divider sx={{ my: 2 }} />
+
+          <EditableTranslationText
+            ns="ubytovani"
+            i18nKey="catering.title"
+            variant="h5"
+            sx={{ fontWeight: 700, mb: 1, textAlign: "center" }}
+            align="center"
+          />
+          <EditableTranslationText ns="ubytovani" i18nKey="catering.text" />
         </Paper>
       </Container>
 
       <FullBleedTiles
         fullBleedHack
+        translationNamespace="ubytovani"
         items={[
           {
-            image: asset(
-              "galerie/interier/100_HZ6_3979_Penzion_U_Lidmanu.webp"
-            ),
-            text: "V lokálu s krbem a kapacitou 40 osob podáváme formou DENNÍ NABÍDKY klasická jídla české kuchyně a domácí moučníky. Na našem baru najdete moravská vína, regionální pivo, nealkoholické, alkoholické a teplé nápoje.",
-            alt: "Lokál",
+            image: asset("/ubytovani/ubytovani1.webp"),
+            textKey: "tiles.0.text",
+            alt: t("tiles.0.alt"),
           },
           {
-            image: asset(
-              "galerie/exterier/012_HZ6_3793_Penzion_U_Lidmanu.webp"
-            ),
-            text: "Při pěkném počasí můžete posedět na naší letní zahrádce s vítěznou jabloní– stromem roku ČR v roce 2020. Zde si můžete vychutnat klid venkova a krásné výhledy na okolní kopce. Děti si mohou pohrát na pískovišti nebo se zhoupnout na houpačce.",
-            alt: "Zahrada",
+            image: asset("/ubytovani/ubytovani3.webp"),
+            textKey: "tiles.1.text",
+            alt: t("tiles.1.alt"),
           },
           {
-            image: asset(
-              "galerie/interier/088_HZ6_3958_Penzion_U_Lidmanu.webp"
-            ),
-            text: "Salónek restaurace s kapacitou 20 osob slouží k pořádání menších oslav, jako školící místnost, společenská místnost pro ubytované hosty nebo v případě většího množství hostů k rozšíření služeb lokálu.",
-            alt: "Salonek",
+            image: asset("/ubytovani/ubytovani5.webp"),
+            textKey: "tiles.2.text",
+            alt: t("tiles.2.alt"),
           },
           {
-            image: asset("galerie/sal/110_HZ6_3997_Penzion_U_Lidmanu.webp"),
-            text: "Velký společenský sál s kapacitou 70 osob je určen k pořádání větších společenských akcí - svatby, oslavy, školení, přednášky, výstavy apod.",
-            alt: "Sál",
+            image: asset("/ubytovani/ubytovani7.webp"),
+            textKey: "tiles.3.text",
+            alt: t("tiles.3.alt"),
           },
         ]}
       />

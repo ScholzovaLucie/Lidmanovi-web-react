@@ -1,8 +1,15 @@
 import { Step, StepLabel, Stepper } from "@mui/material";
 import { useReservationContext } from "../context/ReservationContext";
+import { useTranslation } from "react-i18next";
 
 export default function ReservationStepper() {
-  const steps = ["Termín", "Pokoje", "Hosté", "Osobní údaje"];
+  const { t } = useTranslation("rezervace");
+  const steps = [
+    t("stepper.term"),
+    t("stepper.rooms"),
+    t("stepper.guests"),
+    t("stepper.personal"),
+  ];
   const { step, setStep } = useReservationContext();
   return (
     <Stepper

@@ -1,11 +1,9 @@
 import FullBleedTiles from "../../components/FullBleedTiles.jsx";
 import HeroCarousel from "../../components/HeroCarousel.jsx";
-import { useTranslation } from "react-i18next";
 
 export default function HomePage() {
   const asset = (path) =>
     `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
-  const { t } = useTranslation(["home"]);
 
   return (
     <>
@@ -34,28 +32,29 @@ export default function HomePage() {
 
       <FullBleedTiles
         fullBleedHack
+        translationNamespace="home"
         items={[
           {
             image: asset("/uvod/uvod1.webp"),
-            text: t("uvod"),
+            textKey: "uvod",
           },
           {
             image: asset(
               "galerie/exterier/132_HZ6_4056_Penzion_U_Lidmanu.webp"
             ),
-            text: t("lokace"),
+            textKey: "lokace",
           },
           {
             image: asset(
               "/galerie/exterier/022_HZ6_3836_Penzion_U_Lidmanu.webp"
             ),
-            title: t("jablon.nadpis"),
-            text: t("jablon.text"),
+            titleKey: "jablon.nadpis",
+            textKey: "jablon.text",
           },
           {
             image: asset("/galerie/interier/opona.webp"),
-            title: t("pribeh.nadpis"),
-            paragraphs: t("pribeh.text", { returnObjects: true }),
+            titleKey: "pribeh.nadpis",
+            paragraphsKey: "pribeh.text",
           },
         ]}
       />

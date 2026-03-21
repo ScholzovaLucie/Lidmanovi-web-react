@@ -15,6 +15,7 @@ import { useReservationContext } from "../context/ReservationContext";
 import { updateRoom } from "../../../redux/slices/reservation/reservationSlice";
 import useClickSound from "../../../hooks/useClickSound";
 import ReservationAppBar from "../components/ReservationAppBar";
+import { useTranslation } from "react-i18next";
 
 /*
  TODO: kolika hostům zbyvá přiřadit pokoj? (bez tohoto nepustit dál) 
@@ -26,6 +27,7 @@ import ReservationAppBar from "../components/ReservationAppBar";
  */
 
 export default function HostSelect() {
+  const { t } = useTranslation("rezervace");
   const reservationState = useSelector((state) => state.reservation.values);
   const { step, increaseStep, decreaseStep, setStep } = useReservationContext();
 
@@ -47,17 +49,17 @@ export default function HostSelect() {
       p={2}
       spacing={4}
     >
-      <Typography variant="h4">Rozdělení hostů</Typography>
+      <Typography variant="h4">{t("guests.title")}</Typography>
       <Stack spacing={1}>
         <Typography variant="h6" textAlign={"center"}>
-          Zbývá přiřadit lůžko pro&nbsp;
+          {t("guests.remainingPrefix")}&nbsp;
           {remainingAdultsToAssign > 0 && (
             <Typography
               component="span"
               variant="h6"
               sx={{ fontWeight: "bold", color: "primary.main" }}
             >
-              {remainingAdultsToAssign}&nbsp;dospělý
+              {t("guests.remainingAdults", { count: remainingAdultsToAssign })}
             </Typography>
           )}
           {remainingAdultsToAssign > 0 && remainingChildrenToAssign > 0 && (
@@ -69,7 +71,9 @@ export default function HostSelect() {
               variant="h6"
               sx={{ fontWeight: "bold", color: "primary.main" }}
             >
-              {remainingChildrenToAssign}&nbsp;dítě
+              {t("guests.remainingChildren", {
+                count: remainingChildrenToAssign,
+              })}
             </Typography>
           )}
         </Typography>
@@ -89,13 +93,14 @@ export default function HostSelect() {
         disabled={remainingAdultsToAssign > 0 || remainingChildrenToAssign > 0}
         onClick={increaseStep}
       >
-        Pokračovat na údaje
+        {t("guests.cta")}
       </Button>
     </Stack>
   );
 }
 
 export function RoomHostCard({ room, index }) {
+  const { t } = useTranslation("rezervace");
   const dispatch = useDispatch();
   const values = useSelector((state) => state.reservation.values);
   const roomState = useSelector(
@@ -187,7 +192,7 @@ export function RoomHostCard({ room, index }) {
                   key={index}
                   Icon={SingleBed}
                   iconProps={{ fontSize: "medium", color: "primary.main" }}
-                  text="Postel"
+                  text={t("common.bed")}
                   color={
                     index < numOfSelectedGuests ? "primary.main" : "lightgray"
                   }
@@ -201,12 +206,12 @@ export function RoomHostCard({ room, index }) {
 
           <Stack width={"100%"} spacing={2}>
             <Stack spacing={0.5} alignItems={"start"}>
-              <Typography variant="h6">Rozdělení hostů</Typography>
-              <Typography variant="body2">Rozdělte lůžka mezi hosty</Typography>
+              <Typography variant="h6">{t("guests.title")}</Typography>
+              <Typography variant="body2">{t("guests.assignHint")}</Typography>
             </Stack>
 
             <BedSelect
-              title="Dospělý"
+              title={t("common.adult")}
               price={room.price_for_adult}
               onMinus={
                 canRemoveAdults()
@@ -219,7 +224,7 @@ export function RoomHostCard({ room, index }) {
               value={roomState.num_adults}
             />
             <BedSelect
-              title="Dítě"
+              title={t("common.child")}
               price={room.price_for_children}
               onMinus={
                 canRemoveChildren()
@@ -244,9 +249,9 @@ export function RoomHostCard({ room, index }) {
             direction={"row"}
             width={"100%"}
           >
-            <Typography variant="body1">Celkem za noc</Typography>
+            <Typography variant="body1">{t("common.totalPerNight")}</Typography>
             <Typography variant="h5" fontWeight={"bold"}>
-              {pricePerNight} Kč
+              {t("common.priceCzk", { amount: pricePerNight })}
             </Typography>
           </Stack>
         </Stack>
@@ -256,13 +261,14 @@ export function RoomHostCard({ room, index }) {
 }
 
 function BedSelect({ title, price, onMinus, onPlus, value }) {
+  const { t } = useTranslation("rezervace");
   return (
     <AppCardCustomizable borderRadius={1.5}>
       <Stack direction={"row"} justifyContent={"space-between"} p={1.5}>
         <Stack alignItems={"start"}>
           <Typography variant="h5">{title}</Typography>
           <Typography variant="body1" color="primary.main">
-            {price} Kč / noc
+            {t("common.pricePerNight", { amount: price })}
           </Typography>
         </Stack>
 

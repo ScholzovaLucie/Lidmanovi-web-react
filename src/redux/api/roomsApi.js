@@ -1,10 +1,16 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { withLanguageHeader } from "./language";
+
+const baseQuery = fetchBaseQuery({
+  baseUrl: "http://localhost:8000/pension/public",
+  prepareHeaders: (headers) => {
+    return withLanguageHeader(headers);
+  },
+});
 
 export const roomsApi = createApi({
   reducerPath: "roomsApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/pension/public",
-  }),
+  baseQuery,
   endpoints: (builder) => ({
     rooms: builder.query({
       query: () => "/rooms/",

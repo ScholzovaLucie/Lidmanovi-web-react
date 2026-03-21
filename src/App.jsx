@@ -17,6 +17,7 @@ export default function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<HomePage />} />
+        <Route path="/o-nas" element={<HomePage />} />
         <Route path="/kontakt" element={<Kontakt />} />
         <Route path="/restaurace" element={<Restauration />} />
         <Route path="/ubytovani" element={<Accommodations />} />

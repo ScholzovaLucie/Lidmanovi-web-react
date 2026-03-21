@@ -8,6 +8,7 @@ import RoomSelect from "./steps/RoomSelect";
 import InformationAndConfirmation from "./steps/InformationAndConfirmation";
 import HostSelect from "./steps/HostSelect";
 import { OrderSummary } from "./steps/OrderSummary";
+import { useTranslation } from "react-i18next";
 
 export default function ReservationPage2() {
   return (
@@ -20,6 +21,7 @@ export default function ReservationPage2() {
 }
 
 function Content() {
+  const { t } = useTranslation("rezervace");
   const { step, increaseStep, decreaseStep, setStep } = useReservationContext();
 
   switch (step) {
@@ -34,6 +36,6 @@ function Content() {
     case 4:
       return <OrderSummary />;
     default:
-      return "Unknown step";
+      return t("common.unknownStep");
   }
 }

@@ -1,7 +1,8 @@
 import React from "react";
-import { Box, Container, Grid, Typography } from "@mui/material";
+import { Container, Grid } from "@mui/material";
 import GalleryCategoryCard from "../components/GalleryCategoryCard.jsx";
 import GalleryLightbox from "../components/GalleryLightbox.jsx";
+import { useTranslation } from "react-i18next";
 
 const asset = (path) =>
   `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
@@ -118,6 +119,7 @@ const GALLERIES = [
 ];
 
 export default function Galerie() {
+  const { t } = useTranslation("galerie");
   const [open, setOpen] = React.useState(false);
   const [activeImgs, setActiveImgs] = React.useState([]);
   const [startIndex, setStartIndex] = React.useState(0);
@@ -135,7 +137,7 @@ export default function Galerie() {
         {GALLERIES.map((g) => (
           <Grid key={g.id} item xs={12} sm={6} md={6} lg={3}>
             <GalleryCategoryCard
-              title={g.title}
+              title={t(`categories.${g.id}`, { defaultValue: g.title })}
               cover={g.cover}
               onClick={() => openGallery(g.images, 0)}
             />

@@ -76,6 +76,7 @@ export default function HeroCarousel({
       onTouchEnd={onTouchEnd}
       sx={{
         position: "relative",
+        zIndex: 0,
         // full-bleed varianty:
         ...(fullBleedHack
           ? {
@@ -118,6 +119,7 @@ export default function HeroCarousel({
               opacity: i === index ? 1 : 0,
               transition: `opacity ${transition}ms ease`,
               willChange: "opacity",
+              pointerEvents: "none",
             }}
           />
         ))}

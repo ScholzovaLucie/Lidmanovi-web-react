@@ -12,6 +12,7 @@ import {
   Alert,
   CircularProgress,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 /**
  * ContactForm – vše pod sebou, MUI + validace + consent.
@@ -28,6 +29,7 @@ import {
  */
 export default function ContactForm({
   title = "Kontaktujte nás",
+  translationNamespace = null,
   maxWidth = "lg",
   useMailto = true,
   mailto = "info@ulidmanu.cz",
@@ -36,6 +38,10 @@ export default function ContactForm({
   onSubmit,
   sx = {},
 }) {
+  const { t } = useTranslation(translationNamespace || undefined);
+  const tt = (key, fallback) =>
+    translationNamespace ? t(key, { defaultValue: fallback }) : fallback;
+
   const initialForm = React.useMemo(
     () => ({
       userName: "",
@@ -67,14 +73,21 @@ export default function ContactForm({
 
   const validate = () => {
     const e = {};
-    if (!form.userName.trim()) e.userName = "Zadejte prosím jméno.";
-    if (!form.userEmail.trim()) e.userEmail = "Zadejte prosím e-mail.";
+    if (!form.userName.trim())
+      e.userName = tt("form.errors.name", "Zadejte prosím jméno.");
+    if (!form.userEmail.trim())
+      e.userEmail = tt("form.errors.emailRequired", "Zadejte prosím e-mail.");
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.userEmail))
-      e.userEmail = "Neplatný formát e-mailu.";
-    if (!form.subject.trim()) e.subject = "Zadejte prosím předmět.";
-    if (!form.zprava.trim()) e.zprava = "Napište prosím zprávu.";
+      e.userEmail = tt("form.errors.emailInvalid", "Neplatný formát e-mailu.");
+    if (!form.subject.trim())
+      e.subject = tt("form.errors.subject", "Zadejte prosím předmět.");
+    if (!form.zprava.trim())
+      e.zprava = tt("form.errors.message", "Napište prosím zprávu.");
     if (requireConsent && !form.consent)
-      e.consent = "Potvrďte prosím souhlas se zpracováním.";
+      e.consent = tt(
+        "form.errors.consent",
+        "Potvrďte prosím souhlas se zpracováním.",
+      );
     setErrors(e);
     return e;
   };
@@ -97,7 +110,7 @@ export default function ContactForm({
         setSnack({
           open: true,
           type: "success",
-          msg: "Zpráva byla odeslána. Děkujeme!",
+          msg: tt("form.snack.sent", "Zpráva byla odeslána. Děkujeme!"),
         });
       } else if (useMailto) {
         const body = encodeURIComponent(
@@ -108,13 +121,13 @@ export default function ContactForm({
         setSnack({
           open: true,
           type: "info",
-          msg: "Otevírám váš e-mailový klient…",
+          msg: tt("form.snack.openingClient", "Otevírám váš e-mailový klient…"),
         });
       } else {
         setSnack({
           open: true,
           type: "error",
-          msg: "Není nastaven způsob odeslání.",
+          msg: tt("form.errors.noMethod", "Není nastaven způsob odeslání."),
         });
         return;
       }
@@ -126,7 +139,10 @@ export default function ContactForm({
       setSnack({
         open: true,
         type: "error",
-        msg: "Odeslání se nezdařilo. Zkuste to prosím znovu.",
+        msg: tt(
+          "form.errors.generic",
+          "Odeslání se nezdařilo. Zkuste to prosím znovu.",
+        ),
       });
     } finally {
       setLoading(false);
@@ -147,7 +163,7 @@ export default function ContactForm({
       {/* VŠE POD SEBOU */}
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <TextField
-          label="Jméno *"
+          label={tt("form.labels.name", "Jméno *")}
           name="userName"
           value={form.userName}
           onChange={handleChange}
@@ -160,7 +176,7 @@ export default function ContactForm({
 
         <TextField
           type="email"
-          label="Email *"
+          label={tt("form.labels.email", "Email *")}
           name="userEmail"
           value={form.userEmail}
           onChange={handleChange}
@@ -172,7 +188,7 @@ export default function ContactForm({
         />
 
         <TextField
-          label="Předmět *"
+          label={tt("form.labels.subject", "Předmět *")}
           name="subject"
           value={form.subject}
           onChange={handleChange}
@@ -183,7 +199,7 @@ export default function ContactForm({
         />
 
         <TextField
-          label="Zpráva *"
+          label={tt("form.labels.message", "Zpráva *")}
           name="zprava"
           value={form.zprava}
           onChange={handleChange}
@@ -196,7 +212,7 @@ export default function ContactForm({
           inputProps={{ maxLength: 2000 }}
         />
         <Typography variant="caption" sx={{ color: "text.secondary" }}>
-          Max. 2000 znaků
+          {tt("form.labels.charsNote", "Max. 2000 znaků")}
         </Typography>
 
         {requireConsent && (
@@ -210,7 +226,10 @@ export default function ContactForm({
                   onBlur={handleBlur}
                 />
               }
-              label="Souhlasím se zpracováním osobních údajů za účelem vyřízení mého dotazu."
+              label={tt(
+                "form.labels.consent",
+                "Souhlasím se zpracováním osobních údajů za účelem vyřízení mého dotazu.",
+              )}
             />
             {touched.consent && errors.consent && (
               <Typography variant="caption" color="error" sx={{ mt: -1 }}>
@@ -227,7 +246,9 @@ export default function ContactForm({
           startIcon={loading ? <CircularProgress size={18} /> : null}
           sx={{ alignSelf: "flex-start" }}
         >
-          {loading ? "Odesílám…" : "Odeslat"}
+          {loading
+            ? tt("form.sending", "Odesílám…")
+            : tt("form.labels.send", "Odeslat")}
         </Button>
       </Box>
     </Box>

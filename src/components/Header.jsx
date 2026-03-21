@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import {
   AppBar,
   Box,
-  Container,
   IconButton,
   Stack,
   Toolbar,
@@ -13,17 +12,18 @@ import { useModal } from "../hooks/useModal";
 import { LoginModal } from "./LoginModal";
 import { DesktopHeader } from "./DesktopHeader";
 import { MobileMenu } from "./MobileMenu";
+import { useTranslation } from "react-i18next";
 
-const allNavItems = [
-  { to: "/", label: "Domů", end: true },
-  { to: "/rezervace", label: "Rezervace" },
-  { to: "/restaurace", label: "Restaurace" },
-  { to: "/svatby", label: "Svatby" },
-  { to: "/ubytovani", label: "Ubytování" },
-  { to: "/pobytove_balicky", label: "Pobytové balíčky" },
-  { to: "/galerie", label: "Galerie" },
-  { to: "/kontakt", label: "Kontakt" },
-  { to: "/cenik", label: "Ceník" },
+const navConfig = [
+  { to: "/o-nas", key: "about" },
+  { to: "/restaurace", key: "restaurant" },
+  { to: "/svatby", key: "weddings" },
+  { to: "/ubytovani", key: "accommodation" },
+  { to: "/pobytove_balicky", key: "packages" },
+  { to: "/galerie", key: "gallery" },
+  { to: "/kontakt", key: "contact" },
+  { to: "/cenik", key: "priceList" },
+  { to: "/rezervace", key: "reservation" },
 ];
 
 const langOptions = [
@@ -37,6 +37,12 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const navigate = useNavigate();
   const loginModal = useModal();
+  const { t } = useTranslation("global");
+
+  const allNavItems = navConfig.map(({ key, ...rest }) => ({
+    ...rest,
+    label: t(`nav.${key}`),
+  }));
 
   return (
     <AppBar
@@ -46,12 +52,13 @@ export default function Header() {
         backgroundColor: "background.paper",
         color: "text.primary",
         boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+        zIndex: (theme) => theme.zIndex.appBar + 20,
       }}
     >
       <Box>
         <Toolbar>
           {/* Desktop */}
-          <DesktopHeader onLogin={loginModal.openModal} />
+          <DesktopHeader onLogin={loginModal.openModal} navItems={allNavItems} />
 
           {/* Mobile */}
           <Stack

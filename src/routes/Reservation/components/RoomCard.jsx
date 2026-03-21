@@ -9,8 +9,10 @@ import {
 import IconWithText from "../../../components/IconWithText";
 import CollapsableText from "./CollapsableText";
 import Price from "./Price";
+import { useTranslation } from "react-i18next";
 
 export default function RoomCard({ room, selected }) {
+  const { t } = useTranslation("rezervace");
   const dispatch = useDispatch();
 
   return (
@@ -40,12 +42,12 @@ export default function RoomCard({ room, selected }) {
               <IconWithText
                 Icon={SpaOutlined}
                 iconProps={{ fontSize: "16" }}
-                text="Ručníky"
+                text={t("roomCard.towels")}
               />
               <IconWithText
                 Icon={BathtubOutlined}
                 iconProps={{ fontSize: "16" }}
-                text="Koupelna"
+                text={t("roomCard.bathroom")}
               />
             </Stack>
 
@@ -71,7 +73,7 @@ export default function RoomCard({ room, selected }) {
                   : dispatch(addRoom(room));
               }}
             >
-              {selected ? "Odebrat" : "Vybrat"}
+              {selected ? t("roomCard.remove") : t("roomCard.select")}
             </Button>
           </Stack>
         </Stack>

@@ -1,6 +1,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, useLocation } from "react-router-dom";
 import { StyledEngineProvider, CssBaseline } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
 import App from "./App.jsx";
@@ -18,6 +18,29 @@ import {
   useAppContext,
 } from "./context/AppContextProvider.jsx";
 import { SnackbarProvider } from "notistack";
+import { EditorialEditorProvider } from "./context/EditorialEditorProvider.jsx";
+import { useTranslation } from "react-i18next";
+
+function normalizeLanguage(value) {
+  return String(value || "cs").split("-")[0];
+}
+
+function LanguageRouteGuard({ children }) {
+  const location = useLocation();
+  const { i18n } = useTranslation();
+
+  React.useEffect(() => {
+    const savedLanguage = normalizeLanguage(
+      typeof window !== "undefined" ? window.localStorage.getItem("appLanguage") : "cs",
+    );
+    const activeLanguage = normalizeLanguage(i18n.resolvedLanguage || i18n.language);
+    if (savedLanguage && savedLanguage !== activeLanguage) {
+      i18n.changeLanguage(savedLanguage);
+    }
+  }, [location.pathname, i18n]);
+
+  return children;
+}
 
 // Component that provides dynamic theme
 function ThemedApp() {
@@ -29,7 +52,11 @@ function ThemedApp() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <BrowserRouter basename={import.meta.env.BASE_URL}>
-          <App />
+          <LanguageRouteGuard>
+            <EditorialEditorProvider>
+              <App />
+            </EditorialEditorProvider>
+          </LanguageRouteGuard>
         </BrowserRouter>
       </ThemeProvider>
     </StyledEngineProvider>

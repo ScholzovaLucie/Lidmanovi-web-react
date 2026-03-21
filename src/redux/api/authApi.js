@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { setTokens, clearAuth } from "../slices/app/appSlice";
 import { storeTokens, clearTokens, getStoredTokens } from "../../utils/cookieUtils";
+import { withLanguageHeader } from "./language";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: "http://localhost:8000/api",
@@ -9,7 +10,7 @@ const baseQuery = fetchBaseQuery({
     if (token) {
       headers.set('authorization', `Bearer ${token}`);
     }
-    return headers;
+    return withLanguageHeader(headers);
   },
 });
 

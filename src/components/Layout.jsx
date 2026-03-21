@@ -3,8 +3,11 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Header from "./Header";
+import { useTranslation } from "react-i18next";
 
 export default function Layout() {
+  const { t } = useTranslation("global");
+
   return (
     <Box>
       <Header />
@@ -22,7 +25,7 @@ export default function Layout() {
           color: "text.secondary",
         }}
       >
-        © {new Date().getFullYear()} Lidmanovi
+        {t("footer.copyright", { year: new Date().getFullYear() })}
       </Box>
     </Box>
   );

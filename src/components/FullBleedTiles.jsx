@@ -3,6 +3,9 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
+import { useSelector } from "react-redux";
+import { selectIsAuthenticated } from "../redux/slices/app/appSlice";
+import EditableTranslationText from "./EditableTranslationText";
 
 /**
  * Střídající pásy (obrázek ↔ text) bez nutnosti 50% výšky.
@@ -21,6 +24,7 @@ import Paper from "@mui/material/Paper";
  */
 export default function FullBleedTiles({
   items = [],
+  translationNamespace,
   fluidHeight = true,
   imageAspect = { xs: "16 / 10", md: "16 / 9" },
   minHeight = null,
@@ -31,6 +35,8 @@ export default function FullBleedTiles({
   bgPosition = "center",
   bgSize = "cover",
 }) {
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+
   const toParagraphs = (txt) => {
     if (!txt) return [];
     const normalized = txt
@@ -71,12 +77,16 @@ export default function FullBleedTiles({
             variant="outlined"
             key={`${idx}-${item.image || "tile"}`}
             sx={{
+              position: "relative",
               width: bandWidth,
               mx: "auto",
               mb: 3, // gap 3 mezi pásy
               borderRadius: 2,
               overflow: "hidden",
               boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+              borderColor: isAuthenticated ? "secondary.main" : undefined,
+              outline: isAuthenticated ? "1px dashed" : "none",
+              outlineColor: isAuthenticated ? "secondary.main" : "transparent",
               display: "flex",
               flexDirection: {
                 xs: "column",
@@ -85,6 +95,25 @@ export default function FullBleedTiles({
               alignItems: "stretch",
             }}
           >
+            {isAuthenticated && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 8,
+                  right: 8,
+                  zIndex: 2,
+                  px: 1,
+                  py: 0.25,
+                  borderRadius: 1,
+                  bgcolor: "secondary.main",
+                  color: "secondary.contrastText",
+                  fontSize: 11,
+                  fontWeight: 700,
+                }}
+              >
+                Editovatelný blok
+              </Box>
+            )}
             {/* Obrázek jako background */}
             <Box
               role="img"
@@ -123,21 +152,52 @@ export default function FullBleedTiles({
               }}
             >
               <Container maxWidth="md" sx={{ py: { xs: 3, md: 5 } }}>
-                {item.title && (
-                  <Typography
-                    component="h2"
-                    sx={{
-                      fontSize: 24,
-                      fontWeight: 700,
-                      textAlign: "center",
-                      mb: 2,
-                    }}
-                  >
-                    {item.title}
-                  </Typography>
+                {item.titleKey ? (
+                  <EditableTranslationText
+                    ns={item.ns || translationNamespace}
+                    i18nKey={item.titleKey}
+                    variant="h2"
+                    sx={{ fontSize: 24, fontWeight: 700, textAlign: "center", mb: 2 }}
+                    align="center"
+                  />
+                ) : (
+                  item.title && (
+                    <Typography
+                      component="h2"
+                      sx={{
+                        fontSize: 24,
+                        fontWeight: 700,
+                        textAlign: "center",
+                        mb: 2,
+                      }}
+                    >
+                      {item.title}
+                    </Typography>
+                  )
                 )}
-                {(paras.length ? paras : [item.text].filter(Boolean)).map(
-                  (p, i) => (
+
+                {item.paragraphsKey ? (
+                  <EditableTranslationText
+                    ns={item.ns || translationNamespace}
+                    i18nKey={item.paragraphsKey}
+                    variant="body1"
+                    sx={{ color: "text.secondary", textAlign: "center" }}
+                    paragraphs
+                    align="center"
+                    multilineRows={5}
+                  />
+                ) : item.textKey ? (
+                  <EditableTranslationText
+                    ns={item.ns || translationNamespace}
+                    i18nKey={item.textKey}
+                    variant="body1"
+                    sx={{ color: "text.secondary", textAlign: "center" }}
+                    paragraph
+                    align="center"
+                    multilineRows={4}
+                  />
+                ) : (
+                  (paras.length ? paras : [item.text].filter(Boolean)).map((p, i) => (
                     <Typography
                       key={i}
                       sx={{ color: "text.secondary", textAlign: "center" }}
@@ -145,7 +205,7 @@ export default function FullBleedTiles({
                     >
                       {p}
                     </Typography>
-                  )
+                  ))
                 )}
               </Container>
             </Box>

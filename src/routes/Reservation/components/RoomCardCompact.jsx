@@ -3,8 +3,10 @@ import { AppCardCustomizable } from "../../../components/containers/AppCard";
 import { useDispatch } from "react-redux";
 import { removeRoom } from "../../../redux/slices/reservation/reservationSlice";
 import DeleteIconOutline from "@mui/icons-material/DeleteOutline";
+import { useTranslation } from "react-i18next";
 
 export function RoomCartCompactCard({ room }) {
+  const { t } = useTranslation("rezervace");
   const dispatch = useDispatch();
 
   return (
@@ -30,10 +32,10 @@ export function RoomCartCompactCard({ room }) {
             {room.name}
           </Typography>
           <Typography fontSize={13} color="text.secondary" lineHeight="16px">
-            {room.price_for_adult} Kč / dospělý
+            {t("roomCardCompact.adultPrice", { amount: room.price_for_adult })}
           </Typography>
           <Typography fontSize={13} color="text.secondary" lineHeight="16px">
-            {room.price_for_children} Kč / dítě
+            {t("roomCardCompact.childPrice", { amount: room.price_for_children })}
           </Typography>
         </Stack>
 
