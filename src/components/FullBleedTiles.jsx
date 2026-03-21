@@ -2,7 +2,6 @@ import React from "react";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
 import { useSelector } from "react-redux";
 import { selectIsAuthenticated } from "../redux/slices/app/appSlice";
 import EditableTranslationText from "./EditableTranslationText";
@@ -73,26 +72,26 @@ export default function FullBleedTiles({
             : toParagraphs(item.text);
 
         return (
-          <Paper
-            variant="outlined"
+          <Box
             key={`${idx}-${item.image || "tile"}`}
             sx={{
               position: "relative",
               width: bandWidth,
               mx: "auto",
-              mb: 3, // gap 3 mezi pásy
-              borderRadius: 2,
+              mb: { xs: 4, md: 6 },
               overflow: "hidden",
-              boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
-              borderColor: isAuthenticated ? "secondary.main" : undefined,
+              borderTop: "1px solid",
+              borderBottom: "1px solid",
+              borderColor: isAuthenticated ? "secondary.main" : "rgba(85,116,143,0.12)",
               outline: isAuthenticated ? "1px dashed" : "none",
               outlineColor: isAuthenticated ? "secondary.main" : "transparent",
               display: "flex",
-              flexDirection: {
-                xs: "column",
-                md: imageOnLeft ? "row" : "row-reverse",
-              },
+                flexDirection: {
+                  xs: "column",
+                  md: imageOnLeft ? "row" : "row-reverse",
+                },
               alignItems: "stretch",
+              background: idx % 2 === 1 ? "rgba(221,229,233,0.35)" : "background.paper",
             }}
           >
             {isAuthenticated && (
@@ -149,26 +148,37 @@ export default function FullBleedTiles({
                 flexGrow: 1,
                 display: "flex",
                 alignItems: "center",
+                minWidth: 0,
               }}
             >
-              <Container maxWidth="md" sx={{ py: { xs: 3, md: 5 } }}>
+              <Container maxWidth="sm" sx={{ py: { xs: 4, md: 6 }, px: { xs: 3, md: 5 } }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    mb: 1.5,
+                    color: "primary.main",
+                    letterSpacing: "0.18em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {String(idx + 1).padStart(2, "0")}
+                </Typography>
+
                 {item.titleKey ? (
                   <EditableTranslationText
                     ns={item.ns || translationNamespace}
                     i18nKey={item.titleKey}
                     variant="h2"
-                    sx={{ fontSize: 24, fontWeight: 700, textAlign: "center", mb: 2 }}
-                    align="center"
+                    sx={{ mb: 2.2, textAlign: "left" }}
+                    align="left"
                   />
                 ) : (
                   item.title && (
                     <Typography
                       component="h2"
                       sx={{
-                        fontSize: 24,
-                        fontWeight: 700,
-                        textAlign: "center",
-                        mb: 2,
+                        ...((theme) => theme.typography.h2),
+                        mb: 2.2,
                       }}
                     >
                       {item.title}
@@ -181,9 +191,9 @@ export default function FullBleedTiles({
                     ns={item.ns || translationNamespace}
                     i18nKey={item.paragraphsKey}
                     variant="body1"
-                    sx={{ color: "text.secondary", textAlign: "center" }}
+                    sx={{ color: "text.secondary", textAlign: "left" }}
                     paragraphs
-                    align="center"
+                    align="left"
                     multilineRows={5}
                   />
                 ) : item.textKey ? (
@@ -191,16 +201,16 @@ export default function FullBleedTiles({
                     ns={item.ns || translationNamespace}
                     i18nKey={item.textKey}
                     variant="body1"
-                    sx={{ color: "text.secondary", textAlign: "center" }}
+                    sx={{ color: "text.secondary", textAlign: "left" }}
                     paragraph
-                    align="center"
+                    align="left"
                     multilineRows={4}
                   />
                 ) : (
                   (paras.length ? paras : [item.text].filter(Boolean)).map((p, i) => (
                     <Typography
                       key={i}
-                      sx={{ color: "text.secondary", textAlign: "center" }}
+                      sx={{ color: "text.secondary", textAlign: "left" }}
                       paragraph
                     >
                       {p}
@@ -209,7 +219,7 @@ export default function FullBleedTiles({
                 )}
               </Container>
             </Box>
-          </Paper>
+          </Box>
         );
       })}
     </Box>

@@ -13,10 +13,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import "dayjs/locale/cs";
 
 import "./fonts.css";
-import {
-  AppContextProvider,
-  useAppContext,
-} from "./context/AppContextProvider.jsx";
+import { AppContextProvider } from "./context/AppContextProvider.jsx";
 import { SnackbarProvider } from "notistack";
 import { EditorialEditorProvider } from "./context/EditorialEditorProvider.jsx";
 import { useTranslation } from "react-i18next";
@@ -42,10 +39,8 @@ function LanguageRouteGuard({ children }) {
   return children;
 }
 
-// Component that provides dynamic theme
 function ThemedApp() {
-  const { themeMode } = useAppContext();
-  const theme = createAppTheme(themeMode);
+  const theme = createAppTheme();
 
   return (
     <StyledEngineProvider injectFirst>

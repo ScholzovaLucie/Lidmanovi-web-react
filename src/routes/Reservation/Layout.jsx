@@ -52,53 +52,107 @@ export default function Layout({ children }) {
         <AppBar
           position="sticky"
           sx={{
-            top: { xs: 56, md: 64 }, // Pozice pod hlavním AppBar (pokud existuje)
-            zIndex: 1100, // Ujistí se, že zůstane nahoře
-            minHeight: 56, // Nastaví výšku AppBar
+            top: { xs: 56, md: 64 },
+            zIndex: 1100,
+            minHeight: 64,
+            background:
+              "linear-gradient(180deg, rgba(255,255,255,0.96), rgba(245,248,251,0.92))",
+            boxShadow: "0 10px 30px rgba(25,33,43,0.08)",
+            borderBottom: "1px solid rgba(85,116,143,0.12)",
           }}
         >
-          <Stack
-            alignItems={"center"}
-            justifyContent={"center"}
-            spacing={2}
-            direction={"row"}
-            flex={1}
+          <Box
+            sx={{
+              px: { xs: 2, md: 3 },
+              py: 1.25,
+              display: "flex",
+              justifyContent: "center",
+            }}
           >
-            <Typography variant="body1">
-              {dayjs(values.check_in_date).format("D.MM")} -{" "}
-              {dayjs(values.check_out_date).format("D.MM.YYYY")}
-            </Typography>
-
-            <Divider
-              orientation="vertical"
-              sx={{ height: "20px", backgroundColor: "white" }}
-            />
-
-            <Typography variant="body1">
-              {t("layout.guestsSummary", {
-                adults: values.num_adults,
-                children: values.num_children,
-              })}
-            </Typography>
-
-            <Divider
-              orientation="vertical"
-              sx={{ height: "20px", backgroundColor: "white" }}
-            />
-            <Badge
-              badgeContent={values.rooms.length || "0"}
-              color="warning"
+            <Stack
+              alignItems="center"
+              justifyContent="center"
+              spacing={{ xs: 1, md: 2 }}
+              direction="row"
               sx={{
-                "& .MuiBadge-badge": {
-                  transform: "translate(2px, -2px)",
-                },
+                px: { xs: 1.5, md: 2.25 },
+                py: 1,
+                borderRadius: 999,
+                background: "rgba(67,86,104,0.9)",
+                color: "common.white",
+                border: "1px solid rgba(255,255,255,0.12)",
+                boxShadow: "0 12px 28px rgba(25,33,43,0.16)",
+                flexWrap: "wrap",
               }}
             >
-              <IconButton onClick={() => setDrawerOpen(true)}>
-                <BedroomParentIcon fontSize="medium" sx={{ color: "white" }} />
-              </IconButton>
-            </Badge>
-          </Stack>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "rgba(255,255,255,0.92)",
+                  fontSize: { xs: "0.82rem", md: "0.95rem" },
+                  fontWeight: 400,
+                }}
+              >
+                {dayjs(values.check_in_date).format("D.MM")} -{" "}
+                {dayjs(values.check_out_date).format("D.MM.YYYY")}
+              </Typography>
+
+              <Divider
+                orientation="vertical"
+                flexItem
+                sx={{
+                  display: { xs: "none", sm: "block" },
+                  borderColor: "rgba(255,255,255,0.18)",
+                }}
+              />
+
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "rgba(255,255,255,0.92)",
+                  fontSize: { xs: "0.82rem", md: "0.95rem" },
+                  fontWeight: 400,
+                }}
+              >
+                {t("layout.guestsSummary", {
+                  adults: values.num_adults,
+                  children: values.num_children,
+                })}
+              </Typography>
+
+              <Divider
+                orientation="vertical"
+                flexItem
+                sx={{
+                  display: { xs: "none", sm: "block" },
+                  borderColor: "rgba(255,255,255,0.18)",
+                }}
+              />
+
+              <Badge
+                badgeContent={values.rooms.length || "0"}
+                color="warning"
+                sx={{
+                  "& .MuiBadge-badge": {
+                    transform: "translate(2px, -2px)",
+                  },
+                }}
+              >
+                <IconButton
+                  onClick={() => setDrawerOpen(true)}
+                  sx={{
+                    color: "common.white",
+                    bgcolor: "rgba(255,255,255,0.08)",
+                    "&:hover": {
+                      bgcolor: "rgba(255,255,255,0.14)",
+                    },
+                  }}
+                >
+                  <BedroomParentIcon fontSize="medium" />
+                </IconButton>
+              </Badge>
+            </Stack>
+          </Box>
         </AppBar>
         <Box pt={3} display={"flex"} justifyContent={"center"}>
           <ReservationStepper />

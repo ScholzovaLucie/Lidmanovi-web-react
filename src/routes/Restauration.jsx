@@ -1,11 +1,11 @@
 import React from "react";
-import FullBleedTiles from "../components/FullBleedTiles.jsx";
-import HeroCarousel from "../components/HeroCarousel.jsx";
-import { Container, Paper, Box, Divider } from "@mui/material";
+import { Box, Container, Divider, Paper } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import { selectIsAuthenticated } from "../redux/slices/app/appSlice";
+import FullBleedTiles from "../components/FullBleedTiles.jsx";
 import EditableTranslationText from "../components/EditableTranslationText";
+import SubpageBanner from "../components/SubpageBanner.jsx";
+import { selectIsAuthenticated } from "../redux/slices/app/appSlice";
 
 export default function Restauration() {
   const { t } = useTranslation("restaurace");
@@ -15,52 +15,31 @@ export default function Restauration() {
 
   return (
     <>
-      <HeroCarousel
+      <SubpageBanner
+        eyebrow={t("pageTitle")}
+        title={t("pageTitle")}
+        image="/restaurace/restaurace2.webp"
         slides={[
-          {
-            src: asset("/restaurace/restaurace2.webp"),
-          },
-          {
-            src: asset("/restaurace/restaurace3.webp"),
-          },
-          {
-            src: asset("/restaurace/restaurace4.webp"),
-          },
-          {
-            src: asset("/restaurace/restaurace5.webp"),
-          },
-          {
-            src: asset("/restaurace/restaurace1.webp"),
-          },
-          {
-            src: asset("/restaurace/br1733.webp"),
-          },
-          {
-            src: asset(
-              "/restaurace/007_HZ6_4294_Setkani_U_Lidmanu_MASJABLON_podzim22.webp"
-            ),
-          },
-          {
-            src: asset(
-              "/restaurace/010_HZ6_4311_Setkani_U_Lidmanu_MASJABLON_podzim22.webp"
-            ),
-          },
+          "/restaurace/restaurace2.webp",
+          "/restaurace/restaurace3.webp",
+          "/restaurace/restaurace4.webp",
+          "/restaurace/restaurace5.webp",
         ]}
-        interval={2000} // změň třeba na 4000 pro rychlejší střídání
-        transition={100} // délka fade
-        gradientTop="secondary.main"
       />
-
-      <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }} id="oteviraciDoba">
+      <Container
+        maxWidth="md"
+        sx={{ pt: { xs: 4, md: 5 }, pb: { xs: 5, md: 7 } }}
+        id="oteviraciDoba"
+      >
         <Paper
-          variant="outlined"
           sx={{
             position: "relative",
-            p: { xs: 2, md: 3 },
-            borderRadius: 2,
-            boxShadow: (theme) => `0 1px 4px ${theme.palette.mode === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(0,0,0,0.2)'}`,
+            p: { xs: 3, md: 4 },
             textAlign: "center",
-            borderColor: isAuthenticated ? "secondary.main" : undefined,
+            border: "1px solid",
+            borderColor: isAuthenticated ? "secondary.main" : "rgba(85,116,143,0.12)",
+            boxShadow: "none",
+            background: "rgba(255,255,255,0.96)",
             outline: isAuthenticated ? "1px dashed" : "none",
             outlineColor: isAuthenticated ? "secondary.main" : "transparent",
           }}
@@ -83,16 +62,15 @@ export default function Restauration() {
               Editovatelný blok
             </Box>
           )}
-          {/* Nadpis */}
+
           <EditableTranslationText
             ns="restaurace"
             i18nKey="openingHours.heading"
             variant="h5"
-            sx={{ fontWeight: 700, mb: 2 }}
+            sx={{ fontWeight: 400, mb: 2.5 }}
             align="center"
           />
 
-          {/* Letní období */}
           <Box sx={{ mb: 3 }}>
             <EditableTranslationText ns="restaurace" i18nKey="openingHours.summer.season" variant="h6" sx={{ fontWeight: 600 }} align="center" />
             <EditableTranslationText ns="restaurace" i18nKey="openingHours.summer.fri" align="center" />
@@ -102,7 +80,6 @@ export default function Restauration() {
 
           <Divider sx={{ my: 2 }} />
 
-          {/* Zimní období */}
           <Box sx={{ mb: 3 }}>
             <EditableTranslationText ns="restaurace" i18nKey="openingHours.winter.season" variant="h6" sx={{ fontWeight: 600 }} align="center" />
             <EditableTranslationText ns="restaurace" i18nKey="openingHours.winter.fri" align="center" />
@@ -110,7 +87,6 @@ export default function Restauration() {
             <EditableTranslationText ns="restaurace" i18nKey="openingHours.winter.sun" align="center" />
           </Box>
 
-          {/* Nabídka speciálních akcí */}
           <EditableTranslationText
             ns="restaurace"
             i18nKey="openingHours.note"
@@ -126,23 +102,17 @@ export default function Restauration() {
         translationNamespace="restaurace"
         items={[
           {
-            image: asset(
-              "galerie/interier/100_HZ6_3979_Penzion_U_Lidmanu.webp"
-            ),
+            image: asset("galerie/interier/100_HZ6_3979_Penzion_U_Lidmanu.webp"),
             textKey: "tiles.0.text",
             alt: t("tiles.0.alt"),
           },
           {
-            image: asset(
-              "galerie/exterier/012_HZ6_3793_Penzion_U_Lidmanu.webp"
-            ),
+            image: asset("galerie/exterier/012_HZ6_3793_Penzion_U_Lidmanu.webp"),
             textKey: "tiles.1.text",
             alt: t("tiles.1.alt"),
           },
           {
-            image: asset(
-              "galerie/interier/088_HZ6_3958_Penzion_U_Lidmanu.webp"
-            ),
+            image: asset("galerie/interier/088_HZ6_3958_Penzion_U_Lidmanu.webp"),
             textKey: "tiles.2.text",
             alt: t("tiles.2.alt"),
           },

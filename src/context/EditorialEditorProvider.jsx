@@ -157,6 +157,20 @@ function pickLanguageValue(langMap, language, fallbackLanguage = null) {
   return undefined;
 }
 
+function cloneTranslatableValue(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => cloneTranslatableValue(item));
+  }
+
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, inner]) => [key, cloneTranslatableValue(inner)]),
+    );
+  }
+
+  return value;
+}
+
 export function EditorialEditorProvider({ children }) {
   const [isInlineEditing, setIsInlineEditing] = useState(false);
   const [inlineDraft, setInlineDraft] = useState({});
@@ -254,7 +268,14 @@ export function EditorialEditorProvider({ children }) {
       if (firstDot <= 0) return;
       const ns = compositeKey.slice(0, firstDot);
       const key = compositeKey.slice(firstDot + 1);
-      i18n.addResource(currentLanguage, ns, key, value, true, true);
+      i18n.addResource(
+        currentLanguage,
+        ns,
+        key,
+        cloneTranslatableValue(value),
+        true,
+        true,
+      );
       appliedAny = true;
     });
 
@@ -307,7 +328,14 @@ export function EditorialEditorProvider({ children }) {
     if (firstDot <= 0) return;
     const ns = compositeKey.slice(0, firstDot);
     const key = compositeKey.slice(firstDot + 1);
-    i18n.addResource(currentLanguage, ns, key, value, true, true);
+    i18n.addResource(
+      currentLanguage,
+      ns,
+      key,
+      cloneTranslatableValue(value),
+      true,
+      true,
+    );
   };
 
   const getInlineValue = (compositeKey, fallbackValue) => {

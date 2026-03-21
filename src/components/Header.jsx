@@ -8,17 +8,14 @@ import {
   Toolbar,
 } from "@mui/material";
 import { Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material";
-import { useModal } from "../hooks/useModal";
-import { LoginModal } from "./LoginModal";
 import { DesktopHeader } from "./DesktopHeader";
 import { MobileMenu } from "./MobileMenu";
 import { useTranslation } from "react-i18next";
 import { langOptions, navConfig } from "./headerConfig";
 
-export default function Header() {
+export default function Header({ onLogin }) {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const navigate = useNavigate();
-  const loginModal = useModal();
   const { t } = useTranslation("global");
 
   const allNavItems = navConfig.map(({ key, ...rest }) => ({
@@ -31,16 +28,15 @@ export default function Header() {
       position="sticky"
       elevation={0}
       sx={{
-        backgroundColor: "background.paper",
-        color: "text.primary",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
         zIndex: (theme) => theme.zIndex.appBar + 20,
+        backgroundColor: "rgba(255,255,255,0.96)",
+        boxShadow: "0 10px 30px rgba(17,25,35,0.06)",
       }}
     >
-      <Box>
+      <Box sx={{ px: { xs: 0.5, md: 2 } }}>
         <Toolbar>
           {/* Desktop */}
-          <DesktopHeader onLogin={loginModal.openModal} navItems={allNavItems} />
+          <DesktopHeader onLogin={onLogin} navItems={allNavItems} />
 
           {/* Mobile */}
           <Stack
@@ -55,9 +51,16 @@ export default function Header() {
               src="logolidman.webp"
               alt="U Lidmanů"
               onClick={() => navigate("/")}
-              sx={{ height: 40, cursor: "pointer" }}
+              sx={{ height: 48, cursor: "pointer" }}
             />
-            <IconButton onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            <IconButton
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              sx={{
+                border: "1px solid",
+                borderColor: "divider",
+                borderRadius: 1.5,
+              }}
+            >
               {mobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
             </IconButton>
           </Stack>
@@ -70,12 +73,10 @@ export default function Header() {
             onClose={() => setMobileMenuOpen(false)}
             navItems={allNavItems}
             langOptions={langOptions}
-            onLogin={loginModal.openModal}
+            onLogin={onLogin}
           />
         </Box>
       </Box>
-
-      <LoginModal isOpen={loginModal.isOpen} onClose={loginModal.closeModal} />
     </AppBar>
   );
 }

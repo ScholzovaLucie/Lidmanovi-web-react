@@ -1,15 +1,13 @@
 import React from "react";
-import { Box, Collapse, Stack, Button, Switch } from "@mui/material";
+import { Box, Collapse, Stack, Button } from "@mui/material";
 import { NavLink, useNavigate } from "react-router-dom";
-import { LightMode as LightModeIcon, DarkMode as DarkModeIcon, Logout as LogoutIcon } from "@mui/icons-material";
+import { Logout as LogoutIcon } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
-import { useAppContext } from "../context/AppContextProvider";
 import { useAuth } from "../hooks/useAuth";
 
 export function MobileMenu({ isOpen, onClose, navItems, langOptions, onLogin }) {
   const navigate = useNavigate();
   const { i18n, t } = useTranslation("global");
-  const { themeMode, toggleTheme } = useAppContext();
   const { isAuthenticated, logout } = useAuth();
   const activeLang = String(i18n.resolvedLanguage || i18n.language || "cs").split(
     "-",
@@ -22,7 +20,16 @@ export function MobileMenu({ isOpen, onClose, navItems, langOptions, onLogin }) 
 
   return (
     <Collapse in={isOpen} timeout="auto" unmountOnExit>
-      <Box sx={{ px: 2, py: 3 }}>
+      <Box
+        sx={{
+          px: 2,
+          py: 3,
+          borderTop: "1px solid",
+          borderColor: "divider",
+          background:
+            "linear-gradient(180deg, rgba(85,116,143,0.05), rgba(255,255,255,0.98) 18%, rgba(245,247,250,1) 100%)",
+        }}
+      >
         {/* Navigation */}
         <Stack spacing={1} sx={{ mb: 3 }}>
           {navItems.map(({ to, label, end }) => (
@@ -36,16 +43,17 @@ export function MobileMenu({ isOpen, onClose, navItems, langOptions, onLogin }) 
               sx={{
                 justifyContent: "center",
                 textTransform: "none",
-                fontWeight: 400,
+                fontWeight: 500,
                 py: 1.5,
                 fontSize: "1rem",
                 color: "text.primary",
+                borderRadius: 1.5,
                 "&.active": {
-                  fontWeight: 600,
-                  bgcolor: "primary.main",
-                  color: "primary.contrastText",
+                  fontWeight: 700,
+                  bgcolor: "rgba(85,116,143,0.08)",
+                  color: "primary.dark",
                   "&:hover": {
-                    bgcolor: "primary.dark",
+                    bgcolor: "rgba(85,116,143,0.12)",
                   },
                 },
               }}
@@ -59,7 +67,7 @@ export function MobileMenu({ isOpen, onClose, navItems, langOptions, onLogin }) 
         <Stack spacing={3} alignItems="center">
           {/* Languages */}
           <Box sx={{ textAlign: "center", width: "100%" }}>
-            <Box sx={{ color: "text.secondary", fontSize: "0.875rem", mb: 1.5 }}>
+            <Box sx={{ color: "text.secondary", fontSize: "0.8rem", mb: 1.5, letterSpacing: "0.08em", textTransform: "uppercase" }}>
               {t("language")}
             </Box>
             <Stack direction="row" spacing={1} justifyContent="center" flexWrap="wrap">
@@ -86,24 +94,7 @@ export function MobileMenu({ isOpen, onClose, navItems, langOptions, onLogin }) 
             </Stack>
           </Box>
 
-          {/* Theme */}
-          <Stack direction="row" spacing={2} alignItems="center">
-            <LightModeIcon 
-              fontSize="small" 
-              sx={{ color: themeMode === 'light' ? 'primary.main' : 'text.disabled' }} 
-            />
-            <Switch
-              checked={themeMode === 'dark'}
-              onChange={toggleTheme}
-              color="primary"
-            />
-            <DarkModeIcon 
-              fontSize="small" 
-              sx={{ color: themeMode === 'dark' ? 'primary.main' : 'text.disabled' }} 
-            />
-          </Stack>
-
-          {/* Login/Logout */}
+          {/* Admin */}
           {isAuthenticated ? (
             <Stack direction="row" spacing={1.5}>
               <Button
@@ -131,21 +122,7 @@ export function MobileMenu({ isOpen, onClose, navItems, langOptions, onLogin }) 
                 {t("auth.logout")}
               </Button>
             </Stack>
-          ) : (
-            <Button 
-              onClick={() => {
-                onLogin();
-                onClose();
-              }}
-              variant="outlined"
-              sx={{ 
-                textTransform: "none",
-                fontWeight: 500
-              }}
-              >
-              {t("auth.login")}
-            </Button>
-          )}
+          ) : null}
         </Stack>
       </Box>
     </Collapse>

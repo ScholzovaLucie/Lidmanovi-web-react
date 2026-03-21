@@ -3,8 +3,8 @@ import {
   Box,
   Dialog,
   IconButton,
-  MobileStepper,
   ButtonBase,
+  Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -33,6 +33,18 @@ export default function GalleryLightbox({
   React.useEffect(() => {
     if (open) setIndex(startIndex);
   }, [open, startIndex]);
+
+  React.useEffect(() => {
+    if (!open || count < 2) return;
+    const preloadIndexes = [
+      (index + 1) % count,
+      (index - 1 + count) % count,
+    ];
+    preloadIndexes.forEach((i) => {
+      const img = new Image();
+      img.src = images[i];
+    });
+  }, [count, images, index, open]);
 
   const prev = () => setIndex((i) => (i - 1 + count) % count);
   const next = () => setIndex((i) => (i + 1) % count);
@@ -72,26 +84,33 @@ export default function GalleryLightbox({
       open={open}
       onClose={onClose}
       fullScreen
-      PaperProps={{ sx: { backgroundColor: "rgba(0,0,0,0.92)" } }}
+      PaperProps={{
+        sx: {
+          background:
+            "linear-gradient(180deg, rgba(14,17,21,0.96), rgba(12,14,17,0.98))",
+          backdropFilter: "blur(14px)",
+        },
+      }}
     >
-      {/* Zavřít */}
       <IconButton
         onClick={onClose}
         aria-label="Zavřít"
         sx={{
           position: "fixed",
-          top: 12,
-          right: 12,
+          top: { xs: 12, md: 20 },
+          right: { xs: 12, md: 20 },
           zIndex: 3,
-          bgcolor: "rgba(255,255,255,.12)",
+          width: 52,
+          height: 52,
+          bgcolor: "rgba(255,255,255,0.08)",
           color: "white",
-          "&:hover": { bgcolor: "rgba(255,255,255,.2)" },
+          border: "1px solid rgba(255,255,255,0.1)",
+          "&:hover": { bgcolor: "rgba(255,255,255,0.14)" },
         }}
       >
         <CloseIcon />
       </IconButton>
 
-      {/* Obrázek */}
       <Box
         sx={{
           position: "fixed",
@@ -99,25 +118,27 @@ export default function GalleryLightbox({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          p: { xs: 2, md: 4 },
+          p: { xs: 2, md: 4.5 },
         }}
       >
         <Box
           component="img"
+          key={images[index]}
           src={images[index]}
           alt=""
           loading="eager"
           sx={{
             maxWidth: "100%",
-            maxHeight: showThumbnails ? "calc(100% - 110px)" : "100%",
+            maxHeight: showThumbnails ? "calc(100% - 168px)" : "calc(100% - 56px)",
             objectFit: "contain",
-            boxShadow: "0 8px 30px rgba(0,0,0,.6)",
-            borderRadius: 1,
+            boxShadow: "0 30px 80px rgba(0,0,0,0.42)",
+            borderRadius: 2,
+            border: "1px solid rgba(255,255,255,0.08)",
+            transition: "opacity 180ms ease, transform 180ms ease",
           }}
         />
       </Box>
 
-      {/* Ovládání vlevo/vpravo */}
       {count > 1 && (
         <>
           <IconButton
@@ -125,13 +146,16 @@ export default function GalleryLightbox({
             aria-label="Předchozí"
             sx={{
               position: "fixed",
-              left: 12,
+              left: { xs: 12, md: 20 },
               top: "50%",
               transform: "translateY(-50%)",
               zIndex: 3,
-              bgcolor: "rgba(255,255,255,.12)",
+              width: { xs: 52, md: 58 },
+              height: { xs: 52, md: 58 },
+              bgcolor: "rgba(255,255,255,0.08)",
               color: "white",
-              "&:hover": { bgcolor: "rgba(255,255,255,.2)" },
+              border: "1px solid rgba(255,255,255,0.1)",
+              "&:hover": { bgcolor: "rgba(255,255,255,0.14)" },
             }}
           >
             <ChevronLeftIcon />
@@ -141,42 +165,49 @@ export default function GalleryLightbox({
             aria-label="Další"
             sx={{
               position: "fixed",
-              right: 12,
+              right: { xs: 12, md: 20 },
               top: "50%",
               transform: "translateY(-50%)",
               zIndex: 3,
-              bgcolor: "rgba(255,255,255,.12)",
+              width: { xs: 52, md: 58 },
+              height: { xs: 52, md: 58 },
+              bgcolor: "rgba(255,255,255,0.08)",
               color: "white",
-              "&:hover": { bgcolor: "rgba(255,255,255,.2)" },
+              border: "1px solid rgba(255,255,255,0.1)",
+              "&:hover": { bgcolor: "rgba(255,255,255,0.14)" },
             }}
           >
             <ChevronRightIcon />
           </IconButton>
 
-          {/* Tečky (ponechávám, klidně smaž, když stačí miniatury) */}
-          <MobileStepper
-            variant="dots"
-            steps={count}
-            position="static"
-            activeStep={index}
-            nextButton={null}
-            backButton={null}
+          <Box
             sx={{
               position: "fixed",
-              bottom: showThumbnails ? 92 : 12,
-              left: 0,
-              right: 0,
-              mx: "auto",
-              bgcolor: "transparent",
-              ".MuiMobileStepper-dot": { bgcolor: "rgba(255,255,255,.4)" },
-              ".MuiMobileStepper-dotActive": { bgcolor: "white" },
+              top: { xs: 18, md: 28 },
+              left: "50%",
+              transform: "translateX(-50%)",
               zIndex: 2,
+              px: 1.6,
+              py: 0.7,
+              borderRadius: 999,
+              bgcolor: "rgba(12,14,17,0.45)",
+              border: "1px solid rgba(255,255,255,0.08)",
             }}
-          />
+          >
+            <Typography
+              sx={{
+                color: "rgba(255,255,255,0.82)",
+                fontSize: "0.72rem",
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+              }}
+            >
+              {String(index + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
+            </Typography>
+          </Box>
         </>
       )}
 
-      {/* Miniatury */}
       {showThumbnails && count > 1 && (
         <Box
           ref={stripRef}
@@ -185,12 +216,12 @@ export default function GalleryLightbox({
             left: 0,
             right: 0,
             bottom: 0,
-            py: 1.5,
-            px: 2,
-            bgcolor: "rgba(0,0,0,0.7)",
-            borderTop: "1px solid rgba(255,255,255,.12)",
+            py: 1.6,
+            px: { xs: 1.5, md: 2.5 },
+            bgcolor: "rgba(12,14,17,0.74)",
+            borderTop: "1px solid rgba(255,255,255,0.08)",
             display: "flex",
-            gap: 1,
+            gap: 1.1,
             overflowX: "auto",
             WebkitOverflowScrolling: "touch",
             scrollbarWidth: "none",
@@ -208,17 +239,20 @@ export default function GalleryLightbox({
                 sx={{
                   width: thumbSize.w,
                   height: thumbSize.h,
-                  borderRadius: 1,
+                  borderRadius: 1.5,
                   overflow: "hidden",
                   flex: "0 0 auto",
                   position: "relative",
-                  opacity: active ? 1 : 0.75,
+                  opacity: active ? 1 : 0.62,
+                  transform: active ? "translateY(-2px)" : "none",
+                  transition:
+                    "opacity 160ms ease, transform 160ms ease, outline-color 160ms ease, box-shadow 160ms ease",
                   outline: active ? "2px solid" : "1px solid",
                   outlineColor: active
-                    ? "primary.main"
-                    : "rgba(255,255,255,.25)",
+                    ? "#9a8060"
+                    : "rgba(255,255,255,0.16)",
                   boxShadow: active
-                    ? "0 0 0 2px rgba(0,0,0,0.6) inset"
+                    ? "0 0 0 1px rgba(255,255,255,0.08), 0 10px 24px rgba(0,0,0,0.28)"
                     : "none",
                 }}
               >

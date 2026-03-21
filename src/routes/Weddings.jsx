@@ -4,45 +4,41 @@ import Container from "@mui/material/Container";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
-import HeroCarousel from "../components/HeroCarousel.jsx"; // používáme tvůj existující
 import Paper from "@mui/material/Paper";
+import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import { selectIsAuthenticated } from "../redux/slices/app/appSlice";
 import EditableTranslationText from "../components/EditableTranslationText";
+import SubpageBanner from "../components/SubpageBanner.jsx";
+import { selectIsAuthenticated } from "../redux/slices/app/appSlice";
 
 export default function Weddings() {
   const isAuthenticated = useSelector(selectIsAuthenticated);
+  const { t } = useTranslation("svatby");
   const asset = (path) =>
     `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
 
   return (
     <>
-      {/* HERO – můžeš dát 1+ fotek, auto-rotace jako jinde */}
-      <HeroCarousel
+      <SubpageBanner
+        eyebrow={t("pageTitle")}
+        title={t("heading")}
+        image="/svatba/svatba3.webp"
         slides={[
-          { src: asset("/svatba/svatba3.webp") },
-          { src: asset("/svatba/svatba4.webp") },
-          { src: asset("/svatba/svatba5.webp") },
-          { src: asset("/svatba/svatba6.webp") },
-          { src: asset("/svatba/svatba7.webp") },
-          { src: asset("/svatba/svatba8.webp") },
-          { src: asset("/svatba/svatba9.webp") },
-          { src: asset("/svatba/svatba1.webp") },
+          "/svatba/svatba3.webp",
+          "/svatba/svatba4.webp",
+          "/svatba/svatba6.webp",
+          "/svatba/svatba8.webp",
         ]}
-        interval={4000}
-        transition={600}
-        gradientTop="secondary.main"
       />
-
-      {/* Sekce v boxu */}
-      <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
+      <Container maxWidth="md" sx={{ pt: { xs: 4, md: 5 }, pb: { xs: 5, md: 7 } }}>
         <Paper
-          variant="outlined"
           sx={{
             position: "relative",
-            p: { xs: 2, md: 4 },
+            p: { xs: 3, md: 4 },
             overflow: "hidden",
-            borderColor: isAuthenticated ? "secondary.main" : undefined,
+            border: "1px solid",
+            borderColor: isAuthenticated ? "secondary.main" : "rgba(85,116,143,0.12)",
+            background: "rgba(255,255,255,0.96)",
             outline: isAuthenticated ? "1px dashed" : "none",
             outlineColor: isAuthenticated ? "secondary.main" : "transparent",
           }}
@@ -65,7 +61,7 @@ export default function Weddings() {
               Editovatelný blok
             </Box>
           )}
-          {/* Úvodní text */}
+
           <EditableTranslationText
             ns="svatby"
             i18nKey="intro"
@@ -74,14 +70,13 @@ export default function Weddings() {
               position: "relative",
               zIndex: 1,
               textAlign: "center",
-              fontWeight: 600,
+              fontWeight: 400,
               mb: { xs: 3, md: 4 },
             }}
             align="center"
             multilineRows={4}
           />
 
-          {/* Seznam výhod */}
           <List
             sx={{
               position: "relative",
@@ -90,7 +85,13 @@ export default function Weddings() {
               maxWidth: 760,
               textAlign: "center",
               mx: "auto",
-              "& .MuiListItem-root": { py: 1 },
+              "& .MuiListItem-root": {
+                py: 1.6,
+                borderTop: "1px solid rgba(85,116,143,0.08)",
+              },
+              "& .MuiListItem-root:first-of-type": {
+                borderTop: 0,
+              },
             }}
           >
             <ListItem disableGutters>
@@ -125,18 +126,17 @@ export default function Weddings() {
             </ListItem>
           </List>
 
-          {/* Dekorativní srdce uvnitř boxu */}
           <Box
             component="img"
             src={asset("/two-hearts_roh_hnedy.webp")}
             alt=""
             sx={{
               position: "absolute",
-              right: { xs: 0, md: 0 },
-              bottom: { xs: 0, md: 0 },
+              right: 0,
+              bottom: 0,
               width: { xs: "20vw", md: "16vw" },
               maxWidth: 220,
-              opacity: 0.35,
+              opacity: 0.26,
               zIndex: 0,
               pointerEvents: "none",
               userSelect: "none",

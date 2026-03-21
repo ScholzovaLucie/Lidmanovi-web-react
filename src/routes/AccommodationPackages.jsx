@@ -3,19 +3,20 @@ import {
   Box,
   Button,
   Container,
-  Paper,
   Dialog,
   DialogContent,
-  IconButton,
   Divider,
+  IconButton,
+  Paper,
   Chip,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
-import PackageCard from "../components/PackageCard.jsx";
 import { useTranslation } from "react-i18next";
 import EditableTranslationText from "../components/EditableTranslationText";
+import PackageCard from "../components/PackageCard.jsx";
+import SubpageBanner from "../components/SubpageBanner.jsx";
 import { useEditorialEditor } from "../context/editorialEditorContext";
 
 const asset = (path) =>
@@ -23,6 +24,7 @@ const asset = (path) =>
 
 export default function AccommodationPackages() {
   const { t } = useTranslation("balicky");
+  const heroTitle = t("nav.packages", { ns: "global", defaultValue: t("pageTitle") });
   const {
     isAuthenticated,
     isInlineEditing,
@@ -57,13 +59,18 @@ export default function AccommodationPackages() {
           .filter(Boolean);
         const filtered = keys.filter((id) => /^b\d+$/.test(id));
         if (!filtered.length) return ["b1", "b2", "b3"];
-        return Array.from(new Set(filtered)).sort((a, b) => Number(a.slice(1)) - Number(b.slice(1)));
+        return Array.from(new Set(filtered)).sort(
+          (a, b) => Number(a.slice(1)) - Number(b.slice(1)),
+        );
       })();
 
-  const BALICKY = resolvedPackageIds.map((id, index) => ({
+  const packages = resolvedPackageIds.map((id, index) => ({
     id,
     image: packageImages[index % packageImages.length],
   }));
+
+  const featuredPackage = packages[0] || null;
+  const remainingPackages = featuredPackage ? packages.slice(1) : [];
 
   const handleAddPackage = () => {
     const nextNumber = resolvedPackageIds.reduce((max, id) => {
@@ -98,97 +105,181 @@ export default function AccommodationPackages() {
     setActive(pkg);
     setOpen(true);
   };
+
   const handleClose = () => setOpen(false);
 
   return (
     <>
-      {/* Přehled balíčků */}
-      <Container
-        maxWidth="lg"
-        sx={{
-          position: "relative",
-          minHeight: "90vh",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          py: { xs: 4, md: 6 },
-        }}
-      >
+      <SubpageBanner
+        eyebrow={heroTitle}
+        title={heroTitle}
+        image="/pobytoveBalicky/b4387.webp"
+        slides={[
+          "/pobytoveBalicky/b4387.webp",
+          "/pobytoveBalicky/b4460.webp",
+          "/pobytoveBalicky/b4345.webp",
+          "/pobytoveBalicky/br1560.webp",
+        ]}
+      />
+      <Container maxWidth="lg" sx={{ py: { xs: 5, md: 7 } }}>
         {isAuthenticated && isInlineEditing && (
           <Box
             sx={{
-              position: "absolute",
-              top: { xs: 12, md: 16 },
-              right: { xs: 12, md: 16 },
-              zIndex: 2,
+              display: "flex",
+              justifyContent: "flex-end",
+              mb: 3,
             }}
           >
             <Button
               variant="contained"
               startIcon={<AddIcon />}
               onClick={handleAddPackage}
-              sx={{ textTransform: "none" }}
+              sx={{ textTransform: "none", px: 2.2 }}
             >
               Přidat balíček
             </Button>
           </Box>
         )}
 
+        {featuredPackage && (
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+              border: "1px solid rgba(85,116,143,0.12)",
+              background: "rgba(255,255,255,0.98)",
+              overflow: "hidden",
+              mb: { xs: 4, md: 5 },
+            }}
+          >
+            <Box
+              sx={{
+                minHeight: { xs: 300, md: 460 },
+                backgroundImage: `url(${featuredPackage.image})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            />
+            <Box
+              sx={{
+                p: { xs: 3, md: 4.5 },
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              <Box sx={{ mb: 1.5 }}>
+                <EditableTranslationText
+                  ns="balicky"
+                  i18nKey={`cards.${featuredPackage.id}.title`}
+                  variant="h2"
+                  multilineRows={3}
+                />
+              </Box>
+              <EditableTranslationText
+                ns="balicky"
+                i18nKey={`packages.${featuredPackage.id}.description`}
+                variant="body1"
+                paragraphs
+                multilineRows={5}
+                sx={{ color: "text.secondary", mb: 2.5 }}
+              />
+              <Box
+                sx={{
+                  py: 2,
+                  borderTop: "1px solid rgba(85,116,143,0.12)",
+                  borderBottom: "1px solid rgba(85,116,143,0.12)",
+                  mb: 2.5,
+                }}
+              >
+                <EditableTranslationText
+                  ns="balicky"
+                  i18nKey={`packages.${featuredPackage.id}.price`}
+                  variant="body1"
+                  paragraphs
+                  multilineRows={4}
+                />
+              </Box>
+              <Button
+                variant="outlined"
+                onClick={() => handleOpen(featuredPackage)}
+                sx={{ alignSelf: "flex-start" }}
+              >
+                Detail balíčku
+              </Button>
+            </Box>
+          </Box>
+        )}
+
         <Box
           sx={{
             width: "100%",
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            alignItems: "stretch",
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "1fr",
+              sm: "repeat(2, minmax(0, 1fr))",
+              lg: "repeat(3, minmax(0, 1fr))",
+            },
             gap: 3,
           }}
         >
-          {BALICKY.map((b) => (
-            <Box
-              key={b.id}
-              sx={{
-                width: "100%",
-                maxWidth: 320,
-                flex: "0 1 320px",
-              }}
-            >
-              <PackageCard
-                titleNode={
-                  <EditableTranslationText
-                    ns="balicky"
-                    i18nKey={`cards.${b.id}.title`}
-                    variant="subtitle1"
-                    align="center"
-                    multilineRows={2}
-                  />
-                }
-                image={b.image}
-                onClick={() => handleOpen(b)}
-              />
-            </Box>
-          ))}
+          {(remainingPackages.length ? remainingPackages : packages).map(
+            (pkg, index) => (
+              <Box
+                key={pkg.id}
+                sx={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <PackageCard
+                  index={remainingPackages.length ? index + 1 : index}
+                  titleNode={
+                    <EditableTranslationText
+                      ns="balicky"
+                      i18nKey={`cards.${pkg.id}.title`}
+                      variant="subtitle1"
+                      multilineRows={3}
+                      sx={{
+                        textAlign: "left",
+                        fontFamily: '"Cormorant Garamond", Georgia, serif',
+                        fontSize: { xs: "1.5rem", md: "1.7rem" },
+                        fontWeight: 400,
+                        lineHeight: 1.12,
+                        letterSpacing: 0,
+                        textTransform: "none",
+                      }}
+                    />
+                  }
+                  image={pkg.image}
+                  onClick={() => handleOpen(pkg)}
+                />
+              </Box>
+            ),
+          )}
         </Box>
       </Container>
 
-      {/* DETAIL balíčku (Dialog) */}
       <Dialog
         open={open}
         onClose={handleClose}
         fullWidth
         maxWidth="md"
         PaperProps={{
-          sx: { borderRadius: 2, overflow: "hidden" },
+          sx: {
+            overflow: "hidden",
+            border: "1px solid rgba(85,116,143,0.14)",
+            boxShadow: "0 28px 70px rgba(20,24,30,0.18)",
+          },
         }}
       >
         {active && (
           <>
-            {/* Obrázek nahoře */}
             <Box
               sx={{
                 position: "relative",
-                height: { xs: 520, md: 620 },
+                height: { xs: 420, md: 560 },
                 backgroundImage: `url(${active.image})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
@@ -198,11 +289,11 @@ export default function AccommodationPackages() {
                 onClick={handleClose}
                 sx={{
                   position: "absolute",
-                  top: 8,
-                  right: 8,
-                  bgcolor: (theme) => theme.palette.mode === 'light' ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.1)",
+                  top: 12,
+                  right: 12,
+                  bgcolor: "rgba(18,20,24,0.45)",
                   color: "background.paper",
-                  "&:hover": { bgcolor: (theme) => theme.palette.mode === 'light' ? "rgba(0,0,0,.6)" : "rgba(255,255,255,.2)" },
+                  "&:hover": { bgcolor: "rgba(18,20,24,0.68)" },
                 }}
                 aria-label={t("dialog.closeAria")}
               >
@@ -248,20 +339,25 @@ export default function AccommodationPackages() {
                   )}
                 </Box>
               )}
-              {/* Název */}
+
               <EditableTranslationText
                 ns="balicky"
                 i18nKey={`cards.${active.id}.title`}
                 variant="h5"
                 align="center"
                 multilineRows={3}
-                sx={{ textAlign: "center", fontWeight: 700, mb: 2 }}
+                sx={{ textAlign: "center", fontWeight: 400, mb: 2 }}
               />
 
-              {/* Cena */}
               <Paper
                 variant="outlined"
-                sx={{ p: 2, mb: 2, textAlign: "center" }}
+                sx={{
+                  p: 2.2,
+                  mb: 2,
+                  textAlign: "center",
+                  borderColor: "rgba(85,116,143,0.12)",
+                  background: "rgba(221,229,233,0.18)",
+                }}
               >
                 <EditableTranslationText
                   ns="balicky"
@@ -280,7 +376,6 @@ export default function AccommodationPackages() {
                 />
               </Paper>
 
-              {/* Popis (termíny atd.) */}
               <Box sx={{ textAlign: "center", mb: 2 }}>
                 <EditableTranslationText
                   ns="balicky"
@@ -294,47 +389,46 @@ export default function AccommodationPackages() {
 
               <Divider sx={{ my: 2 }} />
 
-              {/* Obsah balíčku */}
               <Box sx={{ textAlign: "center", mb: 2 }}>
                 <Chip
                   label={t("dialog.sections.obsah")}
-                  color="primary"
                   variant="outlined"
-                  sx={{ mb: 1 }}
+                  sx={{
+                    mb: 1,
+                    borderColor: "rgba(154,128,96,0.4)",
+                    color: "#8b7151",
+                  }}
                 />
-                <Box
-                  sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}
-                >
-                  <EditableTranslationText
-                    ns="balicky"
-                    i18nKey={`packages.${active.id}.obsah`}
-                    variant="body1"
-                    align="center"
-                    paragraphs
-                    multilineRows={6}
-                  />
-                </Box>
+                <EditableTranslationText
+                  ns="balicky"
+                  i18nKey={`packages.${active.id}.obsah`}
+                  variant="body1"
+                  align="center"
+                  paragraphs
+                  multilineRows={6}
+                />
               </Box>
 
-              {/* Doporučené aktivity */}
-              <>
-                <Divider sx={{ my: 2 }} />
-                <Box sx={{ textAlign: "center" }}>
-                  <Chip
-                    label={t("dialog.sections.aktivity")}
-                    color="primary"
-                    variant="outlined"
-                    sx={{ mb: 1 }}
-                  />
-                  <EditableTranslationText
-                    ns="balicky"
-                    i18nKey={`packages.${active.id}.aktivity`}
-                    variant="body1"
-                    align="center"
-                    multilineRows={6}
-                  />
-                </Box>
-              </>
+              <Divider sx={{ my: 2 }} />
+
+              <Box sx={{ textAlign: "center" }}>
+                <Chip
+                  label={t("dialog.sections.aktivity")}
+                  variant="outlined"
+                  sx={{
+                    mb: 1,
+                    borderColor: "rgba(154,128,96,0.4)",
+                    color: "#8b7151",
+                  }}
+                />
+                <EditableTranslationText
+                  ns="balicky"
+                  i18nKey={`packages.${active.id}.aktivity`}
+                  variant="body1"
+                  align="center"
+                  multilineRows={6}
+                />
+              </Box>
             </DialogContent>
           </>
         )}

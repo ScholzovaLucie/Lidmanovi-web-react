@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Menu, MenuItem } from "@mui/material";
+import { Button, Menu, MenuItem, Typography } from "@mui/material";
 import { ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
 
 export function MenuButton({ label, options, isActive, ...props }) {
@@ -18,17 +18,30 @@ export function MenuButton({ label, options, isActive, ...props }) {
     <>
       <Button
         onClick={handleClick}
-        variant={isActive ? "contained" : "text"}
+        variant="text"
         endIcon={<ExpandMoreIcon />}
         sx={{
-          textTransform: "none",
-          fontWeight: isActive ? 600 : 500,
-          px: 2,
-          py: 1
+          px: 1.1,
+          py: 0.7,
+          color: isActive ? "primary.main" : "text.primary",
+          borderRadius: 1.5,
+          "& .MuiButton-endIcon": {
+            marginLeft: 0.5,
+          },
         }}
         {...props}
       >
-        {label}
+        <Typography
+          component="span"
+          sx={{
+            fontSize: "0.72rem",
+            fontWeight: isActive ? 500 : 400,
+            letterSpacing: "0.14em",
+            textTransform: "uppercase",
+          }}
+        >
+          {label}
+        </Typography>
       </Button>
       <Menu
         anchorEl={anchorEl}
@@ -48,10 +61,13 @@ export function MenuButton({ label, options, isActive, ...props }) {
             sx={{
               py: 1.5,
               px: 3,
-              fontWeight: option.isActive ? 600 : 400,
-              backgroundColor: option.isActive ? "primary.light" : "transparent",
+              fontSize: "0.75rem",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              fontWeight: option.isActive ? 500 : 400,
+              backgroundColor: option.isActive ? "rgba(85,116,143,0.08)" : "transparent",
               "&:hover": {
-                backgroundColor: option.isActive ? "primary.main" : "action.hover"
+                backgroundColor: option.isActive ? "rgba(85,116,143,0.12)" : "action.hover"
               }
             }}
           >

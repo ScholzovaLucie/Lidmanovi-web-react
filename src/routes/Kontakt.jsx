@@ -1,15 +1,18 @@
 import React from "react";
 import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import Link from "@mui/material/Link";
 import InfoBlock from "../components/InfoBlock";
 import ContactForm from "../components/ContactForm";
+import SubpageBanner from "../components/SubpageBanner.jsx";
+import SectionIntro from "../components/SectionIntro.jsx";
 import { useTranslation } from "react-i18next";
 
 export default function Kontakt() {
-  const { t } = useTranslation("kontakt");
+  const { t } = useTranslation(["kontakt", "global"]);
   const asset = (path) =>
     `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
 
@@ -83,62 +86,31 @@ export default function Kontakt() {
 
   return (
     <Box>
-      {/* HORNÍ PÁS FOTEK (4 obrázky) */}
-      <Box sx={{ display: "flex", flexWrap: "wrap" }}>
-        {images.map((src, i) => (
-          <Box
-            key={i}
-            sx={{
-              flex: "1 1 25%",
-              maxWidth: "25%",
-              position: "relative",
-              borderRadius: 0,
-            }}
-          >
-            <Box
-              component="img"
-              src={src}
-              alt={t(`heroAlt.${i}`)}
-              sx={{
-                width: "100%",
-                height: 250,
-                objectFit: "cover",
-                display: "block",
-                borderRadius: 0,
-              }}
-            />
-            <Box
-              sx={{
-                position: "absolute",
-                inset: 0,
-                backgroundColor: (theme) => theme.palette.mode === 'light' ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.1)",
-              }}
-            />
-          </Box>
-        ))}
-      </Box>
+      <SubpageBanner
+        eyebrow={t("global:footer.brand")}
+        title={t("pageTitle")}
+        image="/kontakt/002_HZ6_3762_Penzion_U_Lidmanu.webp"
+        slides={[
+          "/kontakt/002_HZ6_3762_Penzion_U_Lidmanu.webp",
+          "/kontakt/DSCN0464.webp",
+          "/kontakt/9c8f78d411bc1f0228e6.webp",
+          "/kontakt/95f5c4089c2e069cf161.webp",
+        ]}
+        galleryImages={images}
+      />
 
-      {/* INFO BLOKY */}
-      <Box sx={{ width: "100%", py: { xs: 4, md: 6 }, px: { xs: 2, md: 4 } }}>
+      <Container maxWidth="lg" sx={{ py: { xs: 5, md: 7 } }}>
         <Grid
           container
-          columns={{ xs: 12, sm: 12, md: 12, lg: 15 }} // <<< 5 sloupců na LG
+          columns={{ xs: 12, sm: 12, md: 12, lg: 15 }}
           justifyContent="center"
           alignItems="stretch"
-          rowSpacing={3}
-          columnSpacing={3}
+          rowSpacing={2.5}
+          columnSpacing={2.5}
           sx={{ "& > .MuiGrid-item": { display: "flex" } }}
         >
           {blocks.map((block, i) => (
-            <Grid
-              key={i}
-              item
-              xs={12} // 1 na řádek
-              sm={6} // 2 na řádek
-              md={4} // 3 na řádek
-              lg={3} // 5 na řádek (protože columns lg=15)
-              sx={{ display: "flex" }}
-            >
+            <Grid key={i} item xs={12} sm={6} md={4} lg={3} sx={{ display: "flex" }}>
               <InfoBlock
                 icon={block.icon}
                 title={block.title}
@@ -151,67 +123,125 @@ export default function Kontakt() {
             </Grid>
           ))}
         </Grid>
-      </Box>
+      </Container>
 
-      {/* MAPA (Google Maps iframe) */}
+      <Container maxWidth="lg" sx={{ pb: { xs: 5, md: 7 } }}>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: "minmax(0, 1fr) minmax(0, 1fr)" },
+            gap: { xs: 3, md: 4 },
+            alignItems: "stretch",
+          }}
+        >
+          <Box>
+            <Box
+              sx={{
+                width: "100%",
+                border: "1px solid rgba(85,116,143,0.12)",
+                background: "rgba(255,255,255,0.98)",
+                minHeight: 560,
+                overflow: "hidden",
+              }}
+            >
+              <Box
+                sx={{
+                  p: { xs: 3, md: 4 },
+                  borderBottom: "1px solid rgba(85,116,143,0.08)",
+                }}
+              >
+                <SectionIntro title={t("form.title")} />
+              </Box>
+              <ContactForm
+                title=""
+                translationNamespace="kontakt"
+                mailto="info@ulidmanu.cz"
+                maxWidth={false}
+                contentMaxWidth={false}
+                sx={{
+                  boxShadow: "none",
+                  border: 0,
+                  p: { xs: 3, md: 4 },
+                }}
+              />
+            </Box>
+          </Box>
+
+          <Box>
+            <Box
+              component="section"
+              sx={{
+                width: "100%",
+                height: "100%",
+                border: "1px solid rgba(85,116,143,0.12)",
+                background: "rgba(255,255,255,0.98)",
+                overflow: "hidden",
+              }}
+            >
+              <Box
+                sx={{
+                  p: { xs: 3, md: 4 },
+                  background: "rgba(221,229,233,0.25)",
+                  borderBottom: "1px solid rgba(85,116,143,0.08)",
+                }}
+              >
+                <SectionIntro title={t("map.title")} />
+              </Box>
+              <Box
+                sx={{
+                  width: "100%",
+                  p: { xs: 3, md: 4 },
+                }}
+              >
+                <Box
+                  component="iframe"
+                  title={t("map.title")}
+                  src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d2537.9674639711725!2d16.2889786!3d50.4975633!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x470e686d9f1caccd%3A0x5443aff885131f52!2sPension%20-%20Restaurace%20U%20Lidman%C5%AF!5e0!3m2!1scs!2scz!4v1662476744005!5m2!1scs!2scz"
+                  sx={{
+                    display: "block",
+                    width: "100%",
+                    height: { xs: 420, md: 520 },
+                    border: 0,
+                  }}
+                  allowFullScreen=""
+                  loading="eager"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      </Container>
+
       <Box
         component="section"
         sx={{
-          position: "relative",
-          left: "50%",
-          right: "50%",
-          marginLeft: "-50vw",
-          marginRight: "-50vw",
-          width: "100vw",
-          borderTop: `1px solid ${theme => theme.palette.divider}`,
-          borderBottom: `1px solid ${theme => theme.palette.divider}`,
-        }}
-      >
-        <Box
-          component="iframe"
-          title={t("map.title")}
-          src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d2537.9674639711725!2d16.2889786!3d50.4975633!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x470e686d9f1caccd%3A0x5443aff885131f52!2sPension%20-%20Restaurace%20U%20Lidman%C5%AF!5e0!3m2!1scs!2scz!4v1662476744005!5m2!1scs!2scz"
-          sx={{
-            display: "block",
-            width: "100%",
-            height: { xs: 420, md: 560 },
-            border: 0,
-          }}
-          allowFullScreen=""
-          loading="eager"
-          referrerPolicy="no-referrer-when-downgrade"
-        />
-      </Box>
-
-      {/* Formulář – široký na mobilu, max 720 px a centrovaný */}
-      <ContactForm
-        title={t("form.title")}
-        translationNamespace="kontakt"
-        mailto="info@ulidmanu.cz"
-      />
-
-      {/* KRAJ – kredit */}
-      <Box
-        sx={{
+          borderTop: "1px solid rgba(85,116,143,0.08)",
           py: 3,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 2,
         }}
       >
         <Box
-          component="img"
-          src={asset("/logo_colour_pantone.webp")}
-          alt={t("credit.alt")}
-          sx={{ height: 38 }}
-        />
-        <Typography
-          id="kraj_text"
-          sx={{ color: "text.secondary", textAlign: "center" }}
+          sx={{
+            py: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 2,
+          }}
         >
-          {t("credit.text")}
-        </Typography>
+          <Box
+            component="img"
+            src={asset("/logo_colour_pantone.webp")}
+            alt={t("credit.alt")}
+            sx={{ height: 38 }}
+          />
+          <Typography
+            id="kraj_text"
+            sx={{ color: "text.secondary", textAlign: "center" }}
+          >
+            {t("credit.text")}
+          </Typography>
+        </Box>
       </Box>
     </Box>
   );

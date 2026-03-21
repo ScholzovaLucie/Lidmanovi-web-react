@@ -1,9 +1,6 @@
 import React from "react";
 import {
-  Card,
-  CardActionArea,
-  CardMedia,
-  CardContent,
+  Box,
   Typography,
 } from "@mui/material";
 
@@ -14,36 +11,73 @@ import {
  * - cover: string  // náhledový obrázek (z public)
  * - onClick: () => void
  */
-export default function GalleryCategoryCard({ title, cover, onClick }) {
+export default function GalleryCategoryCard({ title, cover, onClick, index }) {
   return (
-    <Card
-      variant="outlined"
+    <Box
+      component="button"
+      type="button"
+      onClick={onClick}
       sx={{
+        width: "100%",
         height: "100%",
-        borderRadius: 2,
+        border: "1px solid rgba(85,116,143,0.14)",
+        background: "rgba(255,255,255,0.96)",
+        p: 0,
+        textAlign: "left",
+        cursor: "pointer",
         overflow: "hidden",
-        transition: "transform 120ms ease, box-shadow 120ms ease",
-        boxShadow: (theme) => `0 1px 4px ${theme.palette.mode === 'light' ? 'rgba(0,0,0,0.05)' : 'rgba(0,0,0,0.2)'}`,
+        transition:
+          "border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease",
+        boxShadow: "0 16px 36px rgba(21,25,31,0.04)",
         "&:hover": {
-          transform: "translateY(-2px)",
-          boxShadow: (theme) => `0 10px 24px ${theme.palette.mode === 'light' ? 'rgba(0,0,0,0.12)' : 'rgba(0,0,0,0.3)'}`,
+          transform: "translateY(-3px)",
+          borderColor: "rgba(154,128,96,0.45)",
+          boxShadow: "0 20px 44px rgba(21,25,31,0.08)",
+        },
+        "&:focus-visible": {
+          outline: "1px solid rgba(154,128,96,0.55)",
+          outlineOffset: 2,
         },
       }}
     >
-      <CardActionArea onClick={onClick} sx={{ height: "100%" }}>
-        <CardMedia
-          component="img"
-          image={cover}
-          alt={title}
-          sx={{ height: 220, objectFit: "cover" }}
-          loading="lazy"
-        />
-        <CardContent sx={{ textAlign: "center" }}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-            {title}
+      <Box
+        component="img"
+        src={cover}
+        alt={title}
+        loading="lazy"
+        sx={{
+          display: "block",
+          width: "100%",
+          aspectRatio: { xs: "4 / 5", sm: "4 / 4.2", lg: "4 / 3.35" },
+          objectFit: "cover",
+        }}
+      />
+      <Box sx={{ p: { xs: 1.75, md: 2 } }}>
+        {index != null && (
+          <Typography
+            sx={{
+              mb: 0.35,
+              fontSize: "0.62rem",
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              color: "primary.main",
+            }}
+          >
+            {String(index + 1).padStart(2, "0")}
           </Typography>
-        </CardContent>
-      </CardActionArea>
-    </Card>
+        )}
+        <Typography
+          sx={{
+            fontFamily: '"Cormorant Garamond", Georgia, serif',
+            fontSize: { xs: "1.4rem", md: "1.55rem", lg: "1.45rem" },
+            fontWeight: 400,
+            lineHeight: 1.1,
+            color: "text.primary",
+          }}
+        >
+          {title}
+        </Typography>
+      </Box>
+    </Box>
   );
 }

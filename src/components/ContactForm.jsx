@@ -31,6 +31,7 @@ export default function ContactForm({
   title = "Kontaktujte nás",
   translationNamespace = null,
   maxWidth = "lg",
+  contentMaxWidth = 720,
   useMailto = true,
   mailto = "info@ulidmanu.cz",
   requireConsent = true,
@@ -242,7 +243,7 @@ export default function ContactForm({
         <Button
           type="submit"
           variant="contained"
-          disabled={loading}
+          disabled={loading || (requireConsent && !form.consent)}
           startIcon={loading ? <CircularProgress size={18} /> : null}
           sx={{ alignSelf: "flex-start" }}
         >
@@ -261,7 +262,7 @@ export default function ContactForm({
         maxWidth={false}
         sx={{
           width: { xs: "100%", sm: "100%" },
-          maxWidth: 720, // strop šířky
+          maxWidth: contentMaxWidth || "none",
           mx: "auto", // centrování
           px: { xs: 2, md: 0 }, // malý horizontální padding na mobilu
           py: { xs: 4, md: 6 },

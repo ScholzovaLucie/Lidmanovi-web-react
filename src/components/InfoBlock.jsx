@@ -1,5 +1,5 @@
 import React from "react";
-import { Paper, Box, Typography, Button } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import { useSelector } from "react-redux";
 import { selectIsAuthenticated } from "../redux/slices/app/appSlice";
 
@@ -16,23 +16,23 @@ export default function InfoBlock({
   const isAuthenticated = useSelector(selectIsAuthenticated);
 
   return (
-    <Paper
-      variant="outlined"
+    <Box
       sx={{
         position: "relative",
-        borderRadius: 2,
-        p: 2,
-        width: "100%", // <<< sjednocená šířka
+        p: { xs: 2.25, md: 2.75 },
+        width: "100%",
         height: "100%",
         minHeight,
         minWidth,
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between", // <<< rozdělí nahoře/dole
-        alignItems: "center", // <<< horizontální střed
-        textAlign: "center",
-        boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
-        borderColor: isAuthenticated ? "secondary.main" : undefined,
+        justifyContent: "space-between",
+        alignItems: "flex-start",
+        textAlign: "left",
+        background: "rgba(255,255,255,0.96)",
+        border: "1px solid",
+        borderColor: isAuthenticated ? "secondary.main" : "rgba(85,116,143,0.14)",
+        boxShadow: "0 16px 36px rgba(21,25,31,0.04)",
         outline: isAuthenticated ? "1px dashed" : "none",
         outlineColor: isAuthenticated ? "secondary.main" : "transparent",
         ...sx,
@@ -61,9 +61,9 @@ export default function InfoBlock({
         sx={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-          gap: 1.5,
-          mb: 1,
+          justifyContent: "flex-start",
+          gap: 1.1,
+          mb: 1.25,
         }}
       >
         {icon && (
@@ -75,25 +75,30 @@ export default function InfoBlock({
           />
         )}
         {title && (
-          <Typography variant="h6" sx={{ fontSize: 18, fontWeight: 700 }}>
+          <Typography
+            sx={{
+              fontFamily: '"Cormorant Garamond", Georgia, serif',
+              fontSize: { xs: "1.45rem", md: "1.65rem" },
+              lineHeight: 1.1,
+              color: "text.primary",
+            }}
+          >
             {title}
           </Typography>
         )}
       </Box>
 
-      {/* Content – zarovnáno doprostřed */}
-      <Box sx={{ flex: 1, display: "flex", alignItems: "center" }}>
+      <Box sx={{ flex: 1, display: "flex", alignItems: "flex-start", width: "100%" }}>
         <Box sx={{ width: "100%" }}>{children}</Box>
       </Box>
 
-      {/* Footer (button) */}
       {button && (
         <Box sx={{ mt: 2 }}>
-          <Button variant="contained" size="small" onClick={onButtonClick}>
+          <Button variant="text" size="small" onClick={onButtonClick} sx={{ px: 0 }}>
             {button}
           </Button>
         </Box>
       )}
-    </Paper>
+    </Box>
   );
 }

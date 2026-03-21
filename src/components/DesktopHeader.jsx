@@ -1,117 +1,69 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { Box, Button, IconButton, Stack } from "@mui/material";
-import {
-  LightMode as LightModeIcon,
-  DarkMode as DarkModeIcon,
-  Logout as LogoutIcon,
-} from "@mui/icons-material";
-import { MenuButton } from "./controls/MenuButton";
+import { Box, Button, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useAppContext } from "../context/AppContextProvider";
-import { useAuth } from "../hooks/useAuth";
 import { langOptions } from "./headerConfig";
+import "./DesktopHeader.css";
 
 const NavButton = ({ to, label, end }) => (
-  <NavLink to={to} end={end}>
-    {({ isActive }) => (
-      <Button
-        variant={isActive ? "contained" : "text"}
-        sx={{
-          textTransform: "none",
-          fontWeight: isActive ? 600 : 500,
-          px: 2,
-          py: 1,
-        }}
-      >
-        {label}
-      </Button>
-    )}
+  <NavLink to={to} end={end} className={({ isActive }) => `desktop-header__link${isActive ? " active" : ""}`}>
+    <Typography component="span" className="desktop-header__link-label">
+      {label}
+    </Typography>
   </NavLink>
 );
 
-export function DesktopHeader({ onLogin, navItems = [] }) {
+export function DesktopHeader({ navItems = [] }) {
   const navigate = useNavigate();
   const { i18n } = useTranslation("global");
-  const { themeMode, toggleTheme } = useAppContext();
-  const { isAuthenticated, logout } = useAuth();
-
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-  };
-
-  const currentLang =
-    langOptions.find((lang) => lang.code === i18n.language) || langOptions[0];
+  const primaryNavItems = navItems.filter(({ to }) => to !== "/rezervace");
+  const reservationItem = navItems.find(({ to }) => to === "/rezervace");
+  const activeLang = String(i18n.resolvedLanguage || i18n.language || "cs").split("-")[0];
 
   return (
-    <Box
-      sx={{
-        display: { xs: "none", md: "flex" },
-        width: "100%",
-        alignItems: "center",
-      }}
-    >
-      {/* Left side */}
-      <Stack direction="row" alignItems="center" spacing={1.5}>
-        <Box
-          component="img"
-          src="logolidman.webp"
-          alt="U Lidmanů"
-          onClick={() => navigate("/")}
-          sx={{ height: 40, cursor: "pointer", mr: 1 }}
-        />
+    <Box className="desktop-header">
+      <Box
+        component="img"
+        src="logolidman.webp"
+        alt="U Lidmanů"
+        onClick={() => navigate("/")}
+        className="desktop-header__logo"
+      />
 
-        {navItems.map(({ to, label, end }) => (
-          <NavButton key={to} to={to} label={label} end={end} />
-        ))}
-      </Stack>
+      <Box className="desktop-header__nav-wrap">
+        <Box className="desktop-header__nav">
+          {primaryNavItems.map(({ to, label, end }) => (
+            <NavButton key={to} to={to} label={label} end={end} />
+          ))}
+        </Box>
+      </Box>
 
-      {/* Spacer */}
-      <Box sx={{ flexGrow: 1 }} />
+      <Box className="desktop-header__actions">
+        <Box className="desktop-header__langs">
+          {langOptions.map(({ code, label }) => (
+            <Box
+              key={code}
+              component="button"
+              type="button"
+              onClick={() => i18n.changeLanguage(code)}
+              className={`desktop-header__lang${activeLang === code ? " desktop-header__lang--active" : ""}`}
+            >
+              {label.slice(0, 2)}
+            </Box>
+          ))}
+        </Box>
 
-      {/* Right side */}
-      <Stack direction="row" spacing={2} alignItems="center">
-        <MenuButton
-          label={currentLang.label}
-          options={langOptions.map((lang) => ({
-            ...lang,
-            onClick: () => i18n.changeLanguage(lang.code),
-            isActive: i18n.language === lang.code,
-          }))}
-        />
-
-        <IconButton
-          onClick={toggleTheme}
-          size="small"
-          sx={{ p: 1, border: 1, borderColor: "divider" }}
-        >
-          {themeMode === "dark" ? (
-            <LightModeIcon fontSize="small" />
-          ) : (
-            <DarkModeIcon fontSize="small" />
-          )}
-        </IconButton>
-
-        {isAuthenticated ? (
+        {reservationItem && (
           <Button
-            onClick={handleLogout}
-            startIcon={<LogoutIcon />}
-            color="error"
-            sx={{ textTransform: "none" }}
-          >
-            Odhlásit
-          </Button>
-        ) : (
-          <Button
-            onClick={onLogin}
+            component={NavLink}
+            to={reservationItem.to}
             variant="outlined"
-            sx={{ textTransform: "none" }}
+            className="desktop-header__cta"
           >
-            Login
+            {reservationItem.label}
           </Button>
         )}
-      </Stack>
+      </Box>
     </Box>
   );
 }

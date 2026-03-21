@@ -1,13 +1,13 @@
 import React from "react";
-import { Container, Grid } from "@mui/material";
+import { Box, Container } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import GalleryCategoryCard from "../components/GalleryCategoryCard.jsx";
 import GalleryLightbox from "../components/GalleryLightbox.jsx";
-import { useTranslation } from "react-i18next";
+import SubpageBanner from "../components/SubpageBanner.jsx";
 
 const asset = (path) =>
   `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
 
-/** DATA – cesty z public/… (původní HTML jste měla bez počátečního lomítka; v Reactu používej "/…") */
 const GALLERIES = [
   {
     id: "kam-prijedete",
@@ -119,7 +119,7 @@ const GALLERIES = [
 ];
 
 export default function Galerie() {
-  const { t } = useTranslation("galerie");
+  const { t } = useTranslation(["galerie", "global"]);
   const [open, setOpen] = React.useState(false);
   const [activeImgs, setActiveImgs] = React.useState([]);
   const [startIndex, setStartIndex] = React.useState(0);
@@ -131,29 +131,56 @@ export default function Galerie() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
-      {/* Dlaždice kategorií */}
-      <Grid container spacing={3} justifyContent="center" alignItems="stretch">
-        {GALLERIES.map((g) => (
-          <Grid key={g.id} item xs={12} sm={6} md={6} lg={3}>
-            <GalleryCategoryCard
-              title={t(`categories.${g.id}`, { defaultValue: g.title })}
-              cover={g.cover}
-              onClick={() => openGallery(g.images, 0)}
-            />
-          </Grid>
-        ))}
-      </Grid>
-
-      {/* Lightbox */}
-      <GalleryLightbox
-        open={open}
-        onClose={() => setOpen(false)}
-        images={activeImgs}
-        startIndex={startIndex}
-        showThumbnails
-        thumbSize={{ w: 110, h: 72 }} // volitelné
+    <>
+      <SubpageBanner
+        eyebrow={t("global:footer.brand")}
+        title={t("pageTitle")}
+        subtitle={t("heading")}
+        image="/galerie/exterier/132_HZ6_4056_Penzion_U_Lidmanu.webp"
+        slides={[
+          "/galerie/exterier/132_HZ6_4056_Penzion_U_Lidmanu.webp",
+          "/galerie/pokoje/039_HZ6_3852_Penzion_U_Lidmanu.webp",
+          "/galerie/interier/099_HZ6_3978_Penzion_U_Lidmanu.webp",
+          "/galerie/svadba/075A5198.webp",
+        ]}
       />
-    </Container>
+      <Container maxWidth="lg" sx={{ py: { xs: 4, md: 5 } }}>
+        <Box
+          sx={{
+            pt: { xs: 0, md: 0 },
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "minmax(0, 1fr)",
+              sm: "repeat(2, minmax(260px, 320px))",
+              lg: "repeat(3, minmax(260px, 320px))",
+            },
+            justifyContent: "center",
+            gap: { xs: 2, md: 3 },
+          }}
+        >
+          {GALLERIES.map((gallery, index) => (
+            <Box key={gallery.id} sx={{ width: "100%", maxWidth: 320, mx: "auto" }}>
+              <GalleryCategoryCard
+                index={index}
+                title={t(`categories.${gallery.id}`, {
+                  defaultValue: gallery.title,
+                })}
+                cover={gallery.cover}
+                onClick={() => openGallery(gallery.images, 0)}
+              />
+            </Box>
+          ))}
+        </Box>
+
+        <GalleryLightbox
+          open={open}
+          onClose={() => setOpen(false)}
+          images={activeImgs}
+          startIndex={startIndex}
+          showThumbnails
+          thumbSize={{ w: 110, h: 72 }}
+        />
+      </Container>
+    </>
   );
 }

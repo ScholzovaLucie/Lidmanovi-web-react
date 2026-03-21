@@ -1,6 +1,5 @@
 import {
   Box,
-  Paper,
   Typography,
 } from "@mui/material";
 import { useSelector } from "react-redux";
@@ -18,20 +17,20 @@ function ImageTextBand({
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const imgUrl = image?.startsWith("/") ? image : `/${image || ""}`;
   return (
-    <Paper
-      variant="outlined"
+    <Box
       sx={{
         position: "relative",
-        width: { xs: "100%", md: "90%" },
+        width: { xs: "100%", md: "100%" },
         mx: "auto",
-        mb: 3,
-        borderRadius: 2,
+        mb: { xs: 4, md: 5 },
         overflow: "hidden",
         display: "flex",
         flexDirection: { xs: "column", md: imageLeft ? "row" : "row-reverse" },
         minHeight,
-        boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
-        borderColor: isAuthenticated ? "secondary.main" : undefined,
+        borderTop: "1px solid",
+        borderBottom: "1px solid",
+        borderColor: isAuthenticated ? "secondary.main" : "rgba(85,116,143,0.12)",
+        background: imageLeft ? "rgba(221,229,233,0.22)" : "rgba(255,255,255,0.98)",
         outline: isAuthenticated ? "1px dashed" : "none",
         outlineColor: isAuthenticated ? "secondary.main" : "transparent",
       }}
@@ -55,7 +54,6 @@ function ImageTextBand({
           Editovatelný blok
         </Box>
       )}
-      {/* Obrázek jako background */}
       <Box
         sx={{
           flexBasis: { xs: "100%", md: "50%" },
@@ -68,32 +66,38 @@ function ImageTextBand({
             content: '""',
             position: "absolute",
             inset: 0,
-            background: "rgba(0,0,0,.18)", // lehké ztmavení jako jinde
+            background: "linear-gradient(180deg, rgba(18,20,24,0.08), rgba(18,20,24,0.16))",
           },
         }}
       />
-      {/* Text */}
       <Box
         sx={{
           flexBasis: { xs: "100%", md: "50%" },
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          px: { xs: 2, md: 4 },
-          py: { xs: 3, md: 5 },
-          textAlign: "center",
+          px: { xs: 3, md: 5 },
+          py: { xs: 4, md: 5.5 },
+          textAlign: "left",
         }}
       >
         <Box sx={{ maxWidth: 720, width: "100%" }}>
           {titleNode || (title && (
-            <Typography variant="h5" sx={{ fontWeight: 700, mb: 1.5 }}>
+            <Typography
+              variant="h5"
+              sx={{
+                mb: 1.75,
+                fontFamily: '"Cormorant Garamond", Georgia, serif',
+                fontWeight: 400,
+              }}
+            >
               {title}
             </Typography>
           ))}
           {children}
         </Box>
       </Box>
-    </Paper>
+    </Box>
   );
 }
 

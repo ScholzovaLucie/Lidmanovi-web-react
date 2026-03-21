@@ -8,6 +8,19 @@ function normalizeValue(value, fallback) {
   return fallback;
 }
 
+function flattenObjectValue(value) {
+  if (Array.isArray(value)) {
+    return value.flatMap((item) => flattenObjectValue(item));
+  }
+
+  if (value && typeof value === "object") {
+    return Object.values(value).flatMap((item) => flattenObjectValue(item));
+  }
+
+  if (value === undefined || value === null || value === "") return [];
+  return [String(value)];
+}
+
 export default function EditableTranslationText({
   ns,
   i18nKey,
@@ -31,12 +44,16 @@ export default function EditableTranslationText({
   const isArray = Array.isArray(raw) || !!entryTypeMap[`${ns}.${i18nKey}`];
   const compositeKey = `${ns}.${i18nKey}`;
   const mergedValue = normalizeValue(getInlineValue(compositeKey, raw), raw);
+  const normalizedLines =
+    Array.isArray(mergedValue) || (mergedValue && typeof mergedValue === "object")
+      ? flattenObjectValue(mergedValue)
+      : null;
 
   if (!isAuthenticated || !isInlineEditing) {
-    if (Array.isArray(mergedValue)) {
+    if (normalizedLines) {
       return (
         <>
-          {mergedValue.map((line, idx) => (
+          {normalizedLines.map((line, idx) => (
             <Typography
               key={`${compositeKey}-${idx}`}
               variant={variant}
@@ -58,8 +75,8 @@ export default function EditableTranslationText({
     );
   }
 
-  const fieldValue = Array.isArray(mergedValue)
-    ? mergedValue.join("\n")
+  const fieldValue = normalizedLines
+    ? normalizedLines.join("\n")
     : String(mergedValue ?? "");
 
   return (
