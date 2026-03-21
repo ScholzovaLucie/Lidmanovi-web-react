@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { Button, Stack } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
@@ -11,8 +11,7 @@ import {
   useGetCmsPageByRouteLangQuery,
   useUpsertCmsPageMutation,
 } from "../redux/api/cmsApi";
-
-const EditorialEditorContext = createContext(null);
+import { EditorialEditorContext } from "./editorialEditorContext";
 
 const ROUTE_NAMESPACES = {
   "/": ["home"],
@@ -410,12 +409,4 @@ export function EditorialEditorProvider({ children }) {
       )}
     </EditorialEditorContext.Provider>
   );
-}
-
-export function useEditorialEditor() {
-  const context = useContext(EditorialEditorContext);
-  if (!context) {
-    throw new Error("useEditorialEditor must be used within EditorialEditorProvider");
-  }
-  return context;
 }

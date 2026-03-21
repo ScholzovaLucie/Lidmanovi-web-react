@@ -13,7 +13,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { useTranslation } from "react-i18next";
 import ImageTextBand from "../components/ImageTextBand";
 import EditableTranslationText from "../components/EditableTranslationText";
-import { useEditorialEditor } from "../context/EditorialEditorProvider";
+import { useEditorialEditor } from "../context/editorialEditorContext";
 
 export default function PriceList() {
   const { t } = useTranslation("cenik");

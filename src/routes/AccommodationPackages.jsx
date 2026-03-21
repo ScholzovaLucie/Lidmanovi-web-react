@@ -16,7 +16,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import PackageCard from "../components/PackageCard.jsx";
 import { useTranslation } from "react-i18next";
 import EditableTranslationText from "../components/EditableTranslationText";
-import { useEditorialEditor } from "../context/EditorialEditorProvider";
+import { useEditorialEditor } from "../context/editorialEditorContext";
 
 const asset = (path) =>
   `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;

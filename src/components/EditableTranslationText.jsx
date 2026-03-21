@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, TextField, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useEditorialEditor } from "../context/EditorialEditorProvider";
+import { useEditorialEditor } from "../context/editorialEditorContext";
 
 function normalizeValue(value, fallback) {
   if (value !== undefined && value !== null) return value;
