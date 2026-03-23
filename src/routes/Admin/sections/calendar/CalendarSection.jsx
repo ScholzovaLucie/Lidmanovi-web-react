@@ -54,7 +54,7 @@ export default function CalendarSection() {
   }
 
   return (
-    <Stack spacing={6} p={{ sx: 1, md: 3 }}>
+    <Stack spacing={5} p={{ sx: 1, md: 3 }}>
       <Stack>
         <Typography variant="h4" gutterBottom>
           Kalendář rezervací

@@ -6,14 +6,16 @@ import {
   Typography,
   TextField,
   InputAdornment,
+  IconButton,
 } from "@mui/material";
-import { People, Search, Email, Phone } from "@mui/icons-material";
+import { People, Search, Email, Phone, Clear } from "@mui/icons-material";
 import CustomTable from "../../components/CustomMuiTable";
 import { useGuestsQuery } from "../../../../redux/api/guestApi";
 import { useLazyReservationsQuery } from "../../../../redux/api/reservationsApi";
 import AppCard, {
   AppCardCustomizable,
 } from "../../../../components/containers/AppCard";
+import { formFieldStyles } from "../reservations/constants";
 
 function getReservationsCountFromGuestRow(row) {
   if (Array.isArray(row?.reservations)) return row.reservations.length;
@@ -35,6 +37,10 @@ function getReservationsCountFromGuestRow(row) {
 
 export default function GuestsSection() {
   const [searchTerm, setSearchTerm] = useState("");
+
+  const handleClearSearch = () => {
+    setSearchTerm("");
+  };
   const [reservationCountsByGuestId, setReservationCountsByGuestId] = useState(
     {},
   );
@@ -201,7 +207,7 @@ export default function GuestsSection() {
   }
 
   return (
-    <Stack spacing={3} p={{sx: 1, md: 3}}>
+    <Stack spacing={5} p={{sx: 1, md: 3}}>
       <Stack>
         <Typography variant="h4" gutterBottom>
           Správa hostů
@@ -214,21 +220,28 @@ export default function GuestsSection() {
       </Stack>
 
       <Stack spacing={1}>
-        <Typography variant="h6" gutterBottom>
+        <Typography variant="h5" gutterBottom>
           Hosté
         </Typography>
 
         <TextField
-          placeholder="Vyhledávání..."
-          fullWidth
+          placeholder="Vyhledejte podle jména, příjmení, emailu nebo telefonu..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          size="small"
-          sx={{ width: 300 }}
+          variant="outlined"
+          fullWidth
+          sx={formFieldStyles}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Search />
+                <Search color="action" />
+              </InputAdornment>
+            ),
+            endAdornment: searchTerm && (
+              <InputAdornment position="end">
+                <IconButton size="small" onClick={handleClearSearch}>
+                  <Clear />
+                </IconButton>
               </InputAdornment>
             ),
           }}

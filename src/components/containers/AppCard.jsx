@@ -24,7 +24,7 @@ export function AppCardCustomizable({ borderRadius, props, children }) {
       component={Paper}
       variant="outlined"
       sx={{
-        borderRadius: borderRadius ?? 2,
+        borderRadius: borderRadius ?? 1,
         backgroundColor: "background.paper",
         boxShadow: (theme) => `0 1px 4px ${theme.palette.mode === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(0,0,0,0.2)'}`,
         textAlign: "center",

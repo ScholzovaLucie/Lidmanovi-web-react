@@ -6,7 +6,7 @@ import { announcementColumns } from "./constants";
 
 export default function AnnouncementSection() {
   return (
-    <Stack p={{ sx: 1, md: 3 }} spacing={6}>
+    <Stack p={{ sx: 1, md: 3 }} spacing={5}>
       <Stack>
         <Typography variant="h4" gutterBottom>
           Oznámení
@@ -19,7 +19,7 @@ export default function AnnouncementSection() {
       </Stack>
 
       <Stack>
-        <Typography variant="h6" gutterBottom>
+        <Typography variant="h5" gutterBottom>
           Nové oznámení
         </Typography>
         <AppCardCustomizable props={{ p: 2 }}>
@@ -40,7 +40,7 @@ export default function AnnouncementSection() {
       </Stack>
 
       <Stack>
-        <Typography variant="h6" gutterBottom>
+        <Typography variant="h5" gutterBottom>
           Aktivní oznámení
         </Typography>
         <AppCardCustomizable>
