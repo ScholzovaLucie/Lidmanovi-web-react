@@ -4,7 +4,6 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
 
 export default function CustomTable({ columns = [], data = [], getRowId, sx }) {
   const resolveRowId = (row, index) => {
@@ -21,7 +20,7 @@ export default function CustomTable({ columns = [], data = [], getRowId, sx }) {
   };
 
   return (
-    <TableContainer component={Paper}>
+    <TableContainer>
       <Table sx={{ minWidth: 650, ...sx }}>
         <TableHead>
           <TableRow>

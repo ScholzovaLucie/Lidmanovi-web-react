@@ -1,230 +1,186 @@
-import { useEffect, useState } from 'react';
 import {
   Box,
-  Container,
-  Paper,
-  Stack,
-  Tab,
-  Tabs,
   Typography,
+  ListItemButton,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Drawer,
+  IconButton,
+  useTheme,
+  useMediaQuery,
   AppBar,
   Toolbar,
-  IconButton,
-  Avatar,
-  Menu,
-  MenuItem,
-  Badge,
-} from '@mui/material';
-import { 
-  CalendarMonth, 
-  People, 
-  BookOnline, 
-  AdminPanelSettings,
-  Notifications,
-  AccountCircle,
-  ExitToApp 
-} from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+  List,
+  Divider,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import { ArrowBack, CalendarMonth, People } from "@mui/icons-material";
+import CampaignIcon from "@mui/icons-material/Campaign";
+import BedIcon from "@mui/icons-material/Bed";
+import { useState } from "react";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
+import {
+  CalendarSection,
+  GuestsSection,
+  ReservationsSection,
+} from "./sections";
+import RoomsSection from "./sections/rooms/RoomsSection";
+import AnnouncementSection from "./sections/announcement/AnnouncementSection";
+import { useNavigate } from "react-router-dom";
 
-// Import section components
-import { CalendarSection, GuestsSection, ReservationsSection } from './sections';
-
-const TAB_CONFIG = [
-  {
-    value: 'calendar',
-    label: 'Kalendář',
-    icon: CalendarMonth,
-    component: CalendarSection,
-  },
-  {
-    value: 'reservations',
-    label: 'Rezervace',
-    icon: BookOnline,
-    component: ReservationsSection,
-  },
-  {
-    value: 'guests',
-    label: 'Hosté',
-    icon: People,
-    component: GuestsSection,
-  },
+// Menu items s reálnými admin komponentami
+const menuItems = [
+  { id: "calendar", text: "Kalendář", icon: CalendarMonth },
+  { id: "reservations", text: "Rezervace", icon: EventAvailableIcon },
+  { id: "guests", text: "Hosté", icon: People },
+  { id: "rooms", text: "Pokoje", icon: BedIcon },
+  { id: "announcement", text: "Oznámení", icon: CampaignIcon },
 ];
 
+const DRAWER_WIDTH = 200;
+
 export default function AdminPage() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeComponent, setActiveComponent] = useState("calendar");
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
-  const [currentTab, setCurrentTab] = useState('calendar');
-  const [anchorEl, setAnchorEl] = useState(null);
-  
-  // Protect this route - redirect to home if not authenticated
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/', { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
-  
-  // Show loading while checking auth
-  if (!isAuthenticated) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
-        <Typography>Ověřování přístupu...</Typography>
-      </Box>
-    );
-  }
 
-  const handleTabChange = (event, newValue) => {
-    setCurrentTab(newValue);
+  const handleMenuClick = (componentId) => {
+    setActiveComponent(componentId);
+    if (isMobile) setMobileOpen(false);
   };
 
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
+  const renderActiveComponent = () => {
+    const components = {
+      calendar: <CalendarSection />,
+      reservations: <ReservationsSection />,
+      guests: <GuestsSection />,
+      rooms: <RoomsSection />,
+      announcement: <AnnouncementSection />,
+    };
+    return components[activeComponent] || components.calendar;
   };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+  const drawerContent = (
+    <Box sx={{ overflow: "auto" }}>
+      <Toolbar>
+        <Typography variant="h6"> Administrace</Typography>
+      </Toolbar>
 
-  const handleLogout = () => {
-    // TODO: Implement logout logic
-    handleMenuClose();
-    navigate('/', { replace: true });
-  };
+      <Divider />
 
-  const activeTabConfig = TAB_CONFIG.find(tab => tab.value === currentTab);
-  const ActiveComponent = activeTabConfig?.component;
+      <ListItem disablePadding>
+        <ListItemButton onClick={() => navigate("/")}>
+          <ListItemIcon>
+            <ArrowBack />
+          </ListItemIcon>
+          <ListItemText primary="Zpět na web" />
+        </ListItemButton>
+      </ListItem>
 
-  return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
-      {/* Admin Header */}
-      <AppBar 
-        position="sticky" 
-        elevation={0}
-        sx={{ 
-          bgcolor: 'background.paper',
-          color: 'text.primary',
-          borderBottom: '1px solid',
-          borderColor: 'divider'
-        }}
-      >
-        <Container maxWidth="xl">
-          <Toolbar sx={{ px: { xs: 0 } }}>
-            <AdminPanelSettings sx={{ mr: 2, color: 'primary.main' }} />
-            <Typography
-              variant="h6"
+      <Divider />
+
+      {menuItems.map(({ id, text, icon: Icon }) => (
+        <ListItem key={id} disablePadding>
+          <ListItemButton onClick={() => handleMenuClick(id)}>
+            <ListItemIcon
               sx={{
-                flexGrow: 1,
-                fontWeight: 700,
-                fontFamily: '"Manrope", "Poppins", sans-serif',
-                color: 'text.primary'
+                color: activeComponent === id ? "black" : "rgba(0,0,0,0.6)",
               }}
             >
-              Admin Dashboard - Penzion Lidmanovi
+              <Icon />
+            </ListItemIcon>
+            <ListItemText
+              primary={text}
+              sx={{
+                "& .MuiListItemText-primary": {
+                  fontWeight: activeComponent === id ? "bold" : "light",
+                },
+              }}
+            />
+          </ListItemButton>
+        </ListItem>
+      ))}
+    </Box>
+  );
+
+  return (
+    <Box sx={{ display: "flex", height: "100vh" }}>
+      {/* Mobile AppBar */}
+      {isMobile && (
+        <AppBar
+          position="fixed"
+          sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        >
+          <Toolbar>
+            <IconButton
+              onClick={() => setMobileOpen(!mobileOpen)}
+              sx={{ mr: 2, display: { md: "none" } }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" noWrap color="black">
+              Admin Panel
             </Typography>
-
-            <Stack direction="row" spacing={1} alignItems="center">
-              <IconButton color="inherit">
-                <Badge badgeContent={3} color="error">
-                  <Notifications />
-                </Badge>
-              </IconButton>
-              
-              <IconButton
-                onClick={handleMenuOpen}
-                color="inherit"
-              >
-                <Avatar sx={{ width: 32, height: 32 }}>
-                  <AccountCircle />
-                </Avatar>
-              </IconButton>
-
-              <Menu
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleMenuClose}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-              >
-                <MenuItem onClick={handleLogout}>
-                  <ExitToApp sx={{ mr: 1 }} />
-                  Odhlásit se
-                </MenuItem>
-              </Menu>
-            </Stack>
           </Toolbar>
-        </Container>
-      </AppBar>
+        </AppBar>
+      )}
 
-      {/* Navigation Tabs */}
-      <Container maxWidth="xl" sx={{ mt: 3 }}>
-        <Box 
-          sx={{ 
-            mb: 4,
-            display: 'flex',
-            justifyContent: 'center'
+      {/* Drawer */}
+      <Box
+        component="nav"
+        sx={{
+          width: { md: DRAWER_WIDTH },
+          flexShrink: { md: 0 },
+        }}
+      >
+        {/* Mobile */}
+        <Drawer
+          variant="temporary"
+          open={mobileOpen}
+          onClose={() => setMobileOpen(false)}
+          ModalProps={{ keepMounted: true }}
+          sx={{
+            display: { xs: "block", md: "none" },
+            "& .MuiDrawer-paper": {
+              width: DRAWER_WIDTH,
+              boxSizing: "border-box",
+            },
           }}
         >
-          <Stack 
-            direction="row" 
-            spacing={0}
-            sx={{
-              bgcolor: 'background.paper',
-              borderRadius: 2,
-              p: 0.5,
-              border: '1px solid',
-              borderColor: 'divider',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-            }}
-          >
-            {TAB_CONFIG.map((tab) => {
-              const IconComponent = tab.icon;
-              const isActive = currentTab === tab.value;
-              return (
-                <Box
-                  key={tab.value}
-                  onClick={() => setCurrentTab(tab.value)}
-                  sx={{
-                    px: 3,
-                    py: 1.5,
-                    borderRadius: 1.5,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    bgcolor: isActive ? 'primary.main' : 'transparent',
-                    color: isActive ? 'primary.contrastText' : 'text.primary',
-                    '&:hover': {
-                      bgcolor: isActive ? 'primary.dark' : 'action.hover',
-                    }
-                  }}
-                >
-                  <Stack direction="row" alignItems="center" spacing={1.5}>
-                    <IconComponent sx={{ fontSize: 18 }} />
-                    <Typography 
-                      sx={{ 
-                        fontWeight: isActive ? 600 : 500,
-                        fontSize: '0.9rem',
-                        fontFamily: '"Manrope", "Poppins", sans-serif',
-                      }}
-                    >
-                      {tab.label}
-                    </Typography>
-                  </Stack>
-                </Box>
-              );
-            })}
-          </Stack>
-        </Box>
+          {drawerContent}
+        </Drawer>
 
-        {/* Active Section Content */}
-        <Box sx={{ pb: 4 }}>
-          {ActiveComponent && <ActiveComponent />}
-        </Box>
-      </Container>
+        {/* Desktop */}
+        <Drawer
+          variant="permanent"
+          sx={{
+            display: { xs: "none", md: "block" },
+            "& .MuiDrawer-paper": {
+              width: DRAWER_WIDTH,
+              boxSizing: "border-box",
+            },
+          }}
+          open
+        >
+          {drawerContent}
+        </Drawer>
+      </Box>
+
+      {/* Main Content */}
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          mt: isMobile ? 10 : 0,
+          overflow: "auto",
+        }}
+      >
+        {renderActiveComponent()}
+      </Box>
     </Box>
   );
 }

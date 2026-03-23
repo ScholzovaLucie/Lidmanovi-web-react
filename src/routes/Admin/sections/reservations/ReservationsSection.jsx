@@ -13,8 +13,9 @@ import {
   FormControl,
   InputLabel,
   CircularProgress,
+  IconButton,
 } from "@mui/material";
-import { Search, BookOnline } from "@mui/icons-material";
+import { Search, BookOnline, Clear } from "@mui/icons-material";
 import dayjs from "dayjs";
 import CustomTable from "../../components/CustomMuiTable";
 import {
@@ -25,6 +26,12 @@ import {
 import { useRoomsQuery } from "../../../../redux/api/roomsApi";
 import { STATUS_META } from "../../constants";
 import { useSnackbar } from "notistack";
+import { AppCardCustomizable } from "../../../../components/containers/AppCard";
+import { DatePicker } from "@mui/x-date-pickers";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import { formFieldStyles } from "./constants";
+
+
 
 function normalizeStatusOptions(statusesData) {
   if (!statusesData) return [];
@@ -45,7 +52,8 @@ function normalizeStatusOptions(statusesData) {
 
           return {
             value,
-            label: item.label ?? item.name ?? STATUS_META[value]?.label ?? value,
+            label:
+              item.label ?? item.name ?? STATUS_META[value]?.label ?? value,
           };
         }
 
@@ -66,9 +74,9 @@ function normalizeStatusOptions(statusesData) {
 
 export default function ReservationsSection() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [reservationFrom, setReservationFrom] = useState("");
-  const [reservationTo, setReservationTo] = useState("");
+  const [statusFilter, setStatusFilter] = useState(null);
+  const [reservationFrom, setReservationFrom] = useState(null);
+  const [reservationTo, setReservationTo] = useState(null);
   const [selectedRoomId, setSelectedRoomId] = useState("");
   const [primaryGuestEmail, setPrimaryGuestEmail] = useState("");
   const [primaryGuestLastName, setPrimaryGuestLastName] = useState("");
@@ -95,8 +103,11 @@ export default function ReservationsSection() {
     ],
   );
 
-  const { data: reservationsData, isLoading, error } =
-    useReservationsQuery(apiFilters);
+  const {
+    data: reservationsData,
+    isLoading,
+    error,
+  } = useReservationsQuery(apiFilters);
   const { data: statusesData } = useReservationStatusesQuery();
   const { data: roomsData } = useRoomsQuery();
   const [updateReservationStatus, { isLoading: isUpdatingStatus }] =
@@ -139,7 +150,10 @@ export default function ReservationsSection() {
     setUpdatingReservationId(reservationId);
 
     try {
-      await updateReservationStatus({ id: reservationId, status: nextStatus }).unwrap();
+      await updateReservationStatus({
+        id: reservationId,
+        status: nextStatus,
+      }).unwrap();
       enqueueSnackbar("Stav rezervace byl aktualizován.", {
         variant: "success",
         autoHideDuration: 3000,
@@ -199,7 +213,8 @@ export default function ReservationsSection() {
               {dayjs(row.check_out_date).format("DD. MM. YYYY")}
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              {dayjs(row.check_out_date).diff(dayjs(row.check_in_date), "day")} nocí
+              {dayjs(row.check_out_date).diff(dayjs(row.check_in_date), "day")}{" "}
+              nocí
             </Typography>
           </Box>
         ),
@@ -237,7 +252,8 @@ export default function ReservationsSection() {
               {(row.num_adults || 0) + (row.num_children || 0)}
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              {row.num_adults} Dospělý{row.num_children ? `, ${row.num_children} Dítě` : ""}
+              {row.num_adults} Dospělý
+              {row.num_children ? `, ${row.num_children} Dítě` : ""}
             </Typography>
           </Box>
         ),
@@ -267,7 +283,9 @@ export default function ReservationsSection() {
               <FormControl size="small" sx={{ minWidth: 150 }}>
                 <Select
                   value={selectedStatus || ""}
-                  onChange={(e) => handleDraftStatusChange(row.id, e.target.value)}
+                  onChange={(e) =>
+                    handleDraftStatusChange(row.id, e.target.value)
+                  }
                 >
                   {statusOptions.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
@@ -283,7 +301,9 @@ export default function ReservationsSection() {
                 disabled={isUnchanged || isUpdatingThisRow}
                 onClick={() => handleUpdateStatus(row.id, selectedStatus)}
                 startIcon={
-                  isUpdatingThisRow ? <CircularProgress size={14} color="inherit" /> : null
+                  isUpdatingThisRow ? (
+                    <CircularProgress size={14} color="inherit" />
+                  ) : null
                 }
               >
                 Uložit
@@ -293,12 +313,7 @@ export default function ReservationsSection() {
         },
       },
     ],
-    [
-      draftStatuses,
-      isUpdatingStatus,
-      statusOptions,
-      updatingReservationId,
-    ],
+    [draftStatuses, isUpdatingStatus, statusOptions, updatingReservationId],
   );
 
   const filteredReservations = useMemo(() => {
@@ -311,7 +326,9 @@ export default function ReservationsSection() {
       const term = searchTerm.toLowerCase();
       filtered = filtered.filter(
         (reservation) =>
-          String(reservation.number ?? "").toLowerCase().includes(term) ||
+          String(reservation.number ?? "")
+            .toLowerCase()
+            .includes(term) ||
           reservation.primary_guest.first_name?.toLowerCase().includes(term) ||
           reservation.primary_guest.last_name?.toLowerCase().includes(term) ||
           reservation.primary_guest.email?.toLowerCase().includes(term) ||
@@ -426,194 +443,184 @@ export default function ReservationsSection() {
   }
 
   return (
-    <Stack spacing={3}>
-      {/* Header s statistikami */}
+    <Stack spacing={3} p={{sx: 1, md: 3}}>
       <Box>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          mb={2}
-        >
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <BookOnline color="primary" />
-            <Typography
-              variant="h4"
-              sx={{
-                fontWeight: 700,
-                color: "text.primary",
-                fontFamily: '"Manrope", "Poppins", sans-serif',
-              }}
-            >
+        <Stack>
+          <Stack>
+            <Typography variant="h4" gutterBottom>
               Správa rezervací
             </Typography>
+            <Typography variant="body1">
+              Zde můžete spravovat rezervace pro vaše hosty. Přidávejte,
+              upravujte nebo odstraňujte rezervace, které se zobrazí v kalendáři
+              nebo v profilu hosta.
+            </Typography>
           </Stack>
-
         </Stack>
       </Box>
 
-      {/* Seznam rezervací */}
-      <Card
-        sx={{
-          borderRadius: 2,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-          border: '1px solid',
-          borderColor: 'divider'
-        }}
-      >
-        <Box sx={{ p: 3 }}>
-          <Stack spacing={3}>
-            {/* Filtrace a vyhledávání */}
-            <Stack
-              direction={{ xs: "column", sm: "row" }}
-              alignItems={{ xs: "stretch", sm: "center" }}
-              justifyContent="space-between"
-              spacing={2}
-            >
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 600,
-                  color: "text.primary",
-                  fontFamily: '"Manrope", "Poppins", sans-serif',
-                }}
+      <FormControl sx={formFieldStyles}>
+        <InputLabel>Stav rezervace</InputLabel>
+        <Select
+          value={statusFilter || ""}
+          label="Stav rezervace"
+          onChange={(e) => setStatusFilter(e.target.value)}
+          IconComponent={
+            statusFilter && statusFilter !== "all" ? () => null : undefined
+          }
+          endAdornment={
+            statusFilter && statusFilter !== "all" ? (
+              <InputAdornment
+                position="end"
+                sx={{ position: "absolute", right: 8, pointerEvents: "auto" }}
               >
-                Seznam rezervací
-              </Typography>
-
-              <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
-                <FormControl size="small" sx={{ minWidth: 140 }}>
-                  <InputLabel>Stav</InputLabel>
-                  <Select
-                    value={statusFilter}
-                    label="Stav"
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                  >
-                    <MenuItem value="all">Všechny stavy</MenuItem>
-                    {statusOptions.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-
-                <TextField
-                  label="Od"
-                  type="date"
+                <IconButton
                   size="small"
-                  value={reservationFrom}
-                  onChange={(e) => setReservationFrom(e.target.value)}
-                  InputLabelProps={{ shrink: true }}
-                />
-
-                <TextField
-                  label="Do"
-                  type="date"
-                  size="small"
-                  value={reservationTo}
-                  onChange={(e) => setReservationTo(e.target.value)}
-                  InputLabelProps={{ shrink: true }}
-                />
-
-                <FormControl size="small" sx={{ minWidth: 180 }}>
-                  <InputLabel>Pokoj</InputLabel>
-                  <Select
-                    value={selectedRoomId}
-                    label="Pokoj"
-                    onChange={(e) => setSelectedRoomId(e.target.value)}
-                  >
-                    <MenuItem value="">Všechny pokoje</MenuItem>
-                    {roomOptions.map((room) => (
-                      <MenuItem key={room.value} value={room.value}>
-                        {room.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-
-                <TextField
-                  label="Email hosta"
-                  size="small"
-                  value={primaryGuestEmail}
-                  onChange={(e) => setPrimaryGuestEmail(e.target.value)}
-                  sx={{ width: 220 }}
-                />
-
-                <TextField
-                  label="Příjmení hosta"
-                  size="small"
-                  value={primaryGuestLastName}
-                  onChange={(e) => setPrimaryGuestLastName(e.target.value)}
-                  sx={{ width: 190 }}
-                />
-
-                <TextField
-                  placeholder="Hledat rezervaci..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  size="small"
-                  sx={{ width: 300 }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Search sx={{ color: "text.secondary" }} />
-                      </InputAdornment>
-                    ),
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setStatusFilter(null);
                   }}
-                />
+                >
+                  <Clear sx={{ fontSize: 18 }} />
+                </IconButton>
+              </InputAdornment>
+            ) : null
+          }
+        >
+          {statusOptions.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
-                <Stack direction="row" spacing={1}>
-                  <Button
-                    variant="outlined"
-                    onClick={handleClearFilters}
-                    disabled={!hasStructuredFilters}
-                  >
-                    Zrušit filtry
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    onClick={handleClearSearch}
-                    disabled={!hasSearchFilter}
-                  >
-                    Vymazat hledání
-                  </Button>
-                  <Button
-                    variant="text"
-                    onClick={handleResetFilters}
-                    disabled={!hasActiveFilters}
-                  >
-                    Reset vše
-                  </Button>
-                </Stack>
-              </Stack>
-            </Stack>
+      <TextField
+        placeholder="Vyhledávání..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        variant="outlined"
+        sx={formFieldStyles}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Search sx={{ color: "text.secondary", opacity: 0.6 }} />
+            </InputAdornment>
+          ),
+        }}
+      />
 
-            <Box
-              sx={{
-                bgcolor: "background.default",
-                borderRadius: 2,
-                overflow: "hidden",
-              }}
-            >
-              <CustomTable
-                columns={enhancedReservationColumns}
-                data={filteredReservations}
-                getRowId={(row) => row.id}
-                sx={{ bgcolor: "background.paper" }}
-              />
-            </Box>
+      <DatePicker
+        label="Od"
+        value={reservationFrom}
+        onChange={(newValue) => setReservationFrom(newValue)}
+        slotProps={{
+          textField: {
+            variant: "outlined",
+            sx: formFieldStyles,
+            InputProps: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <CalendarMonthIcon />
+                </InputAdornment>
+              ),
+            },
+          },
+        }}
+      />
 
-            {filteredReservations.length === 0 && hasActiveFilters && (
-                <Box textAlign="center" py={4}>
-                  <Typography color="text.secondary">
-                    Žádná rezervace nenalezena pro zadané filtry
-                  </Typography>
-                </Box>
-              )}
-          </Stack>
-        </Box>
-      </Card>
+      <DatePicker
+        label="Do"
+        value={reservationTo}
+        onChange={(newValue) => setReservationTo(newValue)}
+        slotProps={{
+          textField: {
+            variant: "outlined",
+            sx: formFieldStyles,
+            InputProps: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <CalendarMonthIcon />
+                </InputAdornment>
+              ),
+            },
+          },
+        }}
+      />
+
+      <FormControl sx={formFieldStyles}>
+        <InputLabel>Filtr pokojů</InputLabel>
+        <Select
+          value={selectedRoomId}
+          label="Filtr pokojů"
+          onChange={(e) => setSelectedRoomId(e.target.value)}
+          IconComponent={selectedRoomId ? () => null : undefined}
+          endAdornment={
+            selectedRoomId ? (
+              <InputAdornment
+                position="end"
+                sx={{ position: "absolute", right: 8, pointerEvents: "auto" }}
+              >
+                <IconButton
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedRoomId("");
+                  }}
+                >
+                  <Clear sx={{ fontSize: 18 }} />
+                </IconButton>
+              </InputAdornment>
+            ) : null
+          }
+        >
+          <MenuItem value="">Všechny pokoje</MenuItem>
+          {roomOptions.map((room) => (
+            <MenuItem key={room.value} value={room.value}>
+              {room.label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      <Stack direction="row" spacing={1}>
+        <Button
+          variant="outlined"
+          onClick={handleClearFilters}
+          disabled={!hasStructuredFilters}
+        >
+          Zrušit filtry
+        </Button>
+        <Button
+          variant="outlined"
+          onClick={handleClearSearch}
+          disabled={!hasSearchFilter}
+        >
+          Vymazat hledání
+        </Button>
+        <Button
+          variant="text"
+          onClick={handleResetFilters}
+          disabled={!hasActiveFilters}
+        >
+          Reset vše
+        </Button>
+      </Stack>
+
+      <AppCardCustomizable>
+        <CustomTable
+          columns={enhancedReservationColumns}
+          data={filteredReservations}
+          getRowId={(row) => row.id}
+        />
+        {filteredReservations.length === 0 && hasActiveFilters && (
+          <Box textAlign="center" py={4}>
+            <Typography color="text.secondary">
+              Žádná rezervace nenalezena pro zadané filtry
+            </Typography>
+          </Box>
+        )}
+      </AppCardCustomizable>
     </Stack>
   );
 }

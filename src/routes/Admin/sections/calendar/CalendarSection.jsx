@@ -1,14 +1,19 @@
-import { useMemo, useState } from 'react';
-import { 
-  Box, 
-  Card, 
-  Stack, 
-  Typography
-} from '@mui/material';
-import dayjs from 'dayjs';
-import { CalendarMonth } from '@mui/icons-material';
-import CustomMuiCalendar from '../../components/CustomMuiCalendar';
-import { useReservationsQuery } from '../../../../redux/api/reservationsApi';
+import { useMemo, useState } from "react";
+import {
+  Box,
+  Card,
+  Stack,
+  Typography,
+  IconButton,
+  Divider,
+  Chip,
+} from "@mui/material";
+import { Close } from "@mui/icons-material";
+import dayjs from "dayjs";
+import { CalendarMonth } from "@mui/icons-material";
+import CustomMuiCalendar from "../../components/CustomMuiCalendar";
+import { useReservationsQuery } from "../../../../redux/api/reservationsApi";
+import { AppCardCustomizable } from "../../../../components/containers/AppCard";
 
 export default function CalendarSection() {
   const [selectedReservation, setSelectedReservation] = useState(null);
@@ -24,7 +29,7 @@ export default function CalendarSection() {
       status: reservation.status,
       from: dayjs(reservation.check_in_date),
       to: dayjs(reservation.check_out_date),
-      text: `${reservation.primary_guest.first_name} - ${reservation.rooms.map(r => r.name).join(', ')}`,
+      text: `${reservation.primary_guest.first_name} - ${reservation.rooms.map((r) => r.name).join(", ")}`,
       guest: reservation.primary_guest,
       rooms: reservation.rooms,
       num_adults: reservation.num_adults,
@@ -37,90 +42,108 @@ export default function CalendarSection() {
 
   if (isLoading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="400px"
+      >
         <Typography variant="body1">Načítání kalendáře...</Typography>
       </Box>
     );
   }
 
   return (
-    <Stack spacing={3}>
-      {/* Header */}
-      <Box>
-        <Stack direction="row" alignItems="center" spacing={1} mb={3}>
-          <CalendarMonth color="primary" />
-          <Typography 
-            variant="h4" 
-            sx={{ 
-              fontWeight: 700, 
-              color: 'text.primary',
-              fontFamily: '"Manrope", "Poppins", sans-serif'
-            }}
-          >
-            Kalendář rezervací
-          </Typography>
-        </Stack>
-      </Box>
+    <Stack spacing={6} p={{ sx: 1, md: 3 }}>
+      <Stack>
+        <Typography variant="h4" gutterBottom>
+          Kalendář rezervací
+        </Typography>
+        <Typography variant="body1">
+          Zde můžete spravovat rezervace pro vaše hosty. Přidávejte, upravujte
+          nebo odstraňujte rezervace, které se zobrazí v kalendáři nebo v
+          profilu hosta.
+        </Typography>
+      </Stack>
 
-      {/* Kalendář */}
-      <Card 
-        sx={{ 
-          p: 3,
-          borderRadius: 2,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-          border: '1px solid',
-          borderColor: 'divider'
-        }}
-      >
-        <Stack spacing={2}>
-          <CustomMuiCalendar
-            events={calendarEventsFromApi}
-            onEventClick={(event) => setSelectedReservation(event)}
-          />
-
-          {selectedReservation && (
-            <Card
-              variant="outlined"
-              sx={{
-                p: 2,
-                bgcolor: "background.default",
-              }}
+      {selectedReservation && (
+        <AppCardCustomizable>
+          {/* Header with title and close button */}
+          <Box display="flex" justifyContent="space-between" p={2} pb={1}>
+            <Typography variant="h6" fontWeight={600}>
+              Rezervace{" "}
+              {selectedReservation.number || `#${selectedReservation.id}`}
+            </Typography>
+            <IconButton
+              onClick={() => setSelectedReservation(null)}
+              size="small"
+              sx={{ color: "text.secondary" }}
             >
-              <Stack spacing={0.8}>
-                <Typography variant="h6">
-                  Rezervace {selectedReservation.number || `#${selectedReservation.id}`}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {dayjs(selectedReservation.check_in_date).format("DD. MM. YYYY")} -{" "}
-                  {dayjs(selectedReservation.check_out_date).format("DD. MM. YYYY")}
-                </Typography>
-                <Typography variant="body2">
-                  Host: {selectedReservation.guest?.first_name} {selectedReservation.guest?.last_name}
-                </Typography>
-                <Typography variant="body2">
-                  Pokoje: {selectedReservation.rooms?.map((room) => room.name).join(", ")}
-                </Typography>
-                <Typography variant="body2">
-                  Stav: {selectedReservation.status}
-                </Typography>
-                <Typography variant="body2">
-                  Hosté: {selectedReservation.num_adults || 0} dospělí
-                  {selectedReservation.num_children
-                    ? `, ${selectedReservation.num_children} děti`
-                    : ""}
-                  {" "}(
-                  {(selectedReservation.num_adults || 0) +
-                    (selectedReservation.num_children || 0)}{" "}
-                  celkem)
-                </Typography>
-                <Typography variant="body2" fontWeight={700}>
-                  Cena: {selectedReservation.price} Kč
-                </Typography>
-              </Stack>
-            </Card>
-          )}
-        </Stack>
-      </Card>
+              <Close fontSize="small" />
+            </IconButton>
+          </Box>
+
+          <Divider />
+
+          {/* Content */}
+          <Stack spacing={1.5} p={2} alignItems={"flex-start"}>
+            <Typography variant="body1" fontWeight={500}>
+              {dayjs(selectedReservation.check_in_date).format("DD. MM. YYYY")}{" "}
+              -{" "}
+              {dayjs(selectedReservation.check_out_date).format("DD. MM. YYYY")}
+            </Typography>
+
+            <Typography variant="body2">
+              <strong>Host:</strong> {selectedReservation.guest?.first_name}{" "}
+              {selectedReservation.guest?.last_name}
+            </Typography>
+
+            <Typography variant="body2">
+              <strong>Pokoje:</strong>{" "}
+              {selectedReservation.rooms?.map((room) => room.name).join(", ")}
+            </Typography>
+
+            <Box display="flex" alignItems="center" gap={1}>
+              <Typography variant="body2">
+                <strong>Stav:</strong>
+              </Typography>
+              <Chip
+                label={selectedReservation.status}
+                size="small"
+                variant="outlined"
+              />
+            </Box>
+
+            <Typography variant="body2">
+              <strong>Hosté:</strong> {selectedReservation.num_adults || 0}{" "}
+              dospělí
+              {selectedReservation.num_children
+                ? `, ${selectedReservation.num_children} děti`
+                : ""}
+              {" · "}
+              {(selectedReservation.num_adults || 0) +
+                (selectedReservation.num_children || 0)}{" "}
+              celkem
+            </Typography>
+
+            <Typography
+              variant="body1"
+              fontWeight={600}
+              color="primary"
+              sx={{ mt: 1 }}
+            >
+              Cena: {selectedReservation.price} Kč
+            </Typography>
+          </Stack>
+        </AppCardCustomizable>
+      )}
+
+      <AppCardCustomizable>
+        <CustomMuiCalendar
+          events={calendarEventsFromApi}
+          onEventClick={(event) => setSelectedReservation(event)}
+        />
+      </AppCardCustomizable>
     </Stack>
   );
 }

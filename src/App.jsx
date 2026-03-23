@@ -25,8 +25,8 @@ export default function App() {
         <Route path="/cenik" element={<PriceList />} />
         <Route path="/galerie" element={<Galerie />} />
         <Route path="/rezervace" element={<ReservationPage2 />} />
-        <Route path="/admin" element={<AdminPage />} />
       </Route>
+      <Route path="/admin" element={<AdminPage />} />
     </Routes>
   );
 }

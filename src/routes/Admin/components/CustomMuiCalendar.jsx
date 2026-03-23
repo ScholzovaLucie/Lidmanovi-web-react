@@ -83,6 +83,9 @@ function EventDay(props) {
     ? "none"
     : `1px solid ${theme.palette.divider}`;
 
+  // Poslední zobrazený den v kalendáři je den v posledním řádku a posledním sloupci
+  const isLastDisplayedDay = isLastRow && isLastInRow;
+
   if (outsideCurrentMonth) {
     return (
       <Box
@@ -92,6 +95,7 @@ function EventDay(props) {
           borderRight,
           borderBottom,
           backgroundColor: "action.hover",
+          borderBottomRightRadius: isLastDisplayedDay ? "16px" : 0,
         }}
       />
     );
@@ -149,9 +153,7 @@ function EventDay(props) {
           <Tooltip
             key={`${event.name}-${event.number ?? "no-number"}-${day.format("YYYY-MM-DD")}`}
             title={
-              event.number
-                ? `Číslo rezervace: ${event.number}`
-                : event.name
+              event.number ? `Číslo rezervace: ${event.number}` : event.name
             }
             arrow
           >
@@ -193,6 +195,7 @@ export default function CustomMuiCalendar({
   value,
   onChange,
   onEventClick,
+  outlined = false,
   ...rest
 }) {
   const theme = useTheme();
@@ -219,13 +222,13 @@ export default function CustomMuiCalendar({
     const map = {};
     const uniqueNames = [...new Set(events.map((e) => e.name))];
     const eventColors = [
-      '#1976d2',  // primary blue
-      '#1565c0',  // darker blue
-      '#42a5f5',  // lighter blue
-      '#64b5f6',  // light blue
-      '#90caf9',  // very light blue
-      '#5e35b1',  // purple blue
-      '#7e57c2',  // light purple
+      "#1976d2", // primary blue
+      "#1565c0", // darker blue
+      "#42a5f5", // lighter blue
+      "#64b5f6", // light blue
+      "#90caf9", // very light blue
+      "#5e35b1", // purple blue
+      "#7e57c2", // light purple
     ];
     uniqueNames.forEach((name, i) => {
       map[name] = eventColors[i % eventColors.length];
@@ -237,7 +240,7 @@ export default function CustomMuiCalendar({
     <Box
       sx={{
         width: "100%",
-        border: `1px solid ${theme.palette.divider}`,
+        border: outlined ? `1px solid ${theme.palette.divider}` : "none",
         borderRadius: 1,
       }}
     >

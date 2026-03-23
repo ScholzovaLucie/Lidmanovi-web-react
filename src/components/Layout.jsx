@@ -8,11 +8,21 @@ import Footer from "./Footer";
 
 export default function Layout() {
   return (
-    <Box>
+    <Box sx={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      minHeight: '100vh' 
+    }}>
       <Seo />
       <Header />
-      {/* žádný Container kolem Outletu! */}
-      <Box component="main">
+      <Box 
+        component="main" 
+        sx={{ 
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
         <Outlet />
       </Box>
       <Footer />

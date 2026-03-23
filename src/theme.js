@@ -68,13 +68,8 @@ export const createAppTheme = () =>
         letterSpacing: "0.14em",
         textTransform: "uppercase",
       },
-      body1: { fontSize: 15, lineHeight: 1.85, fontWeight: 300 },
-      body2: { fontSize: 13, lineHeight: 1.8, fontWeight: 300 },
-      button: {
-        fontSize: 12,
-        letterSpacing: "0.16em",
-        textTransform: "uppercase",
-      },
+      body1: { fontSize: 16, lineHeight: 1.85, fontWeight: 300 },
+      body2: { fontSize: 14, lineHeight: 1.8, fontWeight: 300 },
     },
     spacing: 8,
     breakpoints: {
