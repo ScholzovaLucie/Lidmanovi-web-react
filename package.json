@@ -5,7 +5,7 @@
   "type": "module",
   "homepage": "https://scholzovalucie.github.io/Lidmanovi-web-react/",
   "scripts": {
-    "dev": "vite --open /Lidmanovi-web-react/",
+    "dev": "vite",
     "build": "vite build",
     "postbuild": "cp dist/index.html dist/404.html",
     "predeploy": "npm run build",

@@ -1,23 +1,5 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { withLanguageHeader } from "./language";
-
-const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:8000/pension/public",
-  prepareHeaders: (headers) => {
-    return withLanguageHeader(headers);
-  },
-});
-
-const baseQueryWithAuth = fetchBaseQuery({
-  baseUrl: "http://localhost:8000",
-  prepareHeaders: (headers, { getState }) => {
-    const token = getState().app.auth.accessToken;
-    if (token) {
-      headers.set("authorization", `Bearer ${token}`);
-    }
-    return withLanguageHeader(headers);
-  },
-});
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseQuery, baseQueryWithAuth } from "../constants";
 
 export const roomsApi = createApi({
   reducerPath: "roomsApi",
@@ -25,12 +7,12 @@ export const roomsApi = createApi({
   tagTypes: ["Room"],
   endpoints: (builder) => ({
     rooms: builder.query({
-      query: () => "/rooms/",
+      query: () => "/pension/public/rooms/",
       providesTags: ["Room"],
     }),
     availableRooms: builder.query({
       query: ({ checkIn, checkOut, adults, children }) =>
-        `/rooms/available-rooms/?adults=${adults}&children=${children}&from_date=${checkIn}&to_date=${checkOut}`,
+        `/pension/public/rooms/available-rooms/?adults=${adults}&children=${children}&from_date=${checkIn}&to_date=${checkOut}`,
     }),
   }),
 });

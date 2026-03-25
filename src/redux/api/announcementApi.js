@@ -1,17 +1,5 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { withLanguageHeader } from "./language";
-
-const baseQueryWithAuth = fetchBaseQuery({
-  baseUrl: "http://localhost:8000/editorial_system/info-boxes",
-  prepareHeaders: (headers, { getState }) => {
-    // By default, if we have a token in the store, let's use that for authenticated requests
-    const token = getState().app.auth.accessToken;
-    if (token) {
-      headers.set("authorization", `Bearer ${token}`);
-    }
-    return withLanguageHeader(headers);
-  },
-});
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseQueryWithAuth } from "../constants";
 
 export const announcementApi = createApi({
   reducerPath: "announcementApi",
@@ -21,7 +9,7 @@ export const announcementApi = createApi({
     // GET /editorial_system/info-boxes/ - seznam info boxů s paginací
     getInfoBoxes: builder.query({
       query: ({ page = 1, page_size = 10, lang } = {}) => ({
-        url: "/",
+        url: "/editorial_system/info-boxes/",
         method: "GET",
         params: {
           page,
@@ -41,7 +29,7 @@ export const announcementApi = createApi({
     // GET /editorial_system/info-boxes/{id}/ - detail info boxu
     getInfoBox: builder.query({
       query: ({ id, lang }) => ({
-        url: `/${id}/`,
+        url: `/editorial_system/info-boxes/${id}/`,
         method: "GET",
         params: {
           ...(lang && { lang }),
@@ -53,7 +41,7 @@ export const announcementApi = createApi({
     // POST /editorial_system/info-boxes/ - vytvoření nového info boxu
     createInfoBox: builder.mutation({
       query: (newInfoBox) => ({
-        url: "/",
+        url: "/editorial_system/info-boxes/",
         method: "POST",
         body: newInfoBox,
       }),
@@ -63,7 +51,7 @@ export const announcementApi = createApi({
     // DELETE /editorial_system/info-boxes/{id}/ - smazání info boxu
     deleteInfoBox: builder.mutation({
       query: (id) => ({
-        url: `/${id}/`,
+        url: `/editorial_system/info-boxes/${id}/`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, id) => [

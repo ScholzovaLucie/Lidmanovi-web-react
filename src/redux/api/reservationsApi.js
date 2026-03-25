@@ -1,63 +1,5 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { setTokens, clearAuth } from "../slices/app/appSlice";
-import { storeTokens, clearTokens, getStoredTokens } from "../../utils/cookieUtils";
-import { withLanguageHeader } from "./language";
-
-const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:8000/pension",
-  prepareHeaders: (headers, { getState }) => {
-    const token = getState().app.auth.accessToken;
-
-    if (token) {
-      headers.set("Authorization", `Bearer ${token}`);
-    }
-
-    return withLanguageHeader(headers);
-  },
-});
-
-const authBaseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:8000/api",
-  prepareHeaders: (headers) => withLanguageHeader(headers),
-});
-
-const baseQueryWithReauth = async (args, api, extraOptions) => {
-  let result = await baseQuery(args, api, extraOptions);
-
-  if (result.error?.status === 401) {
-    const tokens = getStoredTokens();
-
-    if (tokens.refresh) {
-      const refreshResult = await authBaseQuery(
-        {
-          url: "/token/refresh/",
-          method: "POST",
-          body: { refresh: tokens.refresh },
-        },
-        api,
-        extraOptions,
-      );
-
-      if (refreshResult.data?.access) {
-        const newTokens = {
-          access: refreshResult.data.access,
-          refresh: tokens.refresh,
-        };
-        storeTokens(newTokens.access, newTokens.refresh);
-        api.dispatch(setTokens(newTokens));
-        result = await baseQuery(args, api, extraOptions);
-      } else {
-        api.dispatch(clearAuth());
-        clearTokens();
-      }
-    } else {
-      api.dispatch(clearAuth());
-      clearTokens();
-    }
-  }
-
-  return result;
-};
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseQueryWithReauth } from "../constants";
 
 export const reservationsApi = createApi({
   reducerPath: "reservationsApi",
@@ -87,7 +29,7 @@ export const reservationsApi = createApi({
      */
     createReservation: builder.mutation({
       query: (payload) => ({
-        url: "/public/reservations/create/",
+        url: "/pension/public/reservations/create/",
         method: "POST",
         body: payload,
       }),
@@ -133,7 +75,7 @@ export const reservationsApi = createApi({
         }
 
         return {
-          url: "/admin/reservations/",
+          url: "/pension/admin/reservations/",
           method: "GET",
           params,
         };
@@ -142,14 +84,14 @@ export const reservationsApi = createApi({
     }),
 
     reservationStatuses: builder.query({
-      query: () => "/public/reservations/statuses/",
+      query: () => "/pension/public/reservations/statuses/",
       method: "GET",
       providesTags: ["ReservationStatuses"],
     }),
 
     updateReservationStatus: builder.mutation({
       query: ({ id, status }) => ({
-        url: `/admin/reservations/${id}/update/`,
+        url: `/pension/admin/reservations/${id}/update/`,
         method: "PUT",
         body: { status },
       }),
@@ -158,7 +100,7 @@ export const reservationsApi = createApi({
 
     updateReservationNote: builder.mutation({
       query: ({ id, note }) => ({
-        url: `/admin/reservations/${id}/update/`,
+        url: `/pension/admin/reservations/${id}/update/`,
         method: "PUT",
         body: { note },
       }),

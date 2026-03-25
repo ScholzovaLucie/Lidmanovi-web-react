@@ -1,24 +1,13 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { withLanguageHeader } from "./language";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseQueryWithAuth } from "../constants";
 
 export const guestApi = createApi({
   reducerPath: "guestApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/pension",
-    prepareHeaders: (headers, { getState }) => {
-      const token = getState().app.auth.accessToken;
-
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-
-      return withLanguageHeader(headers);
-    },
-  }),
+  baseQuery: baseQueryWithAuth,
   endpoints: (builder) => ({
     guests: builder.query({
       query: ({ page = 1, page_size = 10 } = {}) => ({
-        url: "/admin/guests/",
+        url: "/pension/admin/guests/",
         method: "GET",
         params: {
           page,

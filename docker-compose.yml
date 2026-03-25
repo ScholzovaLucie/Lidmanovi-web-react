@@ -1,0 +1,38 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    container_name: lidmanovi-fe
+    restart: unless-stopped
+    
+    # Environment variables (if needed)
+    # environment:
+    #   - NODE_ENV=production
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# Volumes (if you need persistent data)
+# volumes:
+#   data:
+
+
+networks:
+  default:
+    name: bajerlukascz_network
+    external: true
