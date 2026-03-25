@@ -5,7 +5,7 @@ yarn-error.log*
 .git
 .gitignore
 README.md
-.env
+# Exclude all env files except main .env
 .env.local
 .env.development.local
 .env.test.local
