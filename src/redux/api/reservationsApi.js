@@ -98,6 +98,15 @@ export const reservationsApi = createApi({
       query: (filters = {}) => {
         const params = {};
 
+        // Pagination parametry
+        if (filters.page) {
+          params.page = filters.page;
+        }
+        if (filters.page_size) {
+          params.page_size = filters.page_size;
+        }
+
+        // Existující filtry
         if (filters.reservation_from) {
           params.reservation_from = filters.reservation_from;
         }
@@ -109,6 +118,9 @@ export const reservationsApi = createApi({
         }
         if (filters.status) {
           params.status = filters.status;
+        }
+        if (filters.search_text) {
+          params.search_text = filters.search_text;
         }
         if (filters.primary_guest_email) {
           params.primary_guest_email = filters.primary_guest_email;
@@ -130,7 +142,7 @@ export const reservationsApi = createApi({
     }),
 
     reservationStatuses: builder.query({
-      query: () => "/admin/reservations/statuses/",
+      query: () => "/public/reservations/statuses/",
       method: "GET",
       providesTags: ["ReservationStatuses"],
     }),
@@ -143,6 +155,15 @@ export const reservationsApi = createApi({
       }),
       invalidatesTags: ["Reservations"],
     }),
+
+    updateReservationNote: builder.mutation({
+      query: ({ id, note }) => ({
+        url: `/admin/reservations/${id}/update/`,
+        method: "PUT",
+        body: { note },
+      }),
+      invalidatesTags: ["Reservations"],
+    }),
   }),
 });
 
@@ -152,4 +173,5 @@ export const {
   useLazyReservationsQuery,
   useReservationStatusesQuery,
   useUpdateReservationStatusMutation,
+  useUpdateReservationNoteMutation,
 } = reservationsApi;

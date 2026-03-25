@@ -17,8 +17,14 @@ export const guestApi = createApi({
   }),
   endpoints: (builder) => ({
     guests: builder.query({
-      query: () => "/admin/guests/",
-      method: "GET",
+      query: ({ page = 1, page_size = 10 } = {}) => ({
+        url: "/admin/guests/",
+        method: "GET",
+        params: {
+          page,
+          page_size,
+        },
+      }),
     }),
   }),
 });

@@ -1,103 +1,61 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Box,
-  Card,
   Stack,
   Typography,
   TextField,
   InputAdornment,
   IconButton,
 } from "@mui/material";
-import { People, Search, Email, Phone, Clear } from "@mui/icons-material";
+import { Search, Email, Phone, Clear } from "@mui/icons-material";
 import CustomTable from "../../components/CustomMuiTable";
 import { useGuestsQuery } from "../../../../redux/api/guestApi";
-import { useLazyReservationsQuery } from "../../../../redux/api/reservationsApi";
-import AppCard, {
-  AppCardCustomizable,
-} from "../../../../components/containers/AppCard";
+import { useReservationsQuery } from "../../../../redux/api/reservationsApi";
+import { AppCardCustomizable } from "../../../../components/containers/AppCard";
 import { formFieldStyles } from "../reservations/constants";
-
-function getReservationsCountFromGuestRow(row) {
-  if (Array.isArray(row?.reservations)) return row.reservations.length;
-  if (typeof row?.reservations === "number") return row.reservations;
-  if (typeof row?.reservations === "string")
-    return Number(row.reservations) || 0;
-  if (typeof row?.reservations_count === "number")
-    return row.reservations_count;
-  if (typeof row?.reservations_count === "string")
-    return Number(row.reservations_count) || 0;
-  if (typeof row?.reservation_count === "number") return row.reservation_count;
-  if (typeof row?.reservation_count === "string")
-    return Number(row.reservation_count) || 0;
-  if (typeof row?.num_reservations === "number") return row.num_reservations;
-  if (typeof row?.num_reservations === "string")
-    return Number(row.num_reservations) || 0;
-  return 0;
-}
+import { usePagination } from "../../../../hooks/usePagination";
 
 export default function GuestsSection() {
   const [searchTerm, setSearchTerm] = useState("");
 
+  // ✨ Jeden řádek pro celou pagination logiku!
+  const pagination = usePagination({ 
+    initialPageSize: 10,
+    rowsPerPageOptions: [5, 10, 25, 50] 
+  });
+
   const handleClearSearch = () => {
     setSearchTerm("");
   };
-  const [reservationCountsByGuestId, setReservationCountsByGuestId] = useState(
-    {},
-  );
-  const { data: guestsData, isLoading, error } = useGuestsQuery();
-  const [fetchReservationsByGuest] = useLazyReservationsQuery();
 
-  useEffect(() => {
-    if (!Array.isArray(guestsData) || guestsData.length === 0) {
-      setReservationCountsByGuestId({});
-      return;
-    }
+  // API volání s pagination hookem
+  const {
+    data: guestsData,
+    isLoading: guestsLoading,
+    error: guestsError,
+  } = useGuestsQuery({ 
+    page: pagination.page, 
+    page_size: pagination.pageSize 
+  });
+  const { data: reservationsData, isLoading: reservationsLoading } =
+    useReservationsQuery();
 
-    let cancelled = false;
+  // Spočítáme rezervace pro každého hosta z rezervačních dat
+  const reservationCountsByGuestId = useMemo(() => {
+    if (!reservationsData?.results) return {};
 
-    const loadCounts = async () => {
-      const entries = await Promise.all(
-        guestsData.map(async (guest) => {
-          if (guest?.id == null) {
-            return [guest?.id, getReservationsCountFromGuestRow(guest)];
-          }
-
-          try {
-            const response = await fetchReservationsByGuest(
-              { primary_guest_id: guest.id },
-              true,
-            ).unwrap();
-
-            const list = Array.isArray(response)
-              ? response
-              : Array.isArray(response?.results)
-                ? response.results
-                : [];
-
-            return [guest.id, list.length];
-          } catch (e) {
-            return [guest.id, getReservationsCountFromGuestRow(guest)];
-          }
-        }),
-      );
-
-      if (!cancelled) {
-        const map = {};
-        entries.forEach(([guestId, count]) => {
-          if (guestId != null) {
-            map[guestId] = count;
-          }
-        });
-        setReservationCountsByGuestId(map);
+    const counts = {};
+    reservationsData.results.forEach((reservation) => {
+      const guestId = reservation.primary_guest?.id;
+      if (guestId) {
+        counts[guestId] = (counts[guestId] || 0) + 1;
       }
-    };
+    });
+    return counts;
+  }, [reservationsData]);
 
-    loadCounts();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [fetchReservationsByGuest, guestsData]);
+  const isLoading = guestsLoading || reservationsLoading;
+  const error = guestsError;
 
   const guestColumns = useMemo(
     () => [
@@ -145,15 +103,7 @@ export default function GuestsSection() {
         label: "Rezervace",
         align: "center",
         render: (row) => {
-          const calculatedCount =
-            row.id != null ? reservationCountsByGuestId[row.id] : undefined;
-
-          const fallbackCount = getReservationsCountFromGuestRow(row);
-          const count =
-            typeof calculatedCount === "number"
-              ? calculatedCount
-              : fallbackCount;
-
+          const count = reservationCountsByGuestId[row.id] || 0;
           return (
             <Typography variant="body2" color="text.secondary">
               {count}
@@ -166,10 +116,14 @@ export default function GuestsSection() {
   );
 
   const filteredGuests = useMemo(() => {
-    if (!guestsData || !searchTerm) return guestsData || [];
+    if (!guestsData) return [];
+
+    // Adaptujeme na nový formát dat z BE
+    const guests = guestsData.results || guestsData;
+    if (!searchTerm) return guests;
 
     const term = searchTerm.toLowerCase();
-    return guestsData.filter(
+    return guests.filter(
       (guest) =>
         guest.first_name?.toLowerCase().includes(term) ||
         guest.last_name?.toLowerCase().includes(term) ||
@@ -207,7 +161,7 @@ export default function GuestsSection() {
   }
 
   return (
-    <Stack spacing={5} p={{sx: 1, md: 3}}>
+    <Stack spacing={5} p={{ sx: 1, md: 3 }}>
       <Stack>
         <Typography variant="h4" gutterBottom>
           Správa hostů
@@ -248,10 +202,15 @@ export default function GuestsSection() {
         />
 
         <AppCardCustomizable>
+          {/* ✨ Dramaticky jednodušší API! */}
           <CustomTable
             columns={guestColumns}
             data={filteredGuests}
             getRowId={(row) => row.id}
+            paginationConfig={{
+              ...pagination, // Rozbalí všechny pagination funkce a hodnoty
+              totalCount: guestsData?.count || filteredGuests.length
+            }}
           />
           {filteredGuests.length === 0 && searchTerm && (
             <Box textAlign="center" py={4}>

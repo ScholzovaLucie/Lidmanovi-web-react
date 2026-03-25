@@ -20,9 +20,10 @@ export default function CalendarSection() {
   const { data: reservationsData, isLoading } = useReservationsQuery();
 
   const calendarEventsFromApi = useMemo(() => {
-    if (!reservationsData) return [];
+    console.log(reservationsData);
+    if (!reservationsData?.results) return [];
 
-    return reservationsData.map((reservation) => ({
+    return reservationsData.results.map((reservation) => ({
       id: reservation.id,
       name: `${reservation.primary_guest.first_name}`,
       number: reservation.number,

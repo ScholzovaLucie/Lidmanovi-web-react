@@ -1,10 +1,215 @@
-import { Box, Button, Grid, Stack, TextField, Typography } from "@mui/material";
+import { useState, useMemo } from "react";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Grid,
+  IconButton,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { Delete as DeleteIcon } from "@mui/icons-material";
 import { AppCardCustomizable } from "../../../../components/containers/AppCard";
 import { DatePicker } from "@mui/x-date-pickers";
 import CustomTable from "../../components/CustomMuiTable";
-import { announcementColumns } from "./constants";
+import {
+  useGetInfoBoxesQuery,
+  useCreateInfoBoxMutation,
+  useDeleteInfoBoxMutation,
+} from "../../../../redux/api/announcementApi";
+import { usePagination } from "../../../../hooks/usePagination";
+import { formFieldStyles } from "../reservations/constants";
+import { useSnackbar } from "notistack";
+import dayjs from "dayjs";
 
 export default function AnnouncementSection() {
+  // Formulář state
+  const [message, setMessage] = useState("");
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+
+  // Dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [announcementToDelete, setAnnouncementToDelete] = useState(null);
+
+  // ✨ Pagination hook
+  const pagination = usePagination({
+    initialPageSize: 10,
+    rowsPerPageOptions: [5, 10, 25, 50],
+  });
+
+  // API hooks
+  const {
+    data: announcementsData,
+    isLoading: announcementsLoading,
+    error: announcementsError,
+  } = useGetInfoBoxesQuery({
+    page: pagination.page,
+    page_size: pagination.pageSize,
+  });
+
+  const [createInfoBox, { isLoading: isCreating }] = useCreateInfoBoxMutation();
+  const [deleteInfoBox, { isLoading: isDeleting }] = useDeleteInfoBoxMutation();
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  // Handlers
+  const handleSubmit = async () => {
+    if (!message.trim() || !startDate || !endDate) {
+      enqueueSnackbar("Vyplňte prosím všechna pole", {
+        variant: "error",
+        autoHideDuration: 5000,
+      });
+      return;
+    }
+
+    try {
+      await createInfoBox({
+        title: message,
+        starts_at: startDate.format("YYYY-MM-DD"),
+        ends_at: endDate.format("YYYY-MM-DD"),
+      }).unwrap();
+
+      // Reset formuláře
+      setMessage("");
+      setStartDate(null);
+      setEndDate(null);
+
+      enqueueSnackbar("Oznámení bylo úspěšně vytvořeno", {
+        variant: "success",
+        autoHideDuration: 3000,
+      });
+    } catch (error) {
+      console.error("Chyba při vytváření oznámení:", error);
+      enqueueSnackbar("Chyba při vytváření oznámení", {
+        variant: "error",
+        autoHideDuration: 5000,
+      });
+    }
+  };
+
+  const handleDeleteClick = (announcement) => {
+    setAnnouncementToDelete(announcement);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!announcementToDelete) return;
+
+    try {
+      await deleteInfoBox(announcementToDelete.id).unwrap();
+      setDeleteDialogOpen(false);
+      setAnnouncementToDelete(null);
+
+      enqueueSnackbar("Oznámení bylo úspěšně smazáno", {
+        variant: "success",
+        autoHideDuration: 3000,
+      });
+    } catch (error) {
+      console.error("Chyba při mazání oznámení:", error);
+      enqueueSnackbar("Chyba při mazání oznámení", {
+        variant: "error",
+        autoHideDuration: 5000,
+      });
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+    setAnnouncementToDelete(null);
+  };
+
+  // Sloupce tabulky s delete handlerem
+  const announcementColumns = useMemo(
+    () => [
+      {
+        key: "title",
+        label: "Text oznámení",
+        render: (row) => (
+          <Typography
+            sx={{
+              maxWidth: 300,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {row.title}
+          </Typography>
+        ),
+      },
+      {
+        key: "starts_at",
+        label: "Aktivní od",
+        render: (row) => (
+          <Typography>
+            {row.starts_at ? dayjs(row.starts_at).format("DD.MM.YYYY") : "-"}
+          </Typography>
+        ),
+      },
+      {
+        key: "ends_at",
+        label: "Aktivní do",
+        render: (row) => (
+          <Typography>
+            {row.ends_at ? dayjs(row.ends_at).format("DD.MM.YYYY") : "-"}
+          </Typography>
+        ),
+      },
+      {
+        key: "actions",
+        label: "Akce",
+        align: "center",
+        render: (row) => (
+          <IconButton
+            color="error"
+            onClick={() => handleDeleteClick(row)}
+            disabled={isDeleting}
+            size="small"
+          >
+            <DeleteIcon />
+          </IconButton>
+        ),
+      },
+    ],
+    [isDeleting],
+  );
+
+  const announcements = announcementsData?.results || [];
+
+  if (announcementsLoading) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="400px"
+      >
+        <Typography variant="body1">Načítání oznámení...</Typography>
+      </Box>
+    );
+  }
+
+  if (announcementsError) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="400px"
+      >
+        <Typography variant="body1" color="error">
+          Chyba při načítání oznámení
+        </Typography>
+      </Box>
+    );
+  }
+
   return (
     <Stack p={{ sx: 1, md: 3 }} spacing={5}>
       <Stack>
@@ -23,18 +228,39 @@ export default function AnnouncementSection() {
           Nové oznámení
         </Typography>
         <AppCardCustomizable props={{ p: 2 }}>
-          <TextField multiline rows={5} fullWidth label="Zpráva oznámení" />
-          <Stack
-            direction="row"
-            spacing={2}
-            pt={2}
-            justifyContent={"space-between"}
-          >
-            <DatePicker label="Od" sx={{ width: "100%" }} />
-            <DatePicker label="Do" sx={{ width: "100%" }} />
-            <Button variant="contained" color="primary" fullWidth>
-              Uložit oznámení
-            </Button>
+          <Stack spacing={2}>
+            <TextField
+              multiline
+              rows={5}
+              fullWidth
+              label="Zpráva oznámení"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              sx={formFieldStyles}
+            />
+            <Stack direction="row" spacing={2} justifyContent="space-between">
+              <DatePicker
+                label="Od"
+                sx={{ width: "100%" }}
+                value={startDate}
+                onChange={setStartDate}
+              />
+              <DatePicker
+                label="Do"
+                sx={{ width: "100%" }}
+                value={endDate}
+                onChange={setEndDate}
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={handleSubmit}
+                disabled={isCreating}
+              >
+                {isCreating ? "Ukládám..." : "Uložit oznámení"}
+              </Button>
+            </Stack>
           </Stack>
         </AppCardCustomizable>
       </Stack>
@@ -46,18 +272,95 @@ export default function AnnouncementSection() {
         <AppCardCustomizable>
           <CustomTable
             columns={announcementColumns}
-            data={[
-              {
-                id: 1,
-                title: "Nové oznámení",
-                starts_at: "2024-06-01",
-                ends_at: "2024-06-30",
-              },
-            ]}
+            data={announcements}
             getRowId={(row) => row.id}
+            paginationConfig={{
+              ...pagination,
+              totalCount: announcementsData?.count || announcements.length,
+            }}
           />
+          {announcements.length === 0 && (
+            <Box textAlign="center" py={4}>
+              <Typography color="text.secondary">
+                Žádná oznámení nenalezena
+              </Typography>
+            </Box>
+          )}
         </AppCardCustomizable>
       </Stack>
+
+      {/* Potvrzovací dialog pro smazání */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteCancel}
+        aria-labelledby="delete-dialog-title"
+        aria-describedby="delete-dialog-description"
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle id="delete-dialog-title">Smazat oznámení</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="delete-dialog-description" sx={{ mb: 2 }}>
+            Opravdu chcete trvale smazat toto oznámení? Tato akce je nevratná.
+          </DialogContentText>
+
+          {announcementToDelete && (
+            <Box
+              sx={{
+                p: 2,
+                border: 1,
+                borderColor: "divider",
+                borderRadius: 1,
+                bgcolor: "grey.50",
+              }}
+            >
+              <Typography
+                variant="subtitle2"
+                color="text.secondary"
+                gutterBottom
+              >
+                Text oznámení:
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  maxHeight: 100,
+                  overflow: "auto",
+                  wordBreak: "break-word",
+                }}
+              >
+                {announcementToDelete.title}
+              </Typography>
+
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ mt: 1, display: "block" }}
+              >
+                Aktivní:{" "}
+                {announcementToDelete.starts_at
+                  ? dayjs(announcementToDelete.starts_at).format("DD.MM.YYYY")
+                  : "-"}{" "}
+                -{" "}
+                {announcementToDelete.ends_at
+                  ? dayjs(announcementToDelete.ends_at).format("DD.MM.YYYY")
+                  : "-"}
+              </Typography>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel}>Zrušit</Button>
+          <Button
+            onClick={handleDeleteConfirm}
+            color="error"
+            variant="contained"
+            disabled={isDeleting}
+          >
+            {isDeleting ? "Mažu..." : "Smazat"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Stack>
   );
 }

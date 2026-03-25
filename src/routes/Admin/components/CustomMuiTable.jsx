@@ -1,11 +1,21 @@
+import { Alert } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
+import TableFooter from "@mui/material/TableFooter";
 import TableHead from "@mui/material/TableHead";
+import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 
-export default function CustomTable({ columns = [], data = [], getRowId, sx }) {
+export default function CustomTable({ 
+  columns = [], 
+  data = [], 
+  getRowId, 
+  sx,
+  // Nové jednoduché API - jeden objekt místo 8+ parametrů
+  paginationConfig = null
+}) {
   const resolveRowId = (row, index) => {
     if (getRowId) return getRowId(row);
     if (row.id) return row.id;
@@ -18,6 +28,30 @@ export default function CustomTable({ columns = [], data = [], getRowId, sx }) {
       return current && current[key] !== undefined ? current[key] : undefined;
     }, obj);
   };
+
+  // Pagination handlers
+  const handlePageChange = (event, newPage) => {
+    if (!paginationConfig) return;
+    
+    const currentPageZeroBased = paginationConfig.pageIndex;
+    
+    if (newPage > currentPageZeroBased) {
+      paginationConfig.nextPage?.();
+    } else if (newPage < currentPageZeroBased) {
+      paginationConfig.previousPage?.();
+    }
+  };
+
+  const handleRowsPerPageChange = (event) => {
+    if (!paginationConfig) return;
+    
+    const newPageSize = parseInt(event.target.value, 10);
+    paginationConfig.changePageSize?.(newPageSize);
+  };
+
+  if (!data) {
+    return <Alert severity="error">Data pro tabulku nejsou k dispozici.</Alert>;
+  }
 
   return (
     <TableContainer>
@@ -60,6 +94,26 @@ export default function CustomTable({ columns = [], data = [], getRowId, sx }) {
             </TableRow>
           ))}
         </TableBody>
+
+        {paginationConfig && (
+          <TableFooter>
+            <TableRow>
+              <TablePagination
+                rowsPerPageOptions={paginationConfig.rowsPerPageOptions}
+                colSpan={columns.length}
+                count={paginationConfig.totalCount}
+                rowsPerPage={paginationConfig.pageSize}
+                page={paginationConfig.pageIndex}
+                onPageChange={handlePageChange}
+                onRowsPerPageChange={handleRowsPerPageChange}
+                labelRowsPerPage="Řádků na stránku:"
+                labelDisplayedRows={({ from, to, count }) => 
+                  `${from}–${to} z ${count !== -1 ? count : `více než ${to}`}`
+                }
+              />
+            </TableRow>
+          </TableFooter>
+        )}
       </Table>
     </TableContainer>
   );

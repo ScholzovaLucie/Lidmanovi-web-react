@@ -1,12 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { apiApi } from "./api/apiApi";
 import { authApi } from "./api/authApi";
-import { roomsApi } from "./api/roomsApi";
+import { roomsApi, adminRoomsApi } from "./api/roomsApi";
 import { reservationsApi } from "./api/reservationsApi";
 import appReducer from "./slices/app/appSlice";
 import reservationReducer from "./slices/reservation/reservationSlice";
 import { guestApi } from "./api/guestApi";
 import { cmsApi } from "./api/cmsApi";
+import { announcementApi } from "./api/announcementApi";
 
 // Logger middleware only for explicit debug sessions.
 const loggerMiddleware = () => (next) => (action) => {
@@ -29,9 +30,11 @@ export const store = configureStore({
     [apiApi.reducerPath]: apiApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
     [roomsApi.reducerPath]: roomsApi.reducer,
+    [adminRoomsApi.reducerPath]: adminRoomsApi.reducer,
     [reservationsApi.reducerPath]: reservationsApi.reducer,
     [guestApi.reducerPath]: guestApi.reducer,
     [cmsApi.reducerPath]: cmsApi.reducer,
+    [announcementApi.reducerPath]: announcementApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -39,9 +42,11 @@ export const store = configureStore({
         apiApi.middleware,
         authApi.middleware,
         roomsApi.middleware,
+        adminRoomsApi.middleware,
         reservationsApi.middleware,
         guestApi.middleware,
         cmsApi.middleware,
+        announcementApi.middleware,
       )
       .concat(isReduxLoggerEnabled ? loggerMiddleware : []),
 });

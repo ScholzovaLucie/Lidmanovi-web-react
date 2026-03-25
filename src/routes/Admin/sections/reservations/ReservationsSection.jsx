@@ -1,12 +1,10 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   Box,
-  Card,
   Stack,
   Typography,
   TextField,
   InputAdornment,
-  Chip,
   Button,
   Select,
   MenuItem,
@@ -15,13 +13,14 @@ import {
   CircularProgress,
   IconButton,
 } from "@mui/material";
-import { Search, BookOnline, Clear, FilterListOff } from "@mui/icons-material";
+import { Search, Clear, FilterListOff, Email } from "@mui/icons-material";
 import dayjs from "dayjs";
 import CustomTable from "../../components/CustomMuiTable";
 import {
   useReservationsQuery,
   useReservationStatusesQuery,
   useUpdateReservationStatusMutation,
+  useUpdateReservationNoteMutation,
 } from "../../../../redux/api/reservationsApi";
 import { useRoomsQuery } from "../../../../redux/api/roomsApi";
 import { STATUS_META } from "../../constants";
@@ -29,74 +28,76 @@ import { useSnackbar } from "notistack";
 import { AppCardCustomizable } from "../../../../components/containers/AppCard";
 import { DatePicker } from "@mui/x-date-pickers";
 import { formFieldStyles } from "./constants";
+import { usePagination } from "../../../../hooks/usePagination";
 
-function normalizeStatusOptions(statusesData) {
-  if (!statusesData) return [];
-
-  if (Array.isArray(statusesData)) {
-    return statusesData
-      .map((item) => {
-        if (typeof item === "string") {
-          return {
-            value: item,
-            label: STATUS_META[item]?.label || item,
-          };
-        }
-
-        if (item && typeof item === "object") {
-          const value = item.value ?? item.status ?? item.key ?? item.id;
-          if (!value) return null;
-
-          return {
-            value,
-            label:
-              item.label ?? item.name ?? STATUS_META[value]?.label ?? value,
-          };
-        }
-
-        return null;
-      })
-      .filter(Boolean);
-  }
-
-  if (typeof statusesData === "object") {
-    return Object.entries(statusesData).map(([value, label]) => ({
-      value,
-      label: label || STATUS_META[value]?.label || value,
-    }));
-  }
-
-  return [];
-}
+// Constants
+const STATUS_COLORS = {
+  primary: "#1976d2",
+  success: "#2e7d32",
+  error: "#d32f2f",
+  warning: "#ed6c02",
+  info: "#0288d1",
+  default: "#757575",
+};
 
 export default function ReservationsSection() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState(null);
   const [reservationFrom, setReservationFrom] = useState(null);
   const [reservationTo, setReservationTo] = useState(null);
   const [selectedRoomId, setSelectedRoomId] = useState("");
-  const [primaryGuestEmail, setPrimaryGuestEmail] = useState("");
-  const [primaryGuestLastName, setPrimaryGuestLastName] = useState("");
   const [draftStatuses, setDraftStatuses] = useState({});
   const [updatingReservationId, setUpdatingReservationId] = useState(null);
+  const [reservationNotes, setReservationNotes] = useState({});
+  const [updatingNoteId, setUpdatingNoteId] = useState(null);
   const { enqueueSnackbar } = useSnackbar();
+
+  const pagination = usePagination({
+    initialPageSize: 10,
+    rowsPerPageOptions: [5, 10, 25, 50],
+  });
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    pagination.reset();
+  }, [
+    statusFilter,
+    reservationFrom,
+    reservationTo,
+    selectedRoomId,
+    debouncedSearchTerm,
+  ]);
 
   const apiFilters = useMemo(
     () => ({
+      page: pagination.page,
+      page_size: pagination.pageSize,
       status: statusFilter !== "all" ? statusFilter : undefined,
-      reservation_from: reservationFrom || undefined,
-      reservation_to: reservationTo || undefined,
+      reservation_from: reservationFrom
+        ? dayjs(reservationFrom).format("YYYY-MM-DD")
+        : undefined,
+      reservation_to: reservationTo
+        ? dayjs(reservationTo).format("YYYY-MM-DD")
+        : undefined,
       room_id: selectedRoomId || undefined,
-      primary_guest_email: primaryGuestEmail || undefined,
-      primary_guest_last_name: primaryGuestLastName || undefined,
+      search_text: debouncedSearchTerm || undefined,
     }),
     [
-      primaryGuestEmail,
-      primaryGuestLastName,
+      pagination.page,
+      pagination.pageSize,
       reservationFrom,
       reservationTo,
       selectedRoomId,
       statusFilter,
+      debouncedSearchTerm,
     ],
   );
 
@@ -109,41 +110,51 @@ export default function ReservationsSection() {
   const { data: roomsData } = useRoomsQuery();
   const [updateReservationStatus, { isLoading: isUpdatingStatus }] =
     useUpdateReservationStatusMutation();
+  const [updateReservationNote, { isLoading: isUpdatingNote }] =
+    useUpdateReservationNoteMutation();
+
+  useEffect(() => {
+    if (reservationsData?.results) {
+      const notes = {};
+      reservationsData.results.forEach((reservation) => {
+        notes[reservation.id] = reservation.note || "";
+      });
+      setReservationNotes(notes);
+    }
+  }, [reservationsData]);
 
   const roomOptions = useMemo(() => {
-    const roomList = Array.isArray(roomsData)
-      ? roomsData
-      : Array.isArray(roomsData?.rooms)
-        ? roomsData.rooms
-        : [];
-
+    const roomList = roomsData?.results || roomsData || [];
     return roomList
       .map((room) => ({
         value: String(room.id),
-        label: room.title || room.name || `Pokoj ${room.id}`,
+        label: room.name || `Pokoj ${room.id}`,
       }))
       .sort((a, b) => a.label.localeCompare(b.label, "cs"));
   }, [roomsData]);
 
   const statusOptions = useMemo(() => {
-    const normalized = normalizeStatusOptions(statusesData);
-    if (normalized.length > 0) return normalized;
-
+    if (Array.isArray(statusesData)) {
+      return statusesData.map((status) => ({
+        value: status.value,
+        label: status.label,
+      }));
+    }
     return Object.entries(STATUS_META).map(([value, meta]) => ({
       value,
       label: meta.label,
     }));
   }, [statusesData]);
 
-  const handleDraftStatusChange = (reservationId, nextStatus) => {
-    setDraftStatuses((prev) => ({
-      ...prev,
-      [reservationId]: nextStatus,
-    }));
-  };
+  const handleStatusChange = async (reservationId, nextStatus) => {
+    if (
+      !nextStatus ||
+      nextStatus ===
+        reservationsData?.results?.find((r) => r.id === reservationId)?.status
+    )
+      return;
 
-  const handleUpdateStatus = async (reservationId, nextStatus) => {
-    if (!nextStatus) return;
+    setDraftStatuses((prev) => ({ ...prev, [reservationId]: nextStatus }));
     setUpdatingReservationId(reservationId);
 
     try {
@@ -153,7 +164,6 @@ export default function ReservationsSection() {
       }).unwrap();
       enqueueSnackbar("Stav rezervace byl aktualizován.", {
         variant: "success",
-        autoHideDuration: 3000,
       });
       setDraftStatuses((prev) => {
         const next = { ...prev };
@@ -163,13 +173,41 @@ export default function ReservationsSection() {
     } catch (e) {
       enqueueSnackbar(
         e?.data?.detail || "Nepodařilo se změnit stav rezervace.",
-        {
-          variant: "error",
-          autoHideDuration: 5000,
-        },
+        { variant: "error" },
       );
     } finally {
       setUpdatingReservationId(null);
+    }
+  };
+
+  const handleEmailAction = (email) => {
+    if (email) window.open(`mailto:${email}`, "_blank");
+  };
+
+  const handleNoteChange = (reservationId, note) => {
+    setReservationNotes((prev) => ({ ...prev, [reservationId]: note }));
+  };
+
+  const handleSaveNote = async (reservationId) => {
+    const note = reservationNotes[reservationId] || "";
+    const originalNote =
+      reservationsData?.results?.find((r) => r.id === reservationId)?.note ||
+      "";
+
+    if (note === originalNote) return;
+
+    setUpdatingNoteId(reservationId);
+
+    try {
+      await updateReservationNote({ id: reservationId, note }).unwrap();
+      enqueueSnackbar("Poznámka byla aktualizována.", { variant: "success" });
+    } catch (e) {
+      enqueueSnackbar(
+        e?.data?.detail || "Nepodařilo se aktualizovat poznámku.",
+        { variant: "error" },
+      );
+    } finally {
+      setUpdatingNoteId(null);
     }
   };
 
@@ -180,14 +218,91 @@ export default function ReservationsSection() {
         label: "Stav",
         align: "center",
         render: (row) => {
-          const statusMeta = STATUS_META[row.status];
+          const selectedStatus = draftStatuses[row.id] ?? row.status;
+          const statusMeta = STATUS_META[selectedStatus];
+          const isUpdating =
+            isUpdatingStatus && updatingReservationId === row.id;
+          const statusColor =
+            STATUS_COLORS[statusMeta?.color] || STATUS_COLORS.default;
+
           return (
-            <Chip
-              label={statusMeta?.label || row.status}
-              color={statusMeta?.color || "default"}
-              size="small"
-              sx={{ fontWeight: 600 }}
-            />
+            <Box sx={{ minWidth: 140 }}>
+              <FormControl size="small" fullWidth>
+                {isUpdating && (
+                  <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                    <CircularProgress size={14} sx={{ mr: 1 }} />
+                    <Typography variant="caption" color="text.secondary">
+                      Ukládám...
+                    </Typography>
+                  </Box>
+                )}
+                <Select
+                  value={selectedStatus || ""}
+                  onChange={(e) => handleStatusChange(row.id, e.target.value)}
+                  disabled={isUpdating}
+                  sx={{
+                    backgroundColor: statusColor + "20",
+                    "& .MuiSelect-select": {
+                      fontWeight: 600,
+                      fontSize: "0.875rem",
+                      color: statusColor,
+                    },
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: statusColor + "60",
+                    },
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                      borderColor: statusColor,
+                    },
+                  }}
+                >
+                  {statusOptions.map((option) => {
+                    const optionColor =
+                      STATUS_COLORS[STATUS_META[option.value]?.color] ||
+                      STATUS_COLORS.default;
+                    return (
+                      <MenuItem
+                        key={option.value}
+                        value={option.value}
+                        sx={{
+                          backgroundColor: optionColor + "15",
+                          "&:hover": { backgroundColor: optionColor + "25" },
+                          "&.Mui-selected": {
+                            backgroundColor: optionColor + "30",
+                          },
+                          "&.Mui-selected:hover": {
+                            backgroundColor: optionColor + "40",
+                          },
+                          mb: 0.5,
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            width: "100%",
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              width: 12,
+                              height: 12,
+                              borderRadius: "50%",
+                              backgroundColor: optionColor,
+                              mr: 1,
+                            }}
+                          />
+                          <Typography
+                            sx={{ fontWeight: 600, color: optionColor }}
+                          >
+                            {option.label}
+                          </Typography>
+                        </Box>
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </FormControl>
+            </Box>
           );
         },
       },
@@ -195,21 +310,25 @@ export default function ReservationsSection() {
         key: "number",
         label: "Číslo rezervace",
         render: (row) => (
-          <Typography variant="body2" fontWeight="700">
+          <Typography variant="body2" fontWeight="600" color="primary.main">
             {row.number || "—"}
           </Typography>
         ),
       },
       {
-        key: "dates",
-        label: "Datum pobytu",
+        key: "stay",
+        label: "Pobyt",
         render: (row) => (
           <Box>
-            <Typography variant="body2" fontWeight="600">
+            <Typography variant="body2" fontWeight="500" color="text.primary">
               {dayjs(row.check_in_date).format("DD. MM")} -{" "}
               {dayjs(row.check_out_date).format("DD. MM. YYYY")}
             </Typography>
-            <Typography variant="caption" color="text.secondary">
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontWeight="400"
+            >
               {dayjs(row.check_out_date).diff(dayjs(row.check_in_date), "day")}{" "}
               nocí
             </Typography>
@@ -221,36 +340,52 @@ export default function ReservationsSection() {
         label: "Host",
         render: (row) => (
           <Box>
-            <Typography variant="body2" fontWeight="600">
-              {row.primary_guest.first_name} {row.primary_guest.last_name}
+            <Typography variant="body2" fontWeight="500" color="text.primary">
+              {row.primary_guest?.first_name} {row.primary_guest?.last_name}
             </Typography>
-            <Typography variant="caption" color="text.secondary">
-              {row.primary_guest.email}
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontWeight="400"
+            >
+              {row.primary_guest?.email}
+            </Typography>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontWeight="400"
+              display="block"
+            >
+              {row.primary_guest?.phone}
             </Typography>
           </Box>
         ),
       },
       {
-        key: "rooms",
-        label: "Pokoje",
+        key: "room",
+        label: "Pokoj",
         render: (row) => (
-          <Typography variant="body2" color="text.secondary">
-            {row.rooms.map((room) => room.name).join(", ")}
+          <Typography variant="body2" fontWeight="400" color="text.primary">
+            {row.rooms?.map((room) => room.name).join(", ") || "—"}
           </Typography>
         ),
       },
       {
-        key: "guests_count",
-        label: "Počet hostů",
+        key: "guests",
+        label: "Hosté",
         align: "center",
         render: (row) => (
           <Box textAlign="center">
-            <Typography variant="body2" fontWeight="600">
+            <Typography variant="body2" fontWeight="500" color="text.primary">
               {(row.num_adults || 0) + (row.num_children || 0)}
             </Typography>
-            <Typography variant="caption" color="text.secondary">
-              {row.num_adults} Dospělý
-              {row.num_children ? `, ${row.num_children} Dítě` : ""}
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontWeight="400"
+            >
+              {row.num_adults} dospělý
+              {row.num_children ? `, ${row.num_children} dítě` : ""}
             </Typography>
           </Box>
         ),
@@ -260,124 +395,107 @@ export default function ReservationsSection() {
         label: "Cena",
         align: "right",
         render: (row) => (
-          <Typography variant="body2" fontWeight="700" color="primary.main">
+          <Typography variant="body2" fontWeight="600" color="primary.main">
             {row.price} Kč
           </Typography>
         ),
       },
       {
-        key: "actions",
-        label: "Akce",
-        align: "center",
+        key: "note",
+        label: "Poznámka",
         render: (row) => {
-          const selectedStatus = draftStatuses[row.id] ?? row.status;
-          const isUnchanged = selectedStatus === row.status;
-          const isUpdatingThisRow =
-            isUpdatingStatus && updatingReservationId === row.id;
+          const note = reservationNotes[row.id] ?? row.note ?? "";
+          const isUpdating = isUpdatingNote && updatingNoteId === row.id;
 
           return (
-            <Stack direction="row" spacing={1} alignItems="center">
-              <FormControl size="small" sx={{ minWidth: 150 }}>
-                <Select
-                  value={selectedStatus || ""}
-                  onChange={(e) =>
-                    handleDraftStatusChange(row.id, e.target.value)
-                  }
-                >
-                  {statusOptions.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <Button
+            <Box sx={{ minWidth: 200 }}>
+              <TextField
+                value={note}
+                onChange={(e) => handleNoteChange(row.id, e.target.value)}
+                onBlur={() => handleSaveNote(row.id)}
+                placeholder="Přidat poznámku..."
                 size="small"
-                variant="contained"
-                color="primary"
-                disabled={isUnchanged || isUpdatingThisRow}
-                onClick={() => handleUpdateStatus(row.id, selectedStatus)}
-                startIcon={
-                  isUpdatingThisRow ? (
-                    <CircularProgress size={14} color="inherit" />
-                  ) : null
-                }
-              >
-                Uložit
-              </Button>
-            </Stack>
+                fullWidth
+                multiline
+                maxRows={3}
+                disabled={isUpdating}
+                InputProps={{
+                  endAdornment: isUpdating ? (
+                    <InputAdornment position="end">
+                      <CircularProgress size={16} />
+                    </InputAdornment>
+                  ) : null,
+                }}
+                sx={{
+                  "& .MuiInputBase-input": {
+                    fontSize: "0.875rem",
+                    fontWeight: 400,
+                  },
+                }}
+              />
+            </Box>
           );
         },
       },
+      {
+        key: "actions",
+        label: "Akce",
+        align: "center",
+        render: (row) => (
+          <Box>
+            <IconButton
+              size="small"
+              onClick={() => handleEmailAction(row.primary_guest?.email)}
+              disabled={!row.primary_guest?.email}
+              title="Poslat email"
+              color="primary"
+            >
+              <Email fontSize="small" />
+            </IconButton>
+          </Box>
+        ),
+      },
     ],
-    [draftStatuses, isUpdatingStatus, statusOptions, updatingReservationId],
+    [
+      draftStatuses,
+      isUpdatingStatus,
+      isUpdatingNote,
+      statusOptions,
+      updatingReservationId,
+      updatingNoteId,
+      reservationNotes,
+    ],
   );
 
-  const filteredReservations = useMemo(() => {
+  // Backend zpracovává filtrování, sorting, takže jen extrahujeme data
+  const reservations = useMemo(() => {
     if (!reservationsData) return [];
-
-    let filtered = reservationsData;
-
-    // Filter by search term
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (reservation) =>
-          String(reservation.number ?? "")
-            .toLowerCase()
-            .includes(term) ||
-          reservation.primary_guest.first_name?.toLowerCase().includes(term) ||
-          reservation.primary_guest.last_name?.toLowerCase().includes(term) ||
-          reservation.primary_guest.email?.toLowerCase().includes(term) ||
-          reservation.rooms.some((room) =>
-            room.name?.toLowerCase().includes(term),
-          ),
-      );
-    }
-
-    return [...filtered].sort((a, b) =>
-      dayjs(b.check_in_date).diff(dayjs(a.check_in_date)),
-    );
-  }, [reservationsData, searchTerm]);
-
-  const hasActiveFilters =
-    (statusFilter !== "all" && statusFilter !== null) ||
-    Boolean(reservationFrom) ||
-    Boolean(reservationTo) ||
-    Boolean(selectedRoomId) ||
-    Boolean(primaryGuestEmail) ||
-    Boolean(primaryGuestLastName) ||
-    Boolean(searchTerm);
+    return reservationsData.results || reservationsData || [];
+  }, [reservationsData]);
 
   const hasStructuredFilters =
     (statusFilter !== "all" && statusFilter !== null) ||
     Boolean(reservationFrom) ||
     Boolean(reservationTo) ||
-    Boolean(selectedRoomId) ||
-    Boolean(primaryGuestEmail) ||
-    Boolean(primaryGuestLastName);
+    Boolean(selectedRoomId);
+
   const hasSearchFilter = Boolean(searchTerm);
+  const hasActiveFilters = hasStructuredFilters || hasSearchFilter;
 
   const handleClearFilters = () => {
     setStatusFilter(null);
     setReservationFrom(null);
     setReservationTo(null);
     setSelectedRoomId("");
-    setPrimaryGuestEmail("");
-    setPrimaryGuestLastName("");
-  };
-
-  const handleClearSearch = () => {
-    setSearchTerm("");
   };
 
   const handleResetFilters = () => {
     handleClearFilters();
-    handleClearSearch();
+    setSearchTerm("");
   };
 
   const stats = useMemo(() => {
-    if (!reservationsData) {
+    if (!reservationsData)
       return {
         total: 0,
         pending: 0,
@@ -385,26 +503,35 @@ export default function ReservationsSection() {
         thisMonth: 0,
         totalRevenue: 0,
       };
-    }
 
-    const pending = reservationsData.filter((r) =>
+    const reservations = reservationsData.results || reservationsData;
+    if (!Array.isArray(reservations))
+      return {
+        total: 0,
+        pending: 0,
+        confirmed: 0,
+        thisMonth: 0,
+        totalRevenue: 0,
+      };
+
+    const pending = reservations.filter((r) =>
       ["new", "payment_pending"].includes(r.status),
     ).length;
-    const confirmed = reservationsData.filter((r) =>
+    const confirmed = reservations.filter((r) =>
       ["confirmed", "payed"].includes(r.status),
     ).length;
-    const thisMonth = reservationsData.filter(
+    const thisMonth = reservations.filter(
       (r) =>
         dayjs(r.check_in_date).isSame(dayjs(), "month") ||
         dayjs(r.check_out_date).isSame(dayjs(), "month"),
     ).length;
-    const totalRevenue = reservationsData.reduce(
+    const totalRevenue = reservations.reduce(
       (sum, r) => sum + (parseFloat(r.price) || 0),
       0,
     );
 
     return {
-      total: reservationsData.length,
+      total: reservationsData.count || reservations.length,
       pending,
       confirmed,
       thisMonth,
@@ -441,7 +568,7 @@ export default function ReservationsSection() {
   }
 
   return (
-    <Stack spacing={5}>
+    <Stack spacing={5} p={3}>
       {/* Header */}
       <Box>
         <Typography variant="h4" gutterBottom>
@@ -484,7 +611,7 @@ export default function ReservationsSection() {
                 ),
                 endAdornment: searchTerm && (
                   <InputAdornment position="end">
-                    <IconButton size="small" onClick={handleClearSearch}>
+                    <IconButton size="small" onClick={() => setSearchTerm("")}>
                       <Clear />
                     </IconButton>
                   </InputAdornment>
@@ -501,8 +628,21 @@ export default function ReservationsSection() {
                   variant: "outlined",
                   sx: {
                     ...formFieldStyles,
-                    minWidth: 140,
+                    minWidth: 180,
                     flex: { xs: 1, md: 0 },
+                  },
+                  InputProps: {
+                    endAdornment: reservationFrom ? (
+                      <InputAdornment position="end">
+                        <IconButton
+                          size="small"
+                          onClick={() => setReservationFrom(null)}
+                          sx={{ mr: 1 }}
+                        >
+                          <Clear sx={{ fontSize: 18 }} />
+                        </IconButton>
+                      </InputAdornment>
+                    ) : null,
                   },
                 },
               }}
@@ -517,15 +657,28 @@ export default function ReservationsSection() {
                   variant: "outlined",
                   sx: {
                     ...formFieldStyles,
-                    minWidth: 140,
+                    minWidth: 180,
                     flex: { xs: 1, md: 0 },
+                  },
+                  InputProps: {
+                    endAdornment: reservationTo ? (
+                      <InputAdornment position="end">
+                        <IconButton
+                          size="small"
+                          onClick={() => setReservationTo(null)}
+                          sx={{ mr: 1 }}
+                        >
+                          <Clear sx={{ fontSize: 18 }} />
+                        </IconButton>
+                      </InputAdornment>
+                    ) : null,
                   },
                 },
               }}
             />
 
             <FormControl
-              sx={{ ...formFieldStyles, minWidth: 120, flex: { xs: 1, md: 0 } }}
+              sx={{ ...formFieldStyles, minWidth: 180, flex: { xs: 1, md: 0 } }}
             >
               <InputLabel>Stav</InputLabel>
               <Select
@@ -570,7 +723,7 @@ export default function ReservationsSection() {
             </FormControl>
 
             <FormControl
-              sx={{ ...formFieldStyles, minWidth: 120, flex: { xs: 1, md: 0 } }}
+              sx={{ ...formFieldStyles, minWidth: 180, flex: { xs: 1, md: 0 } }}
             >
               <InputLabel>Pokoj</InputLabel>
               <Select
@@ -609,50 +762,39 @@ export default function ReservationsSection() {
                 ))}
               </Select>
             </FormControl>
-          </Box>
 
-          {/* Clear filters */}
-          {hasActiveFilters && (
-            <Box sx={{ mt: 2, display: "flex", gap: 1, flexWrap: "wrap" }}>
-              {hasStructuredFilters && (
-                <Button
-                  size="small"
-                  variant="outlined"
-                  startIcon={<FilterListOff />}
-                  onClick={handleClearFilters}
-                >
-                  Vymazat filtry
-                </Button>
-              )}
-              {hasSearchFilter && (
-                <Button
-                  size="small"
-                  variant="outlined"
-                  onClick={handleClearSearch}
-                >
-                  Vymazat hledání
-                </Button>
-              )}
-              <Button
-                size="small"
-                variant="text"
+            {hasActiveFilters && (
+              <IconButton
                 onClick={handleResetFilters}
-                sx={{ color: "text.secondary" }}
+                sx={{
+                  color: "white",
+                  backgroundColor: "rgb(172,0,0)",
+                  borderRadius: 1,
+                  "&:hover": {
+                    backgroundColor: "rgb(200,0,0)",
+                    color: "white",
+                  },
+                }}
+                size="large"
               >
-                Vymazat vše
-              </Button>
-            </Box>
-          )}
+                <FilterListOff />
+              </IconButton>
+            )}
+          </Box>
         </Box>
 
         {/* Table */}
         <AppCardCustomizable>
           <CustomTable
             columns={enhancedReservationColumns}
-            data={filteredReservations}
+            data={reservations}
             getRowId={(row) => row.id}
+            paginationConfig={{
+              ...pagination,
+              totalCount: reservationsData?.count || reservations.length,
+            }}
           />
-          {filteredReservations.length === 0 && hasActiveFilters && (
+          {reservations.length === 0 && hasActiveFilters && (
             <Box textAlign="center" py={4}>
               <Typography color="text.secondary" gutterBottom>
                 Žádná rezervace nenalezena
