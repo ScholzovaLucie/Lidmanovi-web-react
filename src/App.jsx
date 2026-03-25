@@ -1,32 +1,50 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import { Suspense, lazy } from "react";
 import Layout from "./components/Layout.jsx";
-import Kontakt from "./routes/Kontakt.jsx";
-import Restauration from "./routes/Restauration.jsx";
-import Accommodations from "./routes/Accommodations.jsx";
-import Weddings from "./routes/Weddings.jsx";
-import AccommodationPackages from "./routes/AccommodationPackages.jsx";
-import PriceList from "./routes/PriceList.jsx";
-import Galerie from "./routes/Galerie.jsx";
-import AdminPage from "./routes/Admin/AdminPage.jsx";
-import HomePage from "./routes/Home/HomePage.jsx";
-import ReservationPage2 from "./routes/Reservation/ReservationPage.jsx";
+
+// Lazy loaded routes
+const HomePage = lazy(() => import("./routes/Home/HomePage.jsx"));
+const Kontakt = lazy(() => import("./routes/Kontakt.jsx"));
+const Restauration = lazy(() => import("./routes/Restauration.jsx"));
+const Accommodations = lazy(() => import("./routes/Accommodations.jsx"));
+const Weddings = lazy(() => import("./routes/Weddings.jsx"));
+const AccommodationPackages = lazy(() => import("./routes/AccommodationPackages.jsx"));
+const PriceList = lazy(() => import("./routes/PriceList.jsx"));
+const Galerie = lazy(() => import("./routes/Galerie.jsx"));
+const AdminPage = lazy(() => import("./routes/Admin/AdminPage.jsx"));
+const ReservationPage2 = lazy(() => import("./routes/Reservation/ReservationPage.jsx"));
+
+// Loading component
+const LoadingFallback = () => (
+  <div style={{ 
+    display: 'flex', 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    height: '50vh',
+    fontSize: '18px'
+  }}>
+    Načítání...
+  </div>
+);
 
 export default function App() {
   return (
-    <Routes>
-      <Route element={<Layout />}>
-        <Route index element={<HomePage />} />
-        <Route path="/o-nas" element={<Navigate to="/" replace />} />
-        <Route path="/kontakt" element={<Kontakt />} />
-        <Route path="/restaurace" element={<Restauration />} />
-        <Route path="/ubytovani" element={<Accommodations />} />
-        <Route path="/svatby" element={<Weddings />} />
-        <Route path="/pobytove_balicky" element={<AccommodationPackages />} />
-        <Route path="/cenik" element={<PriceList />} />
-        <Route path="/galerie" element={<Galerie />} />
-        <Route path="/rezervace" element={<ReservationPage2 />} />
-      </Route>
-      <Route path="/admin" element={<AdminPage />} />
-    </Routes>
+    <Suspense fallback={<LoadingFallback />}>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route index element={<HomePage />} />
+          <Route path="/o-nas" element={<Navigate to="/" replace />} />
+          <Route path="/kontakt" element={<Kontakt />} />
+          <Route path="/restaurace" element={<Restauration />} />
+          <Route path="/ubytovani" element={<Accommodations />} />
+          <Route path="/svatby" element={<Weddings />} />
+          <Route path="/pobytove_balicky" element={<AccommodationPackages />} />
+          <Route path="/cenik" element={<PriceList />} />
+          <Route path="/galerie" element={<Galerie />} />
+          <Route path="/rezervace" element={<ReservationPage2 />} />
+        </Route>
+        <Route path="/admin" element={<AdminPage />} />
+      </Routes>
+    </Suspense>
   );
 }
