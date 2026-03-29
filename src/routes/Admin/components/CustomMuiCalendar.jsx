@@ -35,7 +35,6 @@ function EventDay(props) {
     day,
     outsideCurrentMonth,
     events = [],
-    eventColorMap,
     onEventClick,
     weekRows,
     displayedMonth,
@@ -164,17 +163,38 @@ function EventDay(props) {
               }}
               sx={{
                 width: "100%",
-                height: 12,
-                backgroundColor:
-                  eventColorMap?.[event.name] ?? theme.palette.primary.main,
+                height: 18,
+                backgroundColor: event.color ?? theme.palette.primary.main,
                 cursor: "pointer",
                 //borderRadius: "16px", // border radius pruhu disabled for now - do not edit or remove comment
                 transition: "opacity 0.15s",
+                display: "flex",
+                alignItems: "center",
+                px: "4px",
+                overflow: "hidden",
                 "&:hover": {
                   opacity: 0.65,
                 },
               }}
-            />
+            >
+              {event.label && (
+                <Typography
+                  sx={{
+                    fontSize: "0.65rem",
+                    fontWeight: 600,
+                    color: "#fff",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    lineHeight: 1,
+                    userSelect: "none",
+                    pointerEvents: "none",
+                  }}
+                >
+                  {event.label}
+                </Typography>
+              )}
+            </Box>
           </Tooltip>
         ))}
       </Box>
@@ -217,25 +237,6 @@ export default function CustomMuiCalendar({
   );
   const gridHeight = weekRows * DAY_HEIGHT;
 
-  // Přiřaď každé unikátní události stabilní barvu z odstínů modré
-  const eventColorMap = useMemo(() => {
-    const map = {};
-    const uniqueNames = [...new Set(events.map((e) => e.name))];
-    const eventColors = [
-      "#1976d2", // primary blue
-      "#1565c0", // darker blue
-      "#42a5f5", // lighter blue
-      "#64b5f6", // light blue
-      "#90caf9", // very light blue
-      "#5e35b1", // purple blue
-      "#7e57c2", // light purple
-    ];
-    uniqueNames.forEach((name, i) => {
-      map[name] = eventColors[i % eventColors.length];
-    });
-    return map;
-  }, [events, theme]);
-
   return (
     <Box
       sx={{
@@ -258,7 +259,6 @@ export default function CustomMuiCalendar({
         slotProps={{
           day: {
             events,
-            eventColorMap,
             onEventClick,
             weekRows,
             displayedMonth,
@@ -285,7 +285,7 @@ export default function CustomMuiCalendar({
           // Header s názvem měsíce a šipkami
           "& .MuiPickersCalendarHeader-root": {
             px: 2,
-            py: 2,
+            py: 3.5,
             m: 0,
             borderBottom: `1px solid ${theme.palette.divider}`,
           },

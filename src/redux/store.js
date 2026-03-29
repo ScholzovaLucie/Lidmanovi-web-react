@@ -13,6 +13,7 @@ import { announcementApi } from "./api/announcementApi";
 const loggerMiddleware = () => (next) => (action) => {
   console.group(`🔄 Action: ${action.type}`);
   console.log("📋 Payload:", action.payload);
+  console.log("🌐 State after:", store.getState());
 
   const result = next(action);
   console.groupEnd();
@@ -20,8 +21,7 @@ const loggerMiddleware = () => (next) => (action) => {
   return result;
 };
 
-const isReduxLoggerEnabled =
-  import.meta.env.DEV && import.meta.env.VITE_ENABLE_REDUX_LOGGER === "true";
+const isReduxLoggerEnabled = true
 
 export const store = configureStore({
   reducer: {

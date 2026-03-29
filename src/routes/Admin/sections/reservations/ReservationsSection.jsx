@@ -29,16 +29,7 @@ import { AppCardCustomizable } from "../../../../components/containers/AppCard";
 import { DatePicker } from "@mui/x-date-pickers";
 import { formFieldStyles } from "./constants";
 import { usePagination } from "../../../../hooks/usePagination";
-
-// Constants
-const STATUS_COLORS = {
-  primary: "#1976d2",
-  success: "#2e7d32",
-  error: "#d32f2f",
-  warning: "#ed6c02",
-  info: "#0288d1",
-  default: "#757575",
-};
+import { getColorForReservationStatus } from "../../../../functions/common";
 
 export default function ReservationsSection() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -216,17 +207,30 @@ export default function ReservationsSection() {
       {
         key: "status",
         label: "Stav",
-        align: "center",
         render: (row) => {
           const selectedStatus = draftStatuses[row.id] ?? row.status;
-          const statusMeta = STATUS_META[selectedStatus];
           const isUpdating =
             isUpdatingStatus && updatingReservationId === row.id;
-          const statusColor =
-            STATUS_COLORS[statusMeta?.color] || STATUS_COLORS.default;
+          const statusColor = getColorForReservationStatus(selectedStatus);
 
           return (
-            <Box sx={{ minWidth: 140 }}>
+            <Box
+              sx={{
+                minWidth: 140,
+                gap: 1,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <Typography
+                variant="body2"
+                fontWeight="bold"
+                sx={{ whiteSpace: "nowrap" }}
+              >
+                {`č.\u00A0${row.number.replace(/ /g, "\u00A0") || "—"}`}
+              </Typography>
+
               <FormControl size="small" fullWidth>
                 {isUpdating && (
                   <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
@@ -236,6 +240,7 @@ export default function ReservationsSection() {
                     </Typography>
                   </Box>
                 )}
+
                 <Select
                   value={selectedStatus || ""}
                   onChange={(e) => handleStatusChange(row.id, e.target.value)}
@@ -256,9 +261,7 @@ export default function ReservationsSection() {
                   }}
                 >
                   {statusOptions.map((option) => {
-                    const optionColor =
-                      STATUS_COLORS[STATUS_META[option.value]?.color] ||
-                      STATUS_COLORS.default;
+                    const optionColor = getColorForReservationStatus(option.value);
                     return (
                       <MenuItem
                         key={option.value}
@@ -307,30 +310,24 @@ export default function ReservationsSection() {
         },
       },
       {
-        key: "number",
-        label: "Číslo rezervace",
-        render: (row) => (
-          <Typography variant="body2" fontWeight="600" color="primary.main">
-            {row.number || "—"}
-          </Typography>
-        ),
-      },
-      {
         key: "stay",
         label: "Pobyt",
         render: (row) => (
           <Box>
-            <Typography variant="body2" fontWeight="500" color="text.primary">
-              {dayjs(row.check_in_date).format("DD. MM")} -{" "}
-              {dayjs(row.check_out_date).format("DD. MM. YYYY")}
+            <Typography
+              variant="body2"
+              fontWeight="medium"
+              color="text.primary"
+              sx={{ whiteSpace: "pre-line" }}
+            >
+              {`od:\u00A0${dayjs(row.check_in_date).format("DD.MM.YYYY")}\ndo:\u00A0${dayjs(row.check_out_date).format("DD.MM.YYYY")}`}
             </Typography>
             <Typography
               variant="caption"
               color="text.secondary"
               fontWeight="400"
             >
-              {dayjs(row.check_out_date).diff(dayjs(row.check_in_date), "day")}{" "}
-              nocí
+              {`${dayjs(row.check_out_date).diff(dayjs(row.check_in_date), "day")}x noc`}
             </Typography>
           </Box>
         ),
@@ -339,53 +336,51 @@ export default function ReservationsSection() {
         key: "guest",
         label: "Host",
         render: (row) => (
-          <Box>
-            <Typography variant="body2" fontWeight="500" color="text.primary">
-              {row.primary_guest?.first_name} {row.primary_guest?.last_name}
+          <Typography variant="body2">
+            <Typography variant="body2" fontWeight="medium">
+              {`${row.primary_guest?.first_name}\u00A0${row.primary_guest?.last_name}`}
             </Typography>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              fontWeight="400"
-            >
+            <Typography variant="caption" color="text.secondary">
               {row.primary_guest?.email}
             </Typography>
             <Typography
               variant="caption"
               color="text.secondary"
-              fontWeight="400"
               display="block"
             >
               {row.primary_guest?.phone}
             </Typography>
-          </Box>
+          </Typography>
         ),
       },
       {
         key: "room",
         label: "Pokoj",
-        render: (row) => (
-          <Typography variant="body2" fontWeight="400" color="text.primary">
-            {row.rooms?.map((room) => room.name).join(", ") || "—"}
-          </Typography>
-        ),
+        render: (row) => {
+          const roomString =
+            row.rooms
+              ?.map((room) => room.name.replace(/\s+/g, "\u00A0"))
+              .join(",\n") || "—";
+          return (
+            <Typography variant="body2" sx={{ whiteSpace: "pre-line" }}>
+              {roomString}
+            </Typography>
+          );
+        },
       },
       {
         key: "guests",
         label: "Hosté",
-        align: "center",
         render: (row) => (
-          <Box textAlign="center">
+          <Box>
             <Typography variant="body2" fontWeight="500" color="text.primary">
-              {(row.num_adults || 0) + (row.num_children || 0)}
+              {`${row.num_adults + row.num_children}\u00A0${row.num_adults + row.num_children === 1 ? "Host" : "Hosté"}`}
             </Typography>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              fontWeight="400"
-            >
-              {row.num_adults} dospělý
-              {row.num_children ? `, ${row.num_children} dítě` : ""}
+            <Typography variant="caption" color="text.secondary">
+              {`${row.num_adults}\u00A0${row.num_adults > 1 ? "dospělí" : "dospělý"}`}
+              {row.num_children
+                ? `\n${row.num_children}\u00A0${row.num_children > 1 ? "děti" : "dítě"}`
+                : ""}
             </Typography>
           </Box>
         ),
@@ -393,11 +388,11 @@ export default function ReservationsSection() {
       {
         key: "price",
         label: "Cena",
-        align: "right",
         render: (row) => (
-          <Typography variant="body2" fontWeight="600" color="primary.main">
-            {row.price} Kč
-          </Typography>
+          <Typography
+            variant="body2"
+            fontWeight="bold"
+          >{`${row.price}\u00A0Kč`}</Typography>
         ),
       },
       {
@@ -413,7 +408,6 @@ export default function ReservationsSection() {
                 value={note}
                 onChange={(e) => handleNoteChange(row.id, e.target.value)}
                 onBlur={() => handleSaveNote(row.id)}
-                placeholder="Přidat poznámku..."
                 size="small"
                 fullWidth
                 multiline

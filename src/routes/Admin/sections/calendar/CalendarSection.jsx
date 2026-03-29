@@ -8,12 +8,14 @@ import {
   Divider,
   Chip,
 } from "@mui/material";
-import { Close } from "@mui/icons-material";
+import { Close, FullscreenExit } from "@mui/icons-material";
 import dayjs from "dayjs";
 import { CalendarMonth } from "@mui/icons-material";
 import CustomMuiCalendar from "../../components/CustomMuiCalendar";
 import { useReservationsQuery } from "../../../../redux/api/reservationsApi";
 import { AppCardCustomizable } from "../../../../components/containers/AppCard";
+import ReservationDetail from "./components/ReservationDetail";
+import { getColorForReservationStatus } from "../../../../functions/common";
 
 export default function CalendarSection() {
   const [selectedReservation, setSelectedReservation] = useState(null);
@@ -27,7 +29,9 @@ export default function CalendarSection() {
       id: reservation.id,
       name: `${reservation.primary_guest.first_name}`,
       number: reservation.number,
+      label: `${reservation?.primary_guest.first_name} ${reservation?.primary_guest.last_name}`,
       status: reservation.status,
+      color: getColorForReservationStatus(reservation.status),
       from: dayjs(reservation.check_in_date),
       to: dayjs(reservation.check_out_date),
       text: `${reservation.primary_guest.first_name} - ${reservation.rooms.map((r) => r.name).join(", ")}`,
@@ -67,84 +71,23 @@ export default function CalendarSection() {
         </Typography>
       </Stack>
 
-      {selectedReservation && (
-        <AppCardCustomizable>
-          {/* Header with title and close button */}
-          <Box display="flex" justifyContent="space-between" p={2} pb={1}>
-            <Typography variant="h6" fontWeight={600}>
-              Rezervace{" "}
-              {selectedReservation.number || `#${selectedReservation.id}`}
-            </Typography>
-            <IconButton
-              onClick={() => setSelectedReservation(null)}
-              size="small"
-              sx={{ color: "text.secondary" }}
-            >
-              <Close fontSize="small" />
-            </IconButton>
-          </Box>
-
-          <Divider />
-
-          {/* Content */}
-          <Stack spacing={1.5} p={2} alignItems={"flex-start"}>
-            <Typography variant="body1" fontWeight={500}>
-              {dayjs(selectedReservation.check_in_date).format("DD. MM. YYYY")}{" "}
-              -{" "}
-              {dayjs(selectedReservation.check_out_date).format("DD. MM. YYYY")}
-            </Typography>
-
-            <Typography variant="body2">
-              <strong>Host:</strong> {selectedReservation.guest?.first_name}{" "}
-              {selectedReservation.guest?.last_name}
-            </Typography>
-
-            <Typography variant="body2">
-              <strong>Pokoje:</strong>{" "}
-              {selectedReservation.rooms?.map((room) => room.name).join(", ")}
-            </Typography>
-
-            <Box display="flex" alignItems="center" gap={1}>
-              <Typography variant="body2">
-                <strong>Stav:</strong>
-              </Typography>
-              <Chip
-                label={selectedReservation.status}
-                size="small"
-                variant="outlined"
-              />
-            </Box>
-
-            <Typography variant="body2">
-              <strong>Hosté:</strong> {selectedReservation.num_adults || 0}{" "}
-              dospělí
-              {selectedReservation.num_children
-                ? `, ${selectedReservation.num_children} děti`
-                : ""}
-              {" · "}
-              {(selectedReservation.num_adults || 0) +
-                (selectedReservation.num_children || 0)}{" "}
-              celkem
-            </Typography>
-
-            <Typography
-              variant="body1"
-              fontWeight={600}
-              color="primary"
-              sx={{ mt: 1 }}
-            >
-              Cena: {selectedReservation.price} Kč
-            </Typography>
-          </Stack>
+      <Stack direction={{ md: "column", lg: "row" }} gap={2}>
+        <AppCardCustomizable props={{ flex: 1 }}>
+          <CustomMuiCalendar
+            events={calendarEventsFromApi}
+            onEventClick={(event) => setSelectedReservation(event)}
+          />
         </AppCardCustomizable>
-      )}
 
-      <AppCardCustomizable>
-        <CustomMuiCalendar
-          events={calendarEventsFromApi}
-          onEventClick={(event) => setSelectedReservation(event)}
-        />
-      </AppCardCustomizable>
+        {selectedReservation && (
+          <Stack>
+            <ReservationDetail
+              selectedReservation={selectedReservation}
+              onCrossClick={() => setSelectedReservation(null)}
+            />
+          </Stack>
+        )}
+      </Stack>
     </Stack>
   );
 }

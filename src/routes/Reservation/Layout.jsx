@@ -1,13 +1,4 @@
-import {
-  AppBar,
-  Badge,
-  Box,
-  Divider,
-  Drawer,
-  IconButton,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { AppBar, Box, Divider, Drawer, Stack, Typography } from "@mui/material";
 import { useReservationContext } from "./context/ReservationContext";
 import { useState } from "react";
 import { useSelector } from "react-redux";
@@ -15,7 +6,10 @@ import { RoomCartCompactCard } from "./components/RoomCardCompact";
 import dayjs from "dayjs";
 import ReservationStepper from "./components/ReservationStepper";
 import BedroomParentIcon from "@mui/icons-material/BedroomParent";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import PeopleIcon from "@mui/icons-material/People";
 import { useTranslation } from "react-i18next";
+import Cart from "./components/Cart";
 
 export default function Layout({ children }) {
   const { t } = useTranslation("rezervace");
@@ -30,31 +24,15 @@ export default function Layout({ children }) {
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
       >
-        <Stack p={3} spacing={2} width={300} alignItems={"center"}>
-          <Typography variant="h6" fontWeight={"bold"}>
-            {t("layout.selectedRooms")}
-          </Typography>
-          {values.rooms.length === 0 ? (
-            <Typography variant="body1">
-              {t("layout.noRoomSelected")}
-            </Typography>
-          ) : (
-            <Stack spacing={1.5}>
-              {values.rooms.map((room) => (
-                <RoomCartCompactCard key={room.id} room={room} />
-              ))}
-            </Stack>
-          )}
-        </Stack>
+        <Cart />
       </Drawer>
 
-      <Stack>
+      <Stack sx={{ minHeight: "100%" }} flex={1}>
         <AppBar
           position="sticky"
           sx={{
-            top: { xs: 56, md: 64 },
+            top: { xs: 79, md: 64 },
             zIndex: 1100,
-            minHeight: 64,
             background:
               "linear-gradient(180deg, rgba(255,255,255,0.96), rgba(245,248,251,0.92))",
             boxShadow: "0 10px 30px rgba(25,33,43,0.08)",
@@ -64,178 +42,117 @@ export default function Layout({ children }) {
           <Box
             sx={{
               px: { xs: 2, md: 3 },
-              py: 1.25,
+              py: 1.5,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              background: "rgba(55,75,95,0.95)",
+              borderBottom: "1px solid rgba(255,255,255,0.06)",
+            }}
+          >
+            {/* Left: date + guests */}
+            <Stack
+              direction="row"
+              spacing={{ xs: 1.5, md: 2.5 }}
+              alignItems="center"
+            >
+              <Stack direction="row" spacing={0.5} alignItems="center">
+                <CalendarTodayIcon
+                  sx={{ fontSize: 16, color: "rgba(255,255,255,0.6)" }}
+                />
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "rgba(255,255,255,0.9)",
+                    fontWeight: 500,
+                    letterSpacing: 0.2,
+                  }}
+                >
+                  {dayjs(values.check_in_date).format("D.M")} –{" "}
+                  {dayjs(values.check_out_date).format("D.M.YYYY")}
+                </Typography>
+              </Stack>
+
+              <Divider
+                orientation="vertical"
+                flexItem
+                sx={{ borderColor: "rgba(255,255,255,0.15)", my: 0.5 }}
+              />
+
+              <Stack direction="row" spacing={0.5} alignItems="center">
+                <PeopleIcon
+                  sx={{ fontSize: 16, color: "rgba(255,255,255,0.6)" }}
+                />
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "rgba(255,255,255,0.9)",
+                    fontWeight: 500,
+                    letterSpacing: 0.2,
+                  }}
+                >
+                  {t("layout.guestsSummary", {
+                    adults: values.num_adults,
+                    children: values.num_children,
+                  })}
+                </Typography>
+              </Stack>
+            </Stack>
+
+            {/* Right: cart */}
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={0.6}
+              onClick={() => setDrawerOpen(true)}
+              sx={{
+                cursor: "pointer",
+                bgcolor:
+                  values.rooms.length > 0
+                    ? "warning.main"
+                    : "rgba(255,255,255,0.12)",
+                borderRadius: 999,
+                px: 1.25,
+                py: 0.45,
+                transition: "background-color 0.2s, transform 0.15s",
+                "&:hover": {
+                  bgcolor:
+                    values.rooms.length > 0
+                      ? "warning.dark"
+                      : "rgba(255,255,255,0.2)",
+                  transform: "scale(1.04)",
+                },
+              }}
+            >
+              <BedroomParentIcon sx={{ fontSize: 18, color: "common.white" }} />
+              <Typography
+                sx={{
+                  fontSize: 14,
+                  fontWeight: 700,
+                  color: "common.white",
+                  lineHeight: 1,
+                }}
+              >
+                {values.rooms.length}
+              </Typography>
+            </Stack>
+          </Box>
+
+          {/* Stepper */}
+          <Box
+            sx={{
+              py: 1.5,
               display: "flex",
               justifyContent: "center",
             }}
           >
-            <Stack
-              alignItems="center"
-              justifyContent="center"
-              spacing={{ xs: 1, md: 2 }}
-              direction="row"
-              sx={{
-                px: { xs: 1.5, md: 2.25 },
-                py: 1,
-                borderRadius: 999,
-                background: "rgba(67,86,104,0.9)",
-                color: "common.white",
-                border: "1px solid rgba(255,255,255,0.12)",
-                boxShadow: "0 12px 28px rgba(25,33,43,0.16)",
-                flexWrap: "wrap",
-              }}
-            >
-              <Typography
-                variant="body2"
-                sx={{
-                  color: "rgba(255,255,255,0.92)",
-                  fontSize: { xs: "0.82rem", md: "0.95rem" },
-                  fontWeight: 400,
-                }}
-              >
-                {dayjs(values.check_in_date).format("D.MM")} -{" "}
-                {dayjs(values.check_out_date).format("D.MM.YYYY")}
-              </Typography>
-
-              <Divider
-                orientation="vertical"
-                flexItem
-                sx={{
-                  display: { xs: "none", sm: "block" },
-                  borderColor: "rgba(255,255,255,0.18)",
-                }}
-              />
-
-              <Typography
-                variant="body2"
-                sx={{
-                  color: "rgba(255,255,255,0.92)",
-                  fontSize: { xs: "0.82rem", md: "0.95rem" },
-                  fontWeight: 400,
-                }}
-              >
-                {t("layout.guestsSummary", {
-                  adults: values.num_adults,
-                  children: values.num_children,
-                })}
-              </Typography>
-
-              <Divider
-                orientation="vertical"
-                flexItem
-                sx={{
-                  display: { xs: "none", sm: "block" },
-                  borderColor: "rgba(255,255,255,0.18)",
-                }}
-              />
-
-              <Badge
-                badgeContent={values.rooms.length || "0"}
-                color="warning"
-                sx={{
-                  "& .MuiBadge-badge": {
-                    transform: "translate(2px, -2px)",
-                  },
-                }}
-              >
-                <IconButton
-                  onClick={() => setDrawerOpen(true)}
-                  sx={{
-                    color: "common.white",
-                    bgcolor: "rgba(255,255,255,0.08)",
-                    "&:hover": {
-                      bgcolor: "rgba(255,255,255,0.14)",
-                    },
-                  }}
-                >
-                  <BedroomParentIcon fontSize="medium" />
-                </IconButton>
-              </Badge>
-            </Stack>
+            <ReservationStepper
+              sx={{ maxWidth: { xs: "100%", md: 520 }, width: "100%" }}
+            />
           </Box>
         </AppBar>
-        <Box pt={3} display={"flex"} justifyContent={"center"}>
-          <ReservationStepper />
-        </Box>
         {children}
       </Stack>
     </>
   );
 }
-
-/*
-
- {step > 0 ? (
-              <Button
-                variant="text"
-                color="white"
-                onClick={decreaseStep}
-                disabled={step === 0}
-              >
-                <Stack direction={"row"} alignItems={"center"} spacing={1}>
-                  <ArrowBackIos fontSize="small" />
-                  <Typography>{"Back"}</Typography>
-                </Stack>
-              </Button>
-            ) : (
-              <Box />
-            )}
-
-            
-{step < steps.length - 1 ? (
-              <Button
-                variant="text"
-                color="white"
-                onClick={increaseStep}
-                disabled={step === steps.length - 1}
-              >
-                <Stack direction={"row"} alignItems={"center"} spacing={1}>
-                  <Typography>{"Next"}</Typography>
-                  <ArrowForwardIos fontSize="small" />
-                </Stack>
-              </Button>
-            ) : (
-              <Box />
-            )}
-*/
-/**
- <Stepper
-              activeStep={step}
-              sx={{
-                maxWidth: "400px",
-                width: "100%",
-                "& .MuiStepIcon-root": {
-                  backgroundColor: "white",
-                  color: "white",
-                  border: "2px solid white",
-                  borderRadius: "50%",
-                },
-                "& .MuiStepIcon-text": {
-                  fill: "black",
-                  fontWeight: "bold",
-                },
-                "& .MuiStepLabel-label": {
-                  color: "white",
-                  fontWeight: 500,
-                },
-                "& .MuiStepIcon-root.Mui-active": {
-                  backgroundColor: "white",
-                  color: "white",
-                },
-                "& .MuiStepIcon-root.Mui-completed": {
-                  backgroundColor: "white",
-                  color: "primary.main",
-                },
-              }}
-            >
-              {steps.map((label, index) => (
-                <Step
-                  key={label}
-                  onClick={() => setStep(index)}
-                  sx={{ cursor: "pointer" }}
-                >
-                  <StepLabel>{step === index ? label : ""}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
- */

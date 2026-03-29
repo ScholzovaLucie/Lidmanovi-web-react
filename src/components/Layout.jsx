@@ -11,7 +11,7 @@ export default function Layout() {
     <Box sx={{ 
       display: 'flex', 
       flexDirection: 'column', 
-      minHeight: '100vh' 
+      minHeight: '100dvh' 
     }}>
       <Seo />
       <Header />

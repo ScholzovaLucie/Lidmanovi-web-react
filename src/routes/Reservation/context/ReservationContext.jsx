@@ -5,8 +5,25 @@ const ReservationContext = createContext();
 export const ReservationContextProvider = ({ children }) => {
   const [step, setStep] = useState(0);
 
-  const increaseStep = () => setStep((prev) => prev + 1);
-  const decreaseStep = () => setStep((prev) => prev - 1);
+  const scrollToTop = () => {
+    // Scroll to top of the page smoothly
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const increaseStep = () => {
+    setStep((prev) => prev + 1);
+    scrollToTop();
+  };
+  
+  const decreaseStep = () => {
+    setStep((prev) => prev - 1);
+    scrollToTop();
+  };
+
+  const setStepWithScroll = (newStep) => {
+    setStep(newStep);
+    scrollToTop();
+  };
 
   return (
     <ReservationContext.Provider
@@ -14,7 +31,8 @@ export const ReservationContextProvider = ({ children }) => {
         step,
         increaseStep,
         decreaseStep,
-        setStep,
+        setStep, // původní funkce bez scrollování
+        setStepWithScroll, // nová funkce se scrollováním
       }}
     >
       {children}

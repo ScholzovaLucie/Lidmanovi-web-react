@@ -21,6 +21,7 @@ import {
 import ReservationAppBar from "../components/ReservationAppBar";
 import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
+import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 
 export default function InformationAndConfirmation() {
   const { t } = useTranslation("rezervace");
@@ -46,32 +47,59 @@ export default function InformationAndConfirmation() {
   };
 
   return (
-    <Stack
-      sx={{
-        minHeight: "calc(100vh - 190px)",
-        paddingTop: 2, // Přidá mezeru pod sticky AppBar
-      }}
-      alignItems={"center"}
-      justifyContent={"center"}
-      p={3}
-    >
-      <Stack spacing={4} width={{ xs: "100%", md: 700 }}>
-        <Typography variant="h4">{t("info.title")}</Typography>
+    <Stack flex={1}>
+      <Stack alignItems={"center"} justifyContent={"center"} p={3}>
+        <Stack spacing={4} width={{ xs: "100%", md: 700 }}>
+          <Typography variant="h4">{t("info.title")}</Typography>
 
-        <PersonalInformation />
+          <PersonalInformation />
 
-        <ArrivalTime />
+          <ArrivalTime />
 
-        <SpecialRequests />
-
-        <Button
-          variant="contained"
-          size="large"
-          onClick={handleButtonContinueToSummary}
-        >
-          {t("info.cta")}
-        </Button>
+          <SpecialRequests />
+        </Stack>
       </Stack>
+
+      {/* Sticky bottom navigation */}
+      <Box
+        sx={{
+          position: "sticky",
+          bottom: 0,
+          zIndex: 10,
+          bgcolor: "background.default",
+          borderTop: "1px solid",
+          borderColor: "divider",
+          px: { xs: 2, md: 3 },
+          py: { xs: 1.5, md: 2 },
+        }}
+      >
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          maxWidth={900}
+          width="100%"
+          mx="auto"
+          gap={2}
+        >
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIos />}
+            onClick={decreaseStep}
+            sx={{ minWidth: { xs: 0, sm: 120 }, flexShrink: 0 }}
+          >
+            {t("common.back")}
+          </Button>
+          <Button
+            variant="contained"
+            endIcon={<ArrowForwardIos />}
+            onClick={handleButtonContinueToSummary}
+            sx={{ flex: 1, maxWidth: { xs: "100%" } }}
+          >
+            {t("info.cta")}
+          </Button>
+        </Stack>
+      </Box>
     </Stack>
   );
 }
@@ -184,9 +212,7 @@ function PersonalInformation() {
               <MenuItem value={"Česká republika"}>
                 {t("info.countries.cz")}
               </MenuItem>
-              <MenuItem value={"Slovensko"}>
-                {t("info.countries.sk")}
-              </MenuItem>
+              <MenuItem value={"Slovensko"}>{t("info.countries.sk")}</MenuItem>
               <MenuItem value={"Polsko"}>{t("info.countries.pl")}</MenuItem>
               <MenuItem value={"Německo"}>{t("info.countries.de")}</MenuItem>
             </Select>

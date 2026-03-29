@@ -8,7 +8,13 @@ import {
   Typography,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { Add, Remove, SingleBed } from "@mui/icons-material";
+import {
+  Add,
+  ArrowBackIos,
+  ArrowForwardIos,
+  Remove,
+  SingleBed,
+} from "@mui/icons-material";
 import IconWithText from "../../../components/IconWithText";
 import { AppCardCustomizable } from "../../../components/containers/AppCard";
 import { useReservationContext } from "../context/ReservationContext";
@@ -16,15 +22,6 @@ import { updateRoom } from "../../../redux/slices/reservation/reservationSlice";
 import useClickSound from "../../../hooks/useClickSound";
 import ReservationAppBar from "../components/ReservationAppBar";
 import { useTranslation } from "react-i18next";
-
-/*
- TODO: kolika hostům zbyvá přiřadit pokoj? (bez tohoto nepustit dál) 
- 
- TODO:
-      zobraz něcoj ako zbyva připradit postel x dospělým, x dětem. (budeš muset
-      přidat do spinneru logiku aby nešlo zvolit víc dospelých dětí/než bylo
-      vybráno na začátku)
- */
 
 export default function HostSelect() {
   const { t } = useTranslation("rezervace");
@@ -38,63 +35,129 @@ export default function HostSelect() {
     reservationState.num_children -
     reservationState.rooms.reduce((sum, room) => sum + room.num_children, 0);
 
+  // Kontrola prázdných pokojů
+  const hasEmptyRooms = reservationState.rooms.some(
+    (room) => room.num_adults === 0 && room.num_children === 0
+  );
+
+  // Validace pro tlačítko pokračovat
+  const hasRemainingGuests = remainingAdultsToAssign > 0 || remainingChildrenToAssign > 0;
+  const canProceed = !hasRemainingGuests && !hasEmptyRooms;
+  
+  // Zobrazit error pouze pokud jsou všichni hosté přiřazeni, ale existují prázdné pokoje
+  const shouldShowEmptyRoomsError = !hasRemainingGuests && hasEmptyRooms;
+
   return (
-    <Stack
-      sx={{
-        minHeight: "calc(100vh - 190px)",
-        paddingTop: 2, // Přidá mezeru pod sticky AppBar
-      }}
-      alignItems={"center"}
-      justifyContent={"center"}
-      p={2}
-      spacing={4}
-    >
-      <Typography variant="h4">{t("guests.title")}</Typography>
-      <Stack spacing={1}>
-        <Typography variant="h6" textAlign={"center"}>
-          {t("guests.remainingPrefix")}&nbsp;
-          {remainingAdultsToAssign > 0 && (
-            <Typography
-              component="span"
-              variant="h6"
-              sx={{ fontWeight: "bold", color: "primary.main" }}
-            >
-              {t("guests.remainingAdults", { count: remainingAdultsToAssign })}
-            </Typography>
-          )}
-          {remainingAdultsToAssign > 0 && remainingChildrenToAssign > 0 && (
-            <>&nbsp;a&nbsp;</>
-          )}
-          {remainingChildrenToAssign > 0 && (
-            <Typography
-              component="span"
-              variant="h6"
-              sx={{ fontWeight: "bold", color: "primary.main" }}
-            >
-              {t("guests.remainingChildren", {
-                count: remainingChildrenToAssign,
-              })}
-            </Typography>
-          )}
-        </Typography>
+    <Stack flex={1}>
+      <Stack
+        alignItems={"center"}
+        justifyContent={"center"}
+        p={2}
+        spacing={4}
+        flex={1}
+      >
+        <Typography variant="h4">{t("guests.title")}</Typography>
+        <Stack spacing={1}>
+          <Typography variant="h6" textAlign={"center"}>
+            {t("guests.remainingPrefix")}&nbsp;
+            {remainingAdultsToAssign > 0 && (
+              <Typography
+                component="span"
+                variant="h6"
+                sx={{ fontWeight: "bold", color: "primary.main" }}
+              >
+                {t("guests.remainingAdults", {
+                  count: remainingAdultsToAssign,
+                })}
+              </Typography>
+            )}
+            {remainingAdultsToAssign > 0 && remainingChildrenToAssign > 0 && (
+              <>&nbsp;a&nbsp;</>
+            )}
+            {remainingChildrenToAssign > 0 && (
+              <Typography
+                component="span"
+                variant="h6"
+                sx={{ fontWeight: "bold", color: "primary.main" }}
+              >
+                {t("guests.remainingChildren", {
+                  count: remainingChildrenToAssign,
+                })}
+              </Typography>
+            )}
+          </Typography>
+        </Stack>
+
+        <Grid container spacing={2} justifyContent={"center"}>
+          {reservationState.rooms.map((room, index) => (
+            <Grid key={index}>
+              <RoomHostCard room={room} index={index} />
+            </Grid>
+          ))}
+        </Grid>
       </Stack>
 
-      <Grid container spacing={2} justifyContent={"center"}>
-        {reservationState.rooms.map((room, index) => (
-          <Grid key={index}>
-            <RoomHostCard room={room} index={index} />
-          </Grid>
-        ))}
-      </Grid>
-      <Button
-        variant="contained"
-        size="large"
-        sx={{ maxWidth: "300px" }}
-        disabled={remainingAdultsToAssign > 0 || remainingChildrenToAssign > 0}
-        onClick={increaseStep}
+      {/* Sticky bottom navigation */}
+      <Box
+        sx={{
+          position: "sticky",
+          bottom: 0,
+          zIndex: 10,
+          bgcolor: "background.default",
+          borderTop: "1px solid",
+          borderColor: "divider",
+          px: { xs: 2, md: 3 },
+          py: { xs: 1.5, md: 2 },
+        }}
       >
-        {t("guests.cta")}
-      </Button>
+        <Stack
+          direction="column"
+          justifyContent="center"
+          alignItems="center"
+          maxWidth={900}
+          width="100%"
+          mx="auto"
+          gap={2}
+        >
+          {shouldShowEmptyRoomsError && (
+            <Typography
+              variant="body2"
+              color="error"
+              textAlign="center"
+              sx={{ fontSize: "0.875rem", fontWeight: 500 }}
+            >
+              {t("guests.emptyRoomsError")}
+            </Typography>
+          )}
+          
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            width="100%"
+            gap={2}
+          >
+            <Button
+              variant="outlined"
+              startIcon={<ArrowBackIos />}
+              onClick={decreaseStep}
+              sx={{ minWidth: { xs: 0, sm: 120 }, flexShrink: 0 }}
+            >
+              {t("common.back")}
+            
+            </Button>
+            <Button
+              variant="contained"
+              endIcon={<ArrowForwardIos />}
+              disabled={!canProceed}
+              onClick={increaseStep}
+              sx={{ flex: 1, maxWidth: { xs: "100%" } }}
+            >
+              {t("guests.cta")}
+            </Button>
+          </Stack>
+        </Stack>
+      </Box>
     </Stack>
   );
 }

@@ -19,9 +19,9 @@ export default function GuestsSection() {
   const [searchTerm, setSearchTerm] = useState("");
 
   // ✨ Jeden řádek pro celou pagination logiku!
-  const pagination = usePagination({ 
+  const pagination = usePagination({
     initialPageSize: 10,
-    rowsPerPageOptions: [5, 10, 25, 50] 
+    rowsPerPageOptions: [5, 10, 25, 50],
   });
 
   const handleClearSearch = () => {
@@ -33,9 +33,9 @@ export default function GuestsSection() {
     data: guestsData,
     isLoading: guestsLoading,
     error: guestsError,
-  } = useGuestsQuery({ 
-    page: pagination.page, 
-    page_size: pagination.pageSize 
+  } = useGuestsQuery({
+    page: pagination.page,
+    page_size: pagination.pageSize,
   });
   const { data: reservationsData, isLoading: reservationsLoading } =
     useReservationsQuery();
@@ -62,16 +62,12 @@ export default function GuestsSection() {
       {
         key: "first_name",
         label: "Jméno",
-        render: (row) => (
-          <Typography fontWeight="600">{row.first_name}</Typography>
-        ),
+        render: (row) => <Typography>{row.first_name}</Typography>,
       },
       {
         key: "last_name",
         label: "Příjmení",
-        render: (row) => (
-          <Typography fontWeight="600">{row.last_name}</Typography>
-        ),
+        render: (row) => <Typography>{row.last_name}</Typography>,
       },
       {
         key: "email",
@@ -79,7 +75,7 @@ export default function GuestsSection() {
         render: (row) => (
           <Stack direction="row" alignItems="center" spacing={1}>
             <Email sx={{ fontSize: 16, color: "text.secondary" }} />
-            <Typography variant="body2">{row.email}</Typography>
+            <Typography>{row.email}</Typography>
           </Stack>
         ),
       },
@@ -90,12 +86,10 @@ export default function GuestsSection() {
           row.phone ? (
             <Stack direction="row" alignItems="center" spacing={1}>
               <Phone sx={{ fontSize: 16, color: "text.secondary" }} />
-              <Typography variant="body2">{row.phone}</Typography>
+              <Typography>{row.phone}</Typography>
             </Stack>
           ) : (
-            <Typography variant="body2" color="text.secondary">
-              —
-            </Typography>
+            <Typography>—</Typography>
           ),
       },
       {
@@ -104,11 +98,7 @@ export default function GuestsSection() {
         align: "center",
         render: (row) => {
           const count = reservationCountsByGuestId[row.id] || 0;
-          return (
-            <Typography variant="body2" color="text.secondary">
-              {count}
-            </Typography>
-          );
+          return <Typography>{count}</Typography>;
         },
       },
     ],
@@ -209,7 +199,7 @@ export default function GuestsSection() {
             getRowId={(row) => row.id}
             paginationConfig={{
               ...pagination, // Rozbalí všechny pagination funkce a hodnoty
-              totalCount: guestsData?.count || filteredGuests.length
+              totalCount: guestsData?.count || filteredGuests.length,
             }}
           />
           {filteredGuests.length === 0 && searchTerm && (

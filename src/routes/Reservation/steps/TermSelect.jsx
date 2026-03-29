@@ -20,6 +20,7 @@ import {
 import dayjs from "dayjs";
 import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
+import ReservationStepper from "../components/ReservationStepper";
 
 export default function TermSelect() {
   const { t } = useTranslation("rezervace");
@@ -53,10 +54,7 @@ export default function TermSelect() {
 
   return (
     <Stack
-      sx={{
-        minHeight: "calc(100vh - 190px)",
-        paddingTop: 2, // Přidá mezeru pod sticky AppBar
-      }}
+      flex={1}
       alignItems={"center"}
       justifyContent={"center"}
       p={3}
@@ -68,9 +66,12 @@ export default function TermSelect() {
         <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
           <DatePicker
             label={t("term.labels.checkIn")}
+            disablePast
             value={checkInDate}
             onChange={(value) => {
-              const formattedCheckIn = value ? value.format("YYYY-MM-DD") : null;
+              const formattedCheckIn = value
+                ? value.format("YYYY-MM-DD")
+                : null;
               const nextPayload = { check_in_date: formattedCheckIn };
 
               if (!formattedCheckIn) {
@@ -80,7 +81,10 @@ export default function TermSelect() {
                   ? dayjs(values.check_out_date)
                   : null;
 
-                if (!currentCheckOut || !currentCheckOut.isAfter(value, "day")) {
+                if (
+                  !currentCheckOut ||
+                  !currentCheckOut.isAfter(value, "day")
+                ) {
                   nextPayload.check_out_date = formattedCheckIn;
                 }
               }
@@ -94,6 +98,7 @@ export default function TermSelect() {
 
           <DatePicker
             label={t("term.labels.checkOut")}
+            disablePast
             value={checkOutDate}
             referenceDate={checkInDate || undefined}
             onChange={(value) =>
@@ -203,9 +208,6 @@ export default function TermSelect() {
                 "& .MuiOutlinedInput-root": {
                   cursor: "pointer",
                 },
-              }}
-              onClick={() => {
-                /* handle click */
               }}
             />
           </MenuDecorator>

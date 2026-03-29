@@ -8,13 +8,13 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 
-export default function CustomTable({ 
-  columns = [], 
-  data = [], 
-  getRowId, 
+export default function CustomTable({
+  columns = [],
+  data = [],
+  getRowId,
   sx,
   // Nové jednoduché API - jeden objekt místo 8+ parametrů
-  paginationConfig = null
+  paginationConfig = null,
 }) {
   const resolveRowId = (row, index) => {
     if (getRowId) return getRowId(row);
@@ -32,9 +32,9 @@ export default function CustomTable({
   // Pagination handlers
   const handlePageChange = (event, newPage) => {
     if (!paginationConfig) return;
-    
+
     const currentPageZeroBased = paginationConfig.pageIndex;
-    
+
     if (newPage > currentPageZeroBased) {
       paginationConfig.nextPage?.();
     } else if (newPage < currentPageZeroBased) {
@@ -44,7 +44,7 @@ export default function CustomTable({
 
   const handleRowsPerPageChange = (event) => {
     if (!paginationConfig) return;
-    
+
     const newPageSize = parseInt(event.target.value, 10);
     paginationConfig.changePageSize?.(newPageSize);
   };
@@ -85,7 +85,7 @@ export default function CustomTable({
                   <TableCell
                     key={col.key}
                     align={col.align || "left"}
-                    sx={col.cellSx}
+                    sx={{ verticalAlign: "top", ...col.cellSx }}
                   >
                     {col.render ? col.render(row, value, rowIndex) : value}
                   </TableCell>
@@ -97,7 +97,7 @@ export default function CustomTable({
 
         {paginationConfig && (
           <TableFooter>
-            <TableRow>
+            <TableRow sx={{ borderTop: "1px solid", borderColor: "divider" }}>
               <TablePagination
                 rowsPerPageOptions={paginationConfig.rowsPerPageOptions}
                 colSpan={columns.length}
@@ -107,7 +107,7 @@ export default function CustomTable({
                 onPageChange={handlePageChange}
                 onRowsPerPageChange={handleRowsPerPageChange}
                 labelRowsPerPage="Řádků na stránku:"
-                labelDisplayedRows={({ from, to, count }) => 
+                labelDisplayedRows={({ from, to, count }) =>
                   `${from}–${to} z ${count !== -1 ? count : `více než ${to}`}`
                 }
               />

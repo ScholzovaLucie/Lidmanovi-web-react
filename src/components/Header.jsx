@@ -26,8 +26,8 @@ export default function Header({ onLogin }) {
   return (
     <AppBar
       position="sticky"
-      elevation={0}
       sx={{
+        top: 0,
         zIndex: (theme) => theme.zIndex.appBar + 20,
         backgroundColor: "rgba(255,255,255,0.96)",
         boxShadow: "0 10px 30px rgba(17,25,35,0.06)",
@@ -44,7 +44,7 @@ export default function Header({ onLogin }) {
             justifyContent="space-between"
             alignItems="center"
             width="100%"
-            sx={{ display: { xs: "flex", md: "none" } }}
+            sx={{ display: "flex", "@media (min-width:1300px)": { display: "none" } }}
           >
             <Box
               component="img"
@@ -67,7 +67,7 @@ export default function Header({ onLogin }) {
         </Toolbar>
 
         {/* Mobile Menu */}
-        <Box sx={{ display: { xs: "block", md: "none" } }}>
+        <Box sx={{ display: "block", "@media (min-width:1300px)": { display: "none" } }}>
           <MobileMenu
             isOpen={mobileMenuOpen}
             onClose={() => setMobileMenuOpen(false)}

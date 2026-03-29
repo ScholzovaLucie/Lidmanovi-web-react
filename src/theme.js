@@ -30,6 +30,16 @@ export const createAppTheme = () =>
         main: "#2e7d32",
       },
 
+      // Reservation status colors
+      reservationStatus: {
+        new:             { main: "#1565c0", contrastText: "#ffffff" }, // blue
+        confirmed:       { main: "#2e7d32", contrastText: "#ffffff" }, // green
+        cancelled:       { main: "#c62828", contrastText: "#ffffff" }, // red
+        payment_pending: { main: "#e65100", contrastText: "#ffffff" }, // deep orange
+        payed:           { main: "#00695c", contrastText: "#ffffff" }, // teal
+        done:            { main: "#37474f", contrastText: "#ffffff" }, // blue-grey
+      },
+
       // Event colors for calendar - pouze základní paleta
       event: {
         colors: [

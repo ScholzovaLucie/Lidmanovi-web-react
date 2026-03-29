@@ -38,15 +38,17 @@ import { SelectButton } from "../../../components/controls/SelectButton";
 import RoomCard from "../components/RoomCard";
 import ReservationStepper from "../components/ReservationStepper";
 import { useTranslation } from "react-i18next";
+import { RoomCartCompactCard } from "../components/RoomCardCompact";
+import Cart from "../components/Cart";
 
 export default function RoomSelect() {
   const { t, i18n } = useTranslation("rezervace");
-  const { step, increaseStep, decreaseStep, setStep } = useReservationContext();
+  const { step, increaseStep, decreaseStep, setStepWithScroll } = useReservationContext();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
-  const activeLang = String(i18n.resolvedLanguage || i18n.language || "cs").split(
-    "-",
-  )[0];
+  const activeLang = String(
+    i18n.resolvedLanguage || i18n.language || "cs",
+  ).split("-")[0];
 
   const {
     data: rooms,
@@ -72,7 +74,8 @@ export default function RoomSelect() {
   const values = reservationState.values;
   const allHostsCount = values.num_adults + values.num_children;
   const roomsList = getRoomsList(rooms);
-  const hasNoAvailableRooms = !isLoading && !error && rooms && roomsList.length === 0;
+  const hasNoAvailableRooms =
+    !isLoading && !error && rooms && roomsList.length === 0;
   const hasEnoughCapacity =
     values.rooms.length > 0 && remainingCapacityToSelect <= 0;
 
@@ -146,94 +149,144 @@ export default function RoomSelect() {
   if (error) return <div>{t("common.error")}</div>;
 
   return (
-    <>
+    <Stack direction={"row"} flex={1}>
+      <Stack flex={1}>
+        {/* Scrollable content */}
+        <Stack alignItems={"center"} p={3} spacing={3} flex={1}>
+          <Stack alignItems="center" spacing={0.5}>
+            <Typography variant="h4">{t("rooms.title")}</Typography>
+            <Typography variant="h6" color="text.secondary">
+              {t("rooms.subtitle")}
+            </Typography>
+          </Stack>
+
+          {hasNoAvailableRooms ? (
+            <AppCardCustomizable
+              props={{
+                width: "100%",
+                maxWidth: 620,
+                border: "1px solid",
+                borderColor: "warning.light",
+                backgroundColor: "warning.50",
+              }}
+            >
+              <Stack spacing={2.5} p={3} alignItems="center">
+                <Typography
+                  variant="h6"
+                  textAlign="center"
+                  color="warning.dark"
+                >
+                  {t("rooms.noRoomTitle")}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  color="text.secondary"
+                  textAlign="center"
+                >
+                  {t("rooms.noRoomText")}
+                </Typography>
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={() => setStepWithScroll(0)}
+                >
+                  {t("rooms.backToTerm")}
+                </Button>
+              </Stack>
+            </AppCardCustomizable>
+          ) : (
+            <Grid container spacing={2} justifyContent={"center"}>
+              {availableRooms.map((room, index) => (
+                <Grid key={index}>
+                  <RoomCard room={room} />
+                </Grid>
+              ))}
+            </Grid>
+          )}
+        </Stack>
+
+        {/* Sticky bottom navigation */}
+        <Box
+          sx={{
+            position: "sticky",
+            bottom: 0,
+            zIndex: 10,
+            bgcolor: "background.default",
+            borderTop: "1px solid",
+            borderColor: "divider",
+            px: { xs: 2, md: 3 },
+            py: { xs: 1.5, md: 2 },
+          }}
+        >
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            maxWidth={900}
+            width="100%"
+            mx="auto"
+            gap={2}
+          >
+            <Stack flex={1}>
+              <Grid
+                container
+                spacing={1}
+                alignItems="center"
+                justifyContent="center"
+              >
+                {Array.from({ length: allHostsCount }).map((_, index) => (
+                  <Grid item key={index}>
+                    {index >= actuallySelectedCapacity ? (
+                      <PersonOutline fontSize="medium" color="disabled" />
+                    ) : (
+                      <Person fontSize="medium" />
+                    )}
+                  </Grid>
+                ))}
+              </Grid>
+
+              <Stack
+                direction="row"
+                spacing={2}
+                justifyContent="space-between"
+                flex={1}
+              >
+                <Button
+                  variant="outlined"
+                  startIcon={<ArrowBackIos />}
+                  onClick={decreaseStep}
+                  sx={{ minWidth: { xs: 0, sm: 120 }, flexShrink: 0 }}
+                >
+                  {t("common.back")}
+                </Button>
+
+                {!hasNoAvailableRooms && (
+                  <Button
+                    variant="contained"
+                    endIcon={<ArrowForwardIos />}
+                    onClick={handleNextStep}
+                    disabled={!hasEnoughCapacity}
+                    sx={{ flex: 1, maxWidth: { xs: "100%" } }}
+                  >
+                    {t("rooms.cta")}
+                  </Button>
+                )}
+              </Stack>
+            </Stack>
+          </Stack>
+        </Box>
+      </Stack>
+
       <Stack
         sx={{
-          minHeight: "calc(100vh - 190px)",
-          paddingTop: 2, // Přidá mezeru pod sticky AppBar
+          bgcolor: "background.default",
+          borderLeft: "1px solid",
+          borderColor: "divider",
         }}
-        alignItems={"center"}
-        justifyContent={"center"}
-        p={3}
-        spacing={4}
+        display={{ xs: "none", lg: "block" }}
       >
-        <Typography variant="h4">{t("rooms.title")}</Typography>
-        <Typography variant="h6">{t("rooms.subtitle")}</Typography>
-
-        <Grid container spacing={1} alignItems="center" justifyContent="center">
-          {Array.from({ length: allHostsCount }).map((_, index) => (
-            <Grid item key={index}>
-              {index >= actuallySelectedCapacity ? (
-                <PersonOutline fontSize="medium" color="disabled" />
-              ) : (
-                <Person fontSize="medium" />
-              )}
-            </Grid>
-          ))}
-        </Grid>
-
-        {hasEnoughCapacity && (
-          <AppCardCustomizable
-            props={{
-              width: "100%",
-              maxWidth: 620,
-              border: "1px solid",
-              borderColor: "success.light",
-              backgroundColor: "success.50",
-            }}
-          >
-            <Stack direction="row" spacing={1.5} p={2} alignItems="center">
-              <CheckCircleOutline color="success" />
-              <Typography variant="body1" color="success.dark">
-                {t("rooms.allSelected")}
-              </Typography>
-            </Stack>
-          </AppCardCustomizable>
-        )}
-
-        {hasNoAvailableRooms ? (
-          <AppCardCustomizable
-            props={{
-              width: "100%",
-              maxWidth: 620,
-              border: "1px solid",
-              borderColor: "warning.light",
-              backgroundColor: "warning.50",
-            }}
-          >
-            <Stack spacing={2.5} p={3} alignItems="center">
-              <Typography variant="h6" textAlign="center" color="warning.dark">
-                {t("rooms.noRoomTitle")}
-              </Typography>
-              <Typography variant="body1" color="text.secondary" textAlign="center">
-                {t("rooms.noRoomText")}
-              </Typography>
-              <Button variant="contained" size="large" onClick={() => setStep(0)}>
-                {t("rooms.backToTerm")}
-              </Button>
-            </Stack>
-          </AppCardCustomizable>
-        ) : (
-          <Grid container spacing={2} justifyContent={"center"}>
-            {availableRooms.map((room, index) => (
-              <Grid key={index}>
-                <RoomCard room={room} />
-              </Grid>
-            ))}
-          </Grid>
-        )}
-
-        {!hasNoAvailableRooms && (
-          <Button
-            variant="contained"
-            size="large"
-            sx={{ maxWidth: "300px" }}
-            onClick={handleNextStep}
-          >
-            {t("rooms.cta")}
-          </Button>
-        )}
+        <Cart />
       </Stack>
-    </>
+    </Stack>
   );
 }

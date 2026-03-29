@@ -1,6 +1,12 @@
 import { Box, Button, Stack, Typography, IconButton } from "@mui/material";
 import { AppCardCustomizable } from "../../../components/containers/AppCard";
-import { BathtubOutlined, SpaOutlined, Wifi, Edit, Delete } from "@mui/icons-material";
+import {
+  BathtubOutlined,
+  SpaOutlined,
+  Wifi,
+  Edit,
+  Delete,
+} from "@mui/icons-material";
 import { useDispatch } from "react-redux";
 import {
   addRoom,
@@ -10,14 +16,38 @@ import IconWithText from "../../../components/IconWithText";
 import CollapsableText from "./CollapsableText";
 import Price from "./Price";
 import { useTranslation } from "react-i18next";
+import HotelOutlinedIcon from "@mui/icons-material/HotelOutlined";
 
-export default function RoomCard({ room, selected, onEdit, onDelete, isAdminMode = false }) {
+export default function RoomCard({
+  room,
+  selected,
+  onEdit,
+  onDelete,
+  isAdminMode = false,
+}) {
   const { t } = useTranslation("rezervace");
   const dispatch = useDispatch();
 
   return (
     <AppCardCustomizable>
       <Box maxWidth={370} sx={{ position: "relative" }}>
+        {/* Inactive overlay */}
+        {!room.is_active && (
+          <Box
+            sx={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 3,
+              borderRadius: 1,
+              bgcolor: "rgba(180,180,180,0.55)",
+              backdropFilter: "grayscale(1)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              pointerEvents: "none",
+            }}
+          />
+        )}
         {/* Admin akce */}
         {isAdminMode && (onEdit || onDelete) && (
           <Box
@@ -25,14 +55,14 @@ export default function RoomCard({ room, selected, onEdit, onDelete, isAdminMode
               position: "absolute",
               top: 8,
               right: 8,
-              zIndex: 2,
+              zIndex: 4,
               display: "flex",
               gap: 1,
             }}
           >
             {onEdit && (
               <IconButton
-                size="small"
+                size="large"
                 onClick={() => onEdit(room)}
                 sx={{
                   bgcolor: "rgba(255,255,255,0.9)",
@@ -45,7 +75,7 @@ export default function RoomCard({ room, selected, onEdit, onDelete, isAdminMode
             )}
             {onDelete && (
               <IconButton
-                size="small"
+                size="large"
                 onClick={() => onDelete(room.id)}
                 sx={{
                   bgcolor: "rgba(255,255,255,0.9)",
@@ -71,24 +101,26 @@ export default function RoomCard({ room, selected, onEdit, onDelete, isAdminMode
         <Stack alignItems={"start"} spacing={3} flex={1} padding={3}>
           {/* top */}
           <Stack alignItems={"start"} spacing={1.5} width={"100%"}>
-            <Typography fontSize={24} fontWeight={"bold"}>
+            <Typography fontSize={24} fontWeight={"bold"} textAlign={"start"}>
               {room.name}
             </Typography>
             <Stack direction={"row"} spacing={2} alignItems={"center"}>
               <IconWithText
-                Icon={Wifi}
+                Icon={HotelOutlinedIcon}
                 iconProps={{ fontSize: "16" }}
-                text="Wi-Fi"
+                text={`${room.capacity} ${t("roomCard.beds")}`}
               />
-              <IconWithText
-                Icon={SpaOutlined}
-                iconProps={{ fontSize: "16" }}
-                text={t("roomCard.towels")}
-              />
+
               <IconWithText
                 Icon={BathtubOutlined}
                 iconProps={{ fontSize: "16" }}
                 text={t("roomCard.bathroom")}
+              />
+
+              <IconWithText
+                Icon={Wifi}
+                iconProps={{ fontSize: "16" }}
+                text="Wi-Fi"
               />
             </Stack>
 

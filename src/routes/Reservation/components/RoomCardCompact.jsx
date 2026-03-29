@@ -4,10 +4,30 @@ import { useDispatch } from "react-redux";
 import { removeRoom } from "../../../redux/slices/reservation/reservationSlice";
 import DeleteIconOutline from "@mui/icons-material/DeleteOutline";
 import { useTranslation } from "react-i18next";
+import { useReservationContext } from "../context/ReservationContext";
+import { RemoveRoomDialog } from "./RemoveRoomDialog";
+import { useState } from "react";
 
 export function RoomCartCompactCard({ room }) {
   const { t } = useTranslation("rezervace");
   const dispatch = useDispatch();
+  const { step, setStep } = useReservationContext();
+  const [showRemoveDialog, setShowRemoveDialog] = useState(false);
+
+  function handleRemoveClick() {
+    if (step === 1) {
+      // Na kroku 1 odeber rovnou bez dialogu
+      dispatch(removeRoom(room.id));
+    } else {
+      // Na ostatních krocích zobraz potvrzovací dialog
+      setShowRemoveDialog(true);
+    }
+  }
+
+  function handleConfirmRemove() {
+    dispatch(removeRoom(room.id));
+    setStep(1);
+  }
 
   return (
     <AppCardCustomizable>
@@ -35,19 +55,27 @@ export function RoomCartCompactCard({ room }) {
             {t("roomCardCompact.adultPrice", { amount: room.price_for_adult })}
           </Typography>
           <Typography fontSize={13} color="text.secondary" lineHeight="16px">
-            {t("roomCardCompact.childPrice", { amount: room.price_for_children })}
+            {t("roomCardCompact.childPrice", {
+              amount: room.price_for_children,
+            })}
           </Typography>
         </Stack>
 
         <IconButton
           variant="filled"
           size="small"
-          onClick={() => dispatch(removeRoom(room.id))}
+          onClick={handleRemoveClick}
           color="error"
         >
           <DeleteIconOutline />
         </IconButton>
       </Stack>
+
+      <RemoveRoomDialog
+        open={showRemoveDialog}
+        onClose={() => setShowRemoveDialog(false)}
+        onConfirm={handleConfirmRemove}
+      />
     </AppCardCustomizable>
   );
 }

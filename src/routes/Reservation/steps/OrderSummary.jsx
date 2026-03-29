@@ -1,8 +1,9 @@
 import { Box, Button, Divider, Stack, Typography } from "@mui/material";
 import { AppCardCustomizable } from "../../../components/containers/AppCard";
-import { Bed } from "@mui/icons-material";
+import { Bed, Person } from "@mui/icons-material";
 import { CalendarIcon } from "@mui/x-date-pickers";
 import ReservationAppBar from "../components/ReservationAppBar";
+import { useReservationContext } from "../context/ReservationContext";
 import { useDispatch, useSelector } from "react-redux";
 import {
   submitFormThunk,
@@ -13,7 +14,7 @@ import dayjs from "dayjs";
 import { useState } from "react";
 import { useSnackbar } from "notistack";
 import { IconButton } from "@mui/material";
-import { Close } from "@mui/icons-material";
+import { ArrowBackIos, Close } from "@mui/icons-material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 
@@ -51,6 +52,7 @@ export function OrderSummary() {
   const dispatch = useDispatch();
   const theme = useTheme();
   const values = useSelector((state) => state.reservation.values);
+  const { decreaseStep } = useReservationContext();
 
   const checkInFormatted = dayjs(values.check_in_date).format("D.MM");
   const checkOutFormatted = dayjs(values.check_out_date).format("D.MM.YYYY");
@@ -88,195 +90,314 @@ export function OrderSummary() {
     setReservationNumber(
       response?.number ?? response?.reservation?.number ?? null,
     );
+
+    // Zobraz toast s potvrzením úspěšné rezervace
+    enqueueSnackbar(t("summary.successEmailConfirmation"), {
+      variant: "success",
+      autoHideDuration: 8000,
+    });
+
     setLoading(false);
   }
 
   return (
-    <Stack
-      sx={{
-        minHeight: "calc(100vh - 190px)",
-        paddingTop: 2, // Přidá mezeru pod sticky AppBar
-      }}
-      alignItems={"center"}
-      justifyContent={"center"}
-      p={3}
-    >
-      <Stack width={{ width: "100%", maxWidth: 500 }} spacing={4}>
-        <Typography variant="h4" textAlign={{ xs: "start", sm: "center" }}>
-          {t("summary.title")}
-        </Typography>
+    <Stack flex={1}>
+      <Stack alignItems={"center"} justifyContent={"center"} p={3} flex={1}>
+        <Stack width={{ width: "100%", maxWidth: 500 }} spacing={4}>
+          <Typography variant="h4" textAlign={{ xs: "start", sm: "center" }}>
+            {t("summary.title")}
+          </Typography>
 
-        <AppCardCustomizable
-          props={{
-            border: reservationNumber
-              ? `2px solid ${theme.palette.success.main}`
-              : undefined,
-            backgroundColor: reservationNumber
-              ? alpha(
-                  theme.palette.success.main,
-                  theme.palette.mode === "dark" ? 0.14 : 0.06,
-                )
-              : undefined,
-          }}
-        >
-          <Stack p={2} spacing={2} sx={{ width: "100%" }}>
-            <Typography
-              variant="h5"
-              fontWeight={"bold"}
-              textAlign={"start"}
-              component={Box}
-              paddingX={1}
-            >
-              {t("summary.property")}
-            </Typography>
+          <AppCardCustomizable
+            props={{
+              border: reservationNumber
+                ? `2px solid ${theme.palette.success.main}`
+                : undefined,
+              backgroundColor: reservationNumber
+                ? alpha(
+                    theme.palette.success.main,
+                    theme.palette.mode === "dark" ? 0.14 : 0.06,
+                  )
+                : undefined,
+            }}
+          >
+            <Stack p={2} spacing={2} sx={{ width: "100%" }}>
+              <Typography
+                variant="h5"
+                fontWeight={"bold"}
+                textAlign={"start"}
+                component={Box}
+                paddingX={1}
+              >
+                {t("summary.property")}
+              </Typography>
 
-            <Divider />
+              <Divider />
 
-            {/* Detalily pobytu */}
-            <Stack alignItems={"center"} direction={"row"} spacing={1.5} p={1}>
-              <HighlightedIcon Icon={CalendarIcon} />
+              {/* Detalily pobytu */}
+              <Stack
+                alignItems={"center"}
+                direction={"row"}
+                spacing={1.5}
+                p={1}
+              >
+                <HighlightedIcon Icon={CalendarIcon} />
 
-              <Stack alignItems={"start"}>
-                <Typography variant="body1" fontWeight={"bold"} color="text.primary">
-                  {t("summary.stayTerm")}
-                </Typography>
-                <Typography variant="body1">
-                  <strong>
-                    {checkInFormatted} - {checkOutFormatted}
-                  </strong>
-                  &nbsp;({t("summary.nightsCount", { count: numberOfNights })})
-                </Typography>
+                <Stack alignItems={"start"}>
+                  <Typography
+                    variant="body1"
+                    fontWeight={"bold"}
+                    color="text.primary"
+                  >
+                    {t("summary.stayTerm")}
+                  </Typography>
+                  <Typography variant="body1">
+                    <strong>
+                      {checkInFormatted} - {checkOutFormatted}
+                    </strong>
+                    &nbsp;({t("summary.nightsCount", { count: numberOfNights })}
+                    )
+                  </Typography>
+                </Stack>
               </Stack>
-            </Stack>
 
-            {/* Počet hostů */}
-            <Stack
-              alignItems={"center"}
-              direction={"row"}
-              spacing={1.5}
-              paddingX={1}
-            >
-              <HighlightedIcon Icon={Bed} />
+              {/* Počet hostů */}
+              <Stack
+                alignItems={"center"}
+                direction={"row"}
+                spacing={1.5}
+                paddingX={1}
+              >
+                <HighlightedIcon Icon={Bed} />
 
-              <Stack alignItems={"start"}>
-                <Typography variant="body1" fontWeight={"bold"} color="text.primary">
-                  {t("summary.guestCount")}
-                </Typography>
-                <Typography variant="body1">
-                  <strong>
-                    {t("summary.guestsTotal", {
-                      count: values.num_adults + values.num_children,
-                    })}
-                  </strong>
-                  &nbsp;(
-                  {formatGuestsText(values.num_adults, values.num_children, t)})
-                </Typography>
+                <Stack alignItems={"start"}>
+                  <Typography
+                    variant="body1"
+                    fontWeight={"bold"}
+                    color="text.primary"
+                  >
+                    {t("summary.guestCount")}
+                  </Typography>
+                  <Typography variant="body1">
+                    <strong>
+                      {t("summary.guestsTotal", {
+                        count: values.num_adults + values.num_children,
+                      })}
+                    </strong>
+                    &nbsp;(
+                    {formatGuestsText(
+                      values.num_adults,
+                      values.num_children,
+                      t,
+                    )}
+                    )
+                  </Typography>
+                </Stack>
               </Stack>
-            </Stack>
 
-            <Divider />
+              <Divider />
 
-            {/* Ubytování */}
-            <Stack spacing={1}>
-              {values.rooms.map((room, index) => (
+              <Stack>
+                {/* Informace o hostu */}
                 <Stack
-                  bgcolor={"primary.50"}
-                  borderRadius={1}
-                  p={1}
-                  spacing={0.5}
-                  key={index}
+                  alignItems={"center"}
+                  direction={"row"}
+                  spacing={1.5}
+                  paddingX={1}
                 >
-                  <Stack alignItems={"center"} direction={"row"} spacing={1.5}>
-                    <HighlightedIcon Icon={Bed} />
+                  <HighlightedIcon Icon={Person} />
 
-                    <Stack
-                      alignItems={"start"}
-                      justifyContent={"space-between"}
-                      direction={"row"}
-                      width={"100%"}
+                  <Stack alignItems={"start"}>
+                    <Typography
+                      variant="body1"
+                      fontWeight={"bold"}
+                      color="text.primary"
                     >
-                      <Typography
-                        variant="body1"
-                        fontWeight={"bold"}
-                        color="text.primary"
-                      >
-                        {room.name}
-                      </Typography>
-                      <Typography variant="body1" fontWeight={"bold"}>
-                        {t("common.priceCzk", {
-                          amount: calculateTotalPriceForRoom(room),
-                        })}
-                      </Typography>
-                    </Stack>
+                      {t("summary.guestInfo")}
+                    </Typography>
+                    <Typography variant="body1" fontWeight={"bold"}>
+                      {values.primary_guest?.first_name}{" "}
+                      {values.primary_guest?.last_name}
+                    </Typography>
                   </Stack>
+                </Stack>
 
-                  {room.num_adults > 0 && (
-                    <Stack direction={"row"} justifyContent={"space-between"}>
-                      <Typography variant="body2" color="text.secondary">
-                        {t("summary.adultRow", { count: room.num_adults })}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {t("common.priceCzk", { amount: room.price_for_adult })}
-                      </Typography>
-                    </Stack>
+                <Stack p={1} alignItems={"flex-start"}>
+                  {values.primary_guest?.email && (
+                    <Typography variant="body2" color="text.secondary">
+                      {t("summary.guestEmail")}: {values.primary_guest.email}
+                    </Typography>
                   )}
 
-                  {room.num_children > 0 && (
-                    <Stack direction={"row"} justifyContent={"space-between"}>
-                      <Typography variant="body2" color="text.secondary">
-                        {t("summary.childRow", { count: room.num_children })}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {t("common.priceCzk", { amount: room.price_for_children })}
-                      </Typography>
-                    </Stack>
+                  {values.primary_guest?.phone && (
+                    <Typography variant="body2" color="text.secondary">
+                      {t("summary.guestPhone")}: {values.primary_guest.phone}
+                    </Typography>
+                  )}
+
+                  {values.primary_guest?.country && (
+                    <Typography variant="body2" color="text.secondary">
+                      {t("summary.guestCountry")}:{" "}
+                      {values.primary_guest.country}
+                    </Typography>
+                  )}
+
+                  {values.primary_guest?.note && (
+                    <Typography variant="body2" color="text.secondary">
+                      {t("summary.guestNote")}: {values.primary_guest.note}
+                    </Typography>
                   )}
                 </Stack>
-              ))}
-            </Stack>
+              </Stack>
 
-            <Divider />
+              <Divider />
 
-            {/* Celková cena */}
-            <Stack
-              spacing={1}
-              alignItems={"end"}
-              justifyContent={"space-between"}
-              direction={"row"}
-              px={1}
-            >
-              <Typography variant="h6" color="text.primary">
-                {t("summary.totalPrice")}
-              </Typography>
-              <Typography variant="h5" fontWeight="bold">
-                {t("common.priceCzk", { amount: calculateTotalPrice(values.rooms) })}
-              </Typography>
-            </Stack>
+              {/* Ubytování */}
+              <Stack spacing={1}>
+                {values.rooms.map((room, index) => (
+                  <Stack
+                    bgcolor={"primary.50"}
+                    borderRadius={1}
+                    p={1}
+                    spacing={0.5}
+                    key={index}
+                  >
+                    <Stack
+                      alignItems={"center"}
+                      direction={"row"}
+                      spacing={1.5}
+                    >
+                      <HighlightedIcon Icon={Bed} />
 
-            <Box padding={1}>
-              <Button
-                variant="contained"
-                size="large"
-                fullWidth
-                onClick={handleSubmit}
-                disabled={loading || reservationNumber !== null}
+                      <Stack
+                        alignItems={"start"}
+                        justifyContent={"space-between"}
+                        direction={"row"}
+                        width={"100%"}
+                      >
+                        <Typography
+                          variant="body1"
+                          fontWeight={"bold"}
+                          color="text.primary"
+                        >
+                          {room.name}
+                        </Typography>
+                        <Typography variant="body1" fontWeight={"bold"}>
+                          {t("common.priceCzk", {
+                            amount: calculateTotalPriceForRoom(room),
+                          })}
+                        </Typography>
+                      </Stack>
+                    </Stack>
+
+                    {room.num_adults > 0 && (
+                      <Stack direction={"row"} justifyContent={"space-between"}>
+                        <Typography variant="body2" color="text.secondary">
+                          {t("summary.adultRow", { count: room.num_adults })}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {t("common.priceCzk", {
+                            amount: room.price_for_adult,
+                          })}
+                        </Typography>
+                      </Stack>
+                    )}
+
+                    {room.num_children > 0 && (
+                      <Stack direction={"row"} justifyContent={"space-between"}>
+                        <Typography variant="body2" color="text.secondary">
+                          {t("summary.childRow", { count: room.num_children })}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {t("common.priceCzk", {
+                            amount: room.price_for_children,
+                          })}
+                        </Typography>
+                      </Stack>
+                    )}
+                  </Stack>
+                ))}
+              </Stack>
+
+              <Divider />
+
+              {/* Celková cena */}
+              <Stack
+                spacing={1}
+                alignItems={"end"}
+                justifyContent={"space-between"}
+                direction={"row"}
+                px={1}
               >
-                {t("summary.submit")}
-              </Button>
-            </Box>
-          </Stack>
-        </AppCardCustomizable>
-        {reservationNumber && (
-          <>
-            <Typography variant="h5" align="center" color="success.main">
-              {t("summary.success")}
-            </Typography>
-            <Typography variant="h4" align="center" color="success.main">
-              {t("summary.reservationNumber")} <strong>{reservationNumber}</strong>
-            </Typography>
-          </>
-        )}
+                <Typography variant="h6" color="text.primary">
+                  {t("summary.totalPrice")}
+                </Typography>
+                <Typography variant="h5" fontWeight="bold">
+                  {t("common.priceCzk", {
+                    amount: calculateTotalPrice(values.rooms),
+                  })}
+                </Typography>
+              </Stack>
+
+              <Box padding={1}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  fullWidth
+                  onClick={handleSubmit}
+                  disabled={loading || reservationNumber !== null}
+                >
+                  {t("summary.submit")}
+                </Button>
+              </Box>
+            </Stack>
+          </AppCardCustomizable>
+          {reservationNumber && (
+            <>
+              <Typography variant="h5" align="center" color="success.main">
+                {t("summary.success")}
+              </Typography>
+              <Typography variant="h4" align="center" color="success.main">
+                {t("summary.reservationNumber")}{" "}
+                <strong>{reservationNumber}</strong>
+              </Typography>
+            </>
+          )}
+        </Stack>{" "}
       </Stack>
+      {/* Sticky bottom navigation */}
+      {!reservationNumber && (
+        <Box
+          sx={{
+            position: "sticky",
+            bottom: 0,
+            zIndex: 10,
+            bgcolor: "background.default",
+            borderTop: "1px solid",
+            borderColor: "divider",
+            px: { xs: 2, md: 3 },
+            py: { xs: 1.5, md: 2 },
+          }}
+        >
+          <Stack
+            direction="row"
+            justifyContent="flex-start"
+            alignItems="center"
+            maxWidth={900}
+            width="100%"
+            mx="auto"
+          >
+            <Button
+              variant="outlined"
+              startIcon={<ArrowBackIos />}
+              onClick={decreaseStep}
+              sx={{ minWidth: { xs: 0, sm: 120 }, flexShrink: 0 }}
+            >
+              {t("common.back")}
+            </Button>
+          </Stack>
+        </Box>
+      )}
     </Stack>
   );
 }
