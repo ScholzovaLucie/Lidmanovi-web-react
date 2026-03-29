@@ -96,7 +96,7 @@ export default function InformationAndConfirmation() {
             onClick={handleButtonContinueToSummary}
             sx={{ flex: 1, maxWidth: { xs: "100%" } }}
           >
-            {t("info.cta")}
+            {t("common.continue")}
           </Button>
         </Stack>
       </Box>

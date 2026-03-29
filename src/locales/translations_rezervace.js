@@ -15,6 +15,7 @@ export const translations_rezervace = {
       priceCzk: "{{amount}} Kč",
       pricePerNight: "{{amount}} Kč / noc",
       back: "Zpět",
+      continue: "Pokračovat",
     },
     stepper: {
       term: "Termín",

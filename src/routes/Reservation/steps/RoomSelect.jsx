@@ -268,7 +268,7 @@ export default function RoomSelect() {
                     disabled={!hasEnoughCapacity}
                     sx={{ flex: 1, maxWidth: { xs: "100%" } }}
                   >
-                    {t("rooms.cta")}
+                    {t("common.continue")}
                   </Button>
                 )}
               </Stack>

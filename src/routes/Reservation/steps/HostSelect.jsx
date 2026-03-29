@@ -153,7 +153,7 @@ export default function HostSelect() {
               onClick={increaseStep}
               sx={{ flex: 1, maxWidth: { xs: "100%" } }}
             >
-              {t("guests.cta")}
+              {t("common.continue")}
             </Button>
           </Stack>
         </Stack>

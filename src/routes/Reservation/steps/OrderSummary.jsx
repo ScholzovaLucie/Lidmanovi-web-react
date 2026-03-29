@@ -393,7 +393,7 @@ export function OrderSummary() {
               onClick={decreaseStep}
               sx={{ minWidth: { xs: 0, sm: 120 }, flexShrink: 0 }}
             >
-              {t("common.back")}
+              {t("common.back")}s
             </Button>
           </Stack>
         </Box>
