@@ -43,9 +43,24 @@ export const adminRoomsApi = createApi({
       }),
       invalidatesTags: ["Room"],
     }),
+    createRoom: builder.mutation({
+      query: (roomData) => ({
+        url: `/pension/admin/rooms/`,
+        method: "POST",
+        body: roomData,
+      }),
+      invalidatesTags: ["Room"],
+    }),
+    deleteRoom: builder.mutation({
+      query: (id) => ({
+        url: `/pension/admin/rooms/${id}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Room"],
+    }),
   }),
 });
 
 export const { useRoomsQuery, useAvailableRoomsQuery } = roomsApi;
 
-export const { useAdminRoomsQuery, useUpdateRoomMutation } = adminRoomsApi;
+export const { useAdminRoomsQuery, useUpdateRoomMutation, useCreateRoomMutation, useDeleteRoomMutation } = adminRoomsApi;

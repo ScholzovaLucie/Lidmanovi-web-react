@@ -6,6 +6,8 @@ import RoomCard from "../../../Reservation/components/RoomCard";
 import {
   useAdminRoomsQuery,
   useUpdateRoomMutation,
+  useCreateRoomMutation,
+  useDeleteRoomMutation,
 } from "../../../../redux/api/roomsApi";
 import RoomEditDialog from "./components/RoomEditDialog";
 import RoomDeleteDialog from "./components/RoomDeleteDialog";
@@ -21,14 +23,14 @@ export default function RoomsSection() {
   const [deletingRoomId, setDeletingRoomId] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
-    name_i18n: "",
-    max_adults: "",
-    max_children: "",
-    capacity: "",
+    name_i18n: {},
+    max_adults: 0,
+    max_children: 0,
+    capacity: 0,
     description: "",
-    description_i18n: "",
-    price_for_adult: "",
-    price_for_children: "",
+    description_i18n: {},
+    price_for_adult: 0,
+    price_for_children: 0,
     is_active: true,
   });
 
@@ -39,8 +41,10 @@ export default function RoomsSection() {
     error,
   } = useAdminRoomsQuery({ page: 1, page_size: 50 });
 
-  // Update room mutation
+  // Update and create room mutations
   const [updateRoom, { isLoading: isUpdating }] = useUpdateRoomMutation();
+  const [createRoom, { isLoading: isCreating }] = useCreateRoomMutation();
+  const [deleteRoom, { isLoading: isDeleting }] = useDeleteRoomMutation();
 
   const rooms = roomsResponse?.results || [];
 
@@ -52,12 +56,12 @@ export default function RoomsSection() {
     setEditingRoom(room);
     setFormData({
       name: room.name || "",
-      name_i18n: room.name_i18n || "",
-      max_adults: room.max_adults?.toString() || "",
-      max_children: room.max_children?.toString() || "",
-      capacity: room.capacity?.toString() || "",
+      name_i18n: room.name_i18n || {},
+      max_adults: room.max_adults || 0,
+      max_children: room.max_children || 0,
+      capacity: room.capacity || 0,
       description: room.description || "",
-      description_i18n: room.description_i18n || "",
+      description_i18n: room.description_i18n || {},
       price_for_adult: room.price_for_adult?.toString() || "",
       price_for_children: room.price_for_children?.toString() || "",
       is_active: room.is_active !== undefined ? room.is_active : true,
@@ -69,14 +73,14 @@ export default function RoomsSection() {
     setEditingRoom(null);
     setFormData({
       name: "",
-      name_i18n: "",
-      max_adults: "",
-      max_children: "",
-      capacity: "",
+      name_i18n: {},
+      max_adults: 0,
+      max_children: 0,
+      capacity: 0,
       description: "",
-      description_i18n: "",
-      price_for_adult: "",
-      price_for_children: "",
+      description_i18n: {},
+      price_for_adult: 0,
+      price_for_children: 0,
       is_active: true,
     });
     setEditDialogOpen(true);
@@ -87,42 +91,48 @@ export default function RoomsSection() {
     setEditingRoom(null);
     setFormData({
       name: "",
-      name_i18n: "",
-      max_adults: "",
-      max_children: "",
-      capacity: "",
+      name_i18n: {},
+      max_adults: 0,
+      max_children: 0,
+      capacity: 0,
       description: "",
-      description_i18n: "",
-      price_for_adult: "",
-      price_for_children: "",
+      description_i18n: {},
+      price_for_adult: 0,
+      price_for_children: 0,
       is_active: true,
     });
   };
 
   const handleSaveRoom = async () => {
-    if (!editingRoom) {
-      console.log("Create room functionality not implemented yet");
-      return;
-    }
-
     try {
+      const maxAdults = parseInt(formData.max_adults) || 0;
+      const maxChildren = parseInt(formData.max_children) || 0;
+      const capacity = Math.max(maxAdults, maxChildren);
+      
       const roomData = {
         name: formData.name,
         name_i18n: formData.name_i18n,
-        max_adults: parseInt(formData.max_adults),
-        max_children: parseInt(formData.max_children),
-        capacity: parseInt(formData.capacity),
+        max_adults: maxAdults,
+        max_children: maxChildren,
+        capacity: capacity,
         description: formData.description,
         description_i18n: formData.description_i18n,
-        price_for_adult: parseInt(formData.price_for_adult),
-        price_for_children: parseInt(formData.price_for_children),
+        price_for_adult: parseInt(formData.price_for_adult) || 0,
+        price_for_children: parseInt(formData.price_for_children) || 0,
         is_active: formData.is_active,
       };
 
-      await updateRoom({ id: editingRoom.id, ...roomData }).unwrap();
+      if (editingRoom) {
+        // Editing existing room - use PUT
+        await updateRoom({ id: editingRoom.id, ...roomData }).unwrap();
+      } else {
+        // Creating new room - use POST
+        await createRoom(roomData).unwrap();
+      }
+      
       handleCloseDialog();
     } catch (error) {
-      console.error("Error updating room:", error);
+      console.error("Error saving room:", error);
     }
   };
 
@@ -131,11 +141,15 @@ export default function RoomsSection() {
     setDeleteDialogOpen(true);
   };
 
-  const confirmDeleteRoom = () => {
-    // TODO: Implementovat API call pro smazání
-    console.log("Delete room:", deletingRoomId);
-    setDeleteDialogOpen(false);
-    setDeletingRoomId(null);
+  const confirmDeleteRoom = async () => {
+    try {
+      await deleteRoom(deletingRoomId).unwrap();
+      setDeleteDialogOpen(false);
+      setDeletingRoomId(null);
+    } catch (error) {
+      console.error("Error deleting room:", error);
+      // Můžete přidat toast notifikaci nebo jiné zobrazení chyby
+    }
   };
 
   const cancelDeleteRoom = () => {
@@ -213,7 +227,7 @@ export default function RoomsSection() {
         formData={formData}
         setFormData={setFormData}
         onSave={handleSaveRoom}
-        isUpdating={isUpdating}
+        isUpdating={isUpdating || isCreating}
       />
 
       <RoomDeleteDialog

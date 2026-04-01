@@ -11,9 +11,30 @@ import {
   Switch,
   FormControlLabel,
   InputAdornment,
+  Tabs,
+  Tab,
+  Box,
 } from "@mui/material";
 import { Save, Cancel } from "@mui/icons-material";
+import { useState } from "react";
 import SpinnerField from "./SpinnerField";
+
+// Tab Panel component pro jazykové taby
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`language-tabpanel-${index}`}
+      aria-labelledby={`language-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ py: 2 }}>{children}</Box>}
+    </div>
+  );
+}
 
 export default function RoomEditDialog({
   open,
@@ -24,6 +45,78 @@ export default function RoomEditDialog({
   onSave,
   isUpdating,
 }) {
+  const [activeTab, setActiveTab] = useState(0);
+
+  // Jazykové varianty
+  const languages = [
+    { code: "cs", label: "Čeština" },
+    { code: "en", label: "Angličtina" },
+    { code: "pl", label: "Polština" },
+    { code: "de", label: "Němčina" },
+  ];
+
+  // Inicializace i18n dat pokud ještě neexistují
+  const initializeI18nData = () => {
+    const nameI18n = formData.name_i18n || {};
+    const descriptionI18n = formData.description_i18n || {};
+    
+    // Inicializace všech jazyků, pokud neexistují
+    languages.forEach(lang => {
+      if (!nameI18n[lang.code]) {
+        nameI18n[lang.code] = lang.code === 'cs' ? (formData.name || '') : '';
+      }
+      if (!descriptionI18n[lang.code]) {
+        descriptionI18n[lang.code] = lang.code === 'cs' ? (formData.description || '') : '';
+      }
+    });
+    
+    return { nameI18n, descriptionI18n };
+  };
+
+  // Aktualizace hodnot pro konkrétní jazyk
+  const updateLanguageData = (languageCode, field, value) => {
+    const { nameI18n, descriptionI18n } = initializeI18nData();
+    
+    const updatedFormData = { ...formData };
+
+    if (field === 'name') {
+      updatedFormData.name_i18n = {
+        ...nameI18n,
+        [languageCode]: value
+      };
+      // Pokud je to čeština, aktualizujeme i hlavní pole name
+      if (languageCode === 'cs') {
+        updatedFormData.name = value;
+      }
+    } else if (field === 'description') {
+      updatedFormData.description_i18n = {
+        ...descriptionI18n,
+        [languageCode]: value
+      };
+      // Pokud je to čeština, aktualizujeme i hlavní pole description
+      if (languageCode === 'cs') {
+        updatedFormData.description = value;
+      }
+    }
+
+    setFormData(updatedFormData);
+  };
+
+  // Získání hodnoty pro konkrétní jazyk a pole
+  const getLanguageValue = (languageCode, field) => {
+    const { nameI18n, descriptionI18n } = initializeI18nData();
+    if (field === 'name') {
+      return nameI18n[languageCode] || '';
+    } else if (field === 'description') {
+      return descriptionI18n[languageCode] || '';
+    }
+    return '';
+  };
+
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
+  };
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>
@@ -33,30 +126,57 @@ export default function RoomEditDialog({
       </DialogTitle>
       <DialogContent>
         <Stack spacing={3} sx={{ mt: 1 }}>
-          {/* Základní informace */}
-          <Typography variant="h6" sx={{ mb: -1 }}>
+          {/* Základní informace s jazykovými taby */}
+          <Typography variant="h6" sx={{ mb: 0 }}>
             Základní informace
           </Typography>
 
-          <TextField
-            label="Název pokoje"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            fullWidth
-            required
-          />
+          {/* Jazykové taby */}
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs 
+              value={activeTab} 
+              onChange={handleTabChange} 
+              aria-label="language tabs"
+              variant="scrollable"
+              scrollButtons="auto"
+            >
+              {languages.map((lang, index) => (
+                <Tab 
+                  key={lang.code} 
+                  label={lang.label} 
+                  id={`language-tab-${index}`}
+                  aria-controls={`language-tabpanel-${index}`}
+                />
+              ))}
+            </Tabs>
+          </Box>
 
-          <TextField
-            label="Popis pokoje"
-            value={formData.description}
-            onChange={(e) =>
-              setFormData({ ...formData, description: e.target.value })
-            }
-            fullWidth
-            multiline
-            rows={3}
-            required
-          />
+          {/* Tab panely pro jednotlivé jazyky */}
+          {languages.map((lang, index) => (
+            <TabPanel key={lang.code} value={activeTab} index={index}>
+              <Stack spacing={2}>
+                <TextField
+                  label={`Název pokoje (${lang.label})`}
+                  value={getLanguageValue(lang.code, 'name')}
+                  onChange={(e) => updateLanguageData(lang.code, 'name', e.target.value)}
+                  fullWidth
+                  required={lang.code === 'cs'}
+                  placeholder={lang.code !== 'cs' ? 'Překlad názvu pokoje' : ''}
+                />
+
+                <TextField
+                  label={`Popis pokoje (${lang.label})`}
+                  value={getLanguageValue(lang.code, 'description')}
+                  onChange={(e) => updateLanguageData(lang.code, 'description', e.target.value)}
+                  fullWidth
+                  multiline
+                  rows={3}
+                  required={lang.code === 'cs'}
+                  placeholder={lang.code !== 'cs' ? 'Překlad popisu pokoje' : ''}
+                />
+              </Stack>
+            </TabPanel>
+          ))}
 
           {/* Kapacita */}
           <Typography variant="h6" sx={{ mb: -1, mt: 2 }}>
@@ -177,8 +297,8 @@ export default function RoomEditDialog({
           startIcon={<Save />}
           disabled={
             isUpdating ||
-            !formData.name ||
-            !formData.description ||
+            !getLanguageValue('cs', 'name') ||
+            !getLanguageValue('cs', 'description') ||
             !formData.max_adults ||
             !formData.price_for_adult ||
             !formData.price_for_children

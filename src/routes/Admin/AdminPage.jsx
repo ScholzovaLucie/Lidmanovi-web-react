@@ -28,6 +28,8 @@ import {
 import RoomsSection from "./sections/rooms/RoomsSection";
 import AnnouncementSection from "./sections/announcement/AnnouncementSection";
 import { useNavigate } from "react-router-dom";
+import GallerySection from "./sections/gallery/GallerySection";
+import CollectionsIcon from '@mui/icons-material/Collections';
 
 // Menu items s reálnými admin komponentami
 const menuItems = [
@@ -36,6 +38,7 @@ const menuItems = [
   { id: "guests", text: "Hosté", icon: People },
   { id: "rooms", text: "Pokoje", icon: BedIcon },
   { id: "announcement", text: "Oznámení", icon: CampaignIcon },
+  { id: "gallery", text: "Galerie", icon: CollectionsIcon },
 ];
 
 const DRAWER_WIDTH = 200;
@@ -59,6 +62,7 @@ export default function AdminPage() {
       guests: <GuestsSection />,
       rooms: <RoomsSection />,
       announcement: <AnnouncementSection />,
+      gallery: <GallerySection />,
     };
     return components[activeComponent] || components.calendar;
   };
