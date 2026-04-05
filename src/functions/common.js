@@ -10,3 +10,22 @@ const RESERVATION_STATUS_COLORS = {
 export function getColorForReservationStatus(status) {
   return RESERVATION_STATUS_COLORS[status] ?? "#8c98a4";
 }
+
+export function getCzechTranslationForReservationStatus(status) {
+  switch (status) {
+    case "New":
+      return "Nová";
+    case "Confirmed":
+      return "Potvrzená";
+    case "Cancelled":
+      return "Zrušená";
+    case "Payment pending":
+      return "Čeká na platbu";
+    case "Payed":
+      return "Zaplacená";
+    case "Done":
+      return "Dokončená";
+    default:
+      return status;
+  }
+}

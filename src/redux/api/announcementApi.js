@@ -1,5 +1,19 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQueryWithAuth } from "../constants";
+import { baseQueryWithAuth, baseQuery } from "../constants";
+
+export const announcementApiPublic = createApi({
+  reducerPath: "announcementApiPublic",
+  baseQuery: baseQuery,
+  tagTypes: ["InfoBoxPublic"],
+  endpoints: (builder) => ({
+    getInfoBoxesPublic: builder.query({
+      query: () => ({
+        url: "/editorial_system/public/info-boxes/",
+        method: "GET",
+      }),
+    }),
+  }),
+});
 
 export const announcementApi = createApi({
   reducerPath: "announcementApi",
@@ -68,6 +82,8 @@ export const {
   useCreateInfoBoxMutation,
   useDeleteInfoBoxMutation,
 } = announcementApi;
+
+export const { useGetInfoBoxesPublicQuery } = announcementApiPublic;
 
 /*
 

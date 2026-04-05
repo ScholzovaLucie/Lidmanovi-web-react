@@ -1,17 +1,23 @@
 import React from "react";
-import { Box, Collapse, Stack, Button } from "@mui/material";
+import { Box, Collapse, Stack, Button, Paper } from "@mui/material";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Logout as LogoutIcon } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../hooks/useAuth";
 
-export function MobileMenu({ isOpen, onClose, navItems, langOptions, onLogin }) {
+export function MobileMenu({
+  isOpen,
+  onClose,
+  navItems,
+  langOptions,
+  onLogin,
+}) {
   const navigate = useNavigate();
   const { i18n, t } = useTranslation("global");
   const { isAuthenticated, logout } = useAuth();
-  const activeLang = String(i18n.resolvedLanguage || i18n.language || "cs").split(
-    "-",
-  )[0];
+  const activeLang = String(
+    i18n.resolvedLanguage || i18n.language || "cs",
+  ).split("-")[0];
 
   const handleLogout = () => {
     logout();
@@ -21,13 +27,12 @@ export function MobileMenu({ isOpen, onClose, navItems, langOptions, onLogin }) 
   return (
     <Collapse in={isOpen} timeout="auto" unmountOnExit>
       <Box
+        component={Paper}
         sx={{
           px: 2,
           py: 3,
-          borderTop: "1px solid",
-          borderColor: "divider",
-          background:
-            "linear-gradient(180deg, rgba(85,116,143,0.05), rgba(255,255,255,0.98) 18%, rgba(245,247,250,1) 100%)",
+          borderTopLeftRadius: 0,
+          borderTopRightRadius: 0,
         }}
       >
         {/* Navigation */}
@@ -67,10 +72,23 @@ export function MobileMenu({ isOpen, onClose, navItems, langOptions, onLogin }) 
         <Stack spacing={3} alignItems="center">
           {/* Languages */}
           <Box sx={{ textAlign: "center", width: "100%" }}>
-            <Box sx={{ color: "text.secondary", fontSize: "0.8rem", mb: 1.5, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+            <Box
+              sx={{
+                color: "text.secondary",
+                fontSize: "0.8rem",
+                mb: 1.5,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+              }}
+            >
               {t("language")}
             </Box>
-            <Stack direction="row" spacing={1} justifyContent="center" flexWrap="wrap">
+            <Stack
+              direction="row"
+              spacing={1}
+              justifyContent="center"
+              flexWrap="wrap"
+            >
               {langOptions.map(({ code, label }) => (
                 <Button
                   key={code}
@@ -82,10 +100,10 @@ export function MobileMenu({ isOpen, onClose, navItems, langOptions, onLogin }) 
                   }}
                   variant={activeLang === code ? "contained" : "text"}
                   size="small"
-                  sx={{ 
+                  sx={{
                     textTransform: "none",
                     fontWeight: activeLang === code ? 600 : 400,
-                    minWidth: "auto"
+                    minWidth: "auto",
                   }}
                 >
                   {label}
@@ -110,15 +128,15 @@ export function MobileMenu({ isOpen, onClose, navItems, langOptions, onLogin }) 
               >
                 {t("auth.admin")}
               </Button>
-              <Button 
+              <Button
                 onClick={handleLogout}
                 startIcon={<LogoutIcon />}
                 color="error"
-                sx={{ 
+                sx={{
                   textTransform: "none",
-                  fontWeight: 500
+                  fontWeight: 500,
                 }}
-                >
+              >
                 {t("auth.logout")}
               </Button>
             </Stack>

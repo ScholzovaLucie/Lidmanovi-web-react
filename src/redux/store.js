@@ -7,7 +7,7 @@ import appReducer from "./slices/app/appSlice";
 import reservationReducer from "./slices/reservation/reservationSlice";
 import { guestApi } from "./api/guestApi";
 import { cmsApi } from "./api/cmsApi";
-import { announcementApi } from "./api/announcementApi";
+import { announcementApi, announcementApiPublic } from "./api/announcementApi";
 
 // Logger middleware only for explicit debug sessions.
 const loggerMiddleware = () => (next) => (action) => {
@@ -21,7 +21,7 @@ const loggerMiddleware = () => (next) => (action) => {
   return result;
 };
 
-const isReduxLoggerEnabled = true
+const isReduxLoggerEnabled = true;
 
 export const store = configureStore({
   reducer: {
@@ -35,6 +35,7 @@ export const store = configureStore({
     [guestApi.reducerPath]: guestApi.reducer,
     [cmsApi.reducerPath]: cmsApi.reducer,
     [announcementApi.reducerPath]: announcementApi.reducer,
+    [announcementApiPublic.reducerPath]: announcementApiPublic.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -47,6 +48,7 @@ export const store = configureStore({
         guestApi.middleware,
         cmsApi.middleware,
         announcementApi.middleware,
+        announcementApiPublic.middleware,
       )
       .concat(isReduxLoggerEnabled ? loggerMiddleware : []),
 });

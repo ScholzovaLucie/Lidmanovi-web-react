@@ -1,4 +1,4 @@
-import { Alert } from "@mui/material";
+import { Alert, Box, Typography } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -71,28 +71,38 @@ export default function CustomTable({
         </TableHead>
 
         <TableBody>
-          {data.map((row, rowIndex) => (
-            <TableRow
-              key={resolveRowId(row, rowIndex)}
-              sx={{
-                "&:last-child td, &:last-child th": { border: 0 },
-              }}
-            >
-              {columns.map((col) => {
-                const value = getNestedValue(row, col.key);
-
-                return (
-                  <TableCell
-                    key={col.key}
-                    align={col.align || "left"}
-                    sx={{ verticalAlign: "top", ...col.cellSx }}
-                  >
-                    {col.render ? col.render(row, value, rowIndex) : value}
-                  </TableCell>
-                );
-              })}
+          {data.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={columns.length} align="center">
+                <Typography color="text.secondary">
+                  Žádná data nenalezena.
+                </Typography>
+              </TableCell>
             </TableRow>
-          ))}
+          ) : (
+            data.map((row, rowIndex) => (
+              <TableRow
+                key={resolveRowId(row, rowIndex)}
+                sx={{
+                  "&:last-child td, &:last-child th": { border: 0 },
+                }}
+              >
+                {columns.map((col) => {
+                  const value = getNestedValue(row, col.key);
+
+                  return (
+                    <TableCell
+                      key={col.key}
+                      align={col.align || "left"}
+                      sx={{ verticalAlign: "top", ...col.cellSx }}
+                    >
+                      {col.render ? col.render(row, value, rowIndex) : value}
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+            ))
+          )}
         </TableBody>
 
         {paginationConfig && (

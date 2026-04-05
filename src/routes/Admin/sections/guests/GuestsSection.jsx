@@ -17,18 +17,10 @@ import { usePagination } from "../../../../hooks/usePagination";
 
 export default function GuestsSection() {
   const [searchTerm, setSearchTerm] = useState("");
-
-  // ✨ Jeden řádek pro celou pagination logiku!
   const pagination = usePagination({
     initialPageSize: 10,
     rowsPerPageOptions: [5, 10, 25, 50],
   });
-
-  const handleClearSearch = () => {
-    setSearchTerm("");
-  };
-
-  // API volání s pagination hookem
   const {
     data: guestsData,
     isLoading: guestsLoading,
@@ -36,6 +28,7 @@ export default function GuestsSection() {
   } = useGuestsQuery({
     page: pagination.page,
     page_size: pagination.pageSize,
+    queryString: searchTerm,
   });
   const { data: reservationsData, isLoading: reservationsLoading } =
     useReservationsQuery();
@@ -105,22 +98,7 @@ export default function GuestsSection() {
     [reservationCountsByGuestId],
   );
 
-  const filteredGuests = useMemo(() => {
-    if (!guestsData) return [];
-
-    // Adaptujeme na nový formát dat z BE
-    const guests = guestsData.results || guestsData;
-    if (!searchTerm) return guests;
-
-    const term = searchTerm.toLowerCase();
-    return guests.filter(
-      (guest) =>
-        guest.first_name?.toLowerCase().includes(term) ||
-        guest.last_name?.toLowerCase().includes(term) ||
-        guest.email?.toLowerCase().includes(term) ||
-        guest.phone?.includes(term),
-    );
-  }, [guestsData, searchTerm]);
+  const guests = guestsData?.results || [];
 
   if (isLoading) {
     return (
@@ -151,7 +129,7 @@ export default function GuestsSection() {
   }
 
   return (
-    <Stack spacing={5} p={{ sx: 1, md: 3 }}>
+    <Stack spacing={5} p={{ md: 3 }}>
       <Stack>
         <Typography variant="h4" gutterBottom>
           Správa hostů
@@ -171,7 +149,10 @@ export default function GuestsSection() {
         <TextField
           placeholder="Vyhledejte podle jména, příjmení, emailu nebo telefonu..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            pagination.setPage(0);
+          }}
           variant="outlined"
           fullWidth
           sx={formFieldStyles}
@@ -183,7 +164,13 @@ export default function GuestsSection() {
             ),
             endAdornment: searchTerm && (
               <InputAdornment position="end">
-                <IconButton size="small" onClick={handleClearSearch}>
+                <IconButton
+                  size="small"
+                  onClick={() => {
+                    setSearchTerm("");
+                    pagination.setPage(0);
+                  }}
+                >
                   <Clear />
                 </IconButton>
               </InputAdornment>
@@ -195,20 +182,13 @@ export default function GuestsSection() {
           {/* ✨ Dramaticky jednodušší API! */}
           <CustomTable
             columns={guestColumns}
-            data={filteredGuests}
+            data={guests}
             getRowId={(row) => row.id}
             paginationConfig={{
-              ...pagination, // Rozbalí všechny pagination funkce a hodnoty
-              totalCount: guestsData?.count || filteredGuests.length,
+              ...pagination,
+              totalCount: guestsData?.count || 0,
             }}
           />
-          {filteredGuests.length === 0 && searchTerm && (
-            <Box textAlign="center" py={4}>
-              <Typography color="text.secondary">
-                Žádný host nenalezen pro hledání "{searchTerm}"
-              </Typography>
-            </Box>
-          )}
         </AppCardCustomizable>
       </Stack>
     </Stack>

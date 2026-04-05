@@ -9,7 +9,10 @@ import {
 import { Close } from "@mui/icons-material";
 import dayjs from "dayjs";
 import { AppCardCustomizable } from "../../../../../components/containers/AppCard";
-import { getColorForReservationStatus } from "../../../../../functions/common";
+import {
+  getColorForReservationStatus,
+  getCzechTranslationForReservationStatus,
+} from "../../../../../functions/common";
 export default function ReservationDetail({
   selectedReservation,
   onCrossClick,
@@ -23,7 +26,9 @@ export default function ReservationDetail({
           </Typography>
 
           <Chip
-            label={selectedReservation.status}
+            label={getCzechTranslationForReservationStatus(
+              selectedReservation.status,
+            )}
             size="small"
             sx={{
               backgroundColor: getColorForReservationStatus(

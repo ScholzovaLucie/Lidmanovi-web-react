@@ -21,6 +21,7 @@ import dayjs from "dayjs";
 import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 import ReservationStepper from "../components/ReservationStepper";
+import { useEffect } from "react";
 
 export default function TermSelect() {
   const { t } = useTranslation("rezervace");
@@ -51,6 +52,10 @@ export default function TermSelect() {
     }
     increaseStep();
   };
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   return (
     <Stack

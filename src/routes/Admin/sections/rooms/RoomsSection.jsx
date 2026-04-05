@@ -108,7 +108,7 @@ export default function RoomsSection() {
       const maxAdults = parseInt(formData.max_adults) || 0;
       const maxChildren = parseInt(formData.max_children) || 0;
       const capacity = Math.max(maxAdults, maxChildren);
-      
+
       const roomData = {
         name: formData.name,
         name_i18n: formData.name_i18n,
@@ -129,7 +129,7 @@ export default function RoomsSection() {
         // Creating new room - use POST
         await createRoom(roomData).unwrap();
       }
-      
+
       handleCloseDialog();
     } catch (error) {
       console.error("Error saving room:", error);
@@ -162,7 +162,7 @@ export default function RoomsSection() {
   }, [rooms]);
 
   return (
-    <Stack p={{ xs: 1, md: 3 }} spacing={2}>
+    <Stack p={{ md: 3 }} spacing={2}>
       <Stack>
         <Stack
           direction="row"
@@ -213,7 +213,7 @@ export default function RoomsSection() {
                 />
               </Grid>
             ))}
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6} md={4} display={"flex"} flexGrow={1} maxWidth={370}>
               <AddRoomCard onClick={handleAddNewRoom} />
             </Grid>
           </Grid>

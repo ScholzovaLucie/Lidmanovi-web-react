@@ -115,6 +115,12 @@ function EventDay(props) {
         borderBottom,
         cursor: "default",
         transition: "background-color 0.12s",
+        overflow: "auto",
+        "&::-webkit-scrollbar": {
+          display: "none",
+        },
+        msOverflowStyle: "none",
+        scrollbarWidth: "none",
         "&:hover": {
           backgroundColor: "action.selected",
         },

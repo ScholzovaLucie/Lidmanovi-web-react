@@ -29,7 +29,10 @@ import { AppCardCustomizable } from "../../../../components/containers/AppCard";
 import { DatePicker } from "@mui/x-date-pickers";
 import { formFieldStyles } from "./constants";
 import { usePagination } from "../../../../hooks/usePagination";
-import { getColorForReservationStatus } from "../../../../functions/common";
+import {
+  getColorForReservationStatus,
+  getCzechTranslationForReservationStatus,
+} from "../../../../functions/common";
 
 export default function ReservationsSection() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -261,7 +264,9 @@ export default function ReservationsSection() {
                   }}
                 >
                   {statusOptions.map((option) => {
-                    const optionColor = getColorForReservationStatus(option.value);
+                    const optionColor = getColorForReservationStatus(
+                      option.value,
+                    );
                     return (
                       <MenuItem
                         key={option.value}
@@ -297,7 +302,7 @@ export default function ReservationsSection() {
                           <Typography
                             sx={{ fontWeight: 600, color: optionColor }}
                           >
-                            {option.label}
+                            {getCzechTranslationForReservationStatus(option.label)}
                           </Typography>
                         </Box>
                       </MenuItem>
@@ -562,7 +567,7 @@ export default function ReservationsSection() {
   }
 
   return (
-    <Stack spacing={5} p={3}>
+    <Stack spacing={5} p={{ md: 3 }}>
       {/* Header */}
       <Box>
         <Typography variant="h4" gutterBottom>
@@ -710,7 +715,7 @@ export default function ReservationsSection() {
               >
                 {statusOptions.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
-                    {option.label}
+                    {getCzechTranslationForReservationStatus(option.label)}
                   </MenuItem>
                 ))}
               </Select>

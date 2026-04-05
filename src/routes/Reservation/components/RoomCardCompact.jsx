@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { useReservationContext } from "../context/ReservationContext";
 import { RemoveRoomDialog } from "./RemoveRoomDialog";
 import { useState } from "react";
+import { roomsApi } from "../../../redux/api/roomsApi";
 
 export function RoomCartCompactCard({ room }) {
   const { t } = useTranslation("rezervace");
@@ -58,6 +59,9 @@ export function RoomCartCompactCard({ room }) {
             {t("roomCardCompact.childPrice", {
               amount: room.price_for_children,
             })}
+          </Typography>
+          <Typography fontSize={13} color="text.secondary" lineHeight="16px">
+            {`${room.capacity} ${t("roomCard.beds")}`}
           </Typography>
         </Stack>
 

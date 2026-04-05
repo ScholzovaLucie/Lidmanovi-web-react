@@ -7,11 +7,10 @@ export default function AddRoomCard({ onClick }) {
       component={Paper}
       variant="outlined"
       onClick={onClick}
+      flex={1}
+      alignItems="center"
+      justifyContent="center"
       sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
         width: { xs: "100%", sm: 370 },
         height: 645,
         borderStyle: "dashed",

@@ -37,56 +37,60 @@ export default function HostSelect() {
 
   // Kontrola prázdných pokojů
   const hasEmptyRooms = reservationState.rooms.some(
-    (room) => room.num_adults === 0 && room.num_children === 0
+    (room) => room.num_adults === 0 && room.num_children === 0,
   );
 
   // Validace pro tlačítko pokračovat
-  const hasRemainingGuests = remainingAdultsToAssign > 0 || remainingChildrenToAssign > 0;
+  const hasRemainingGuests =
+    remainingAdultsToAssign > 0 || remainingChildrenToAssign > 0;
   const canProceed = !hasRemainingGuests && !hasEmptyRooms;
-  
+
   // Zobrazit error pouze pokud jsou všichni hosté přiřazeni, ale existují prázdné pokoje
   const shouldShowEmptyRoomsError = !hasRemainingGuests && hasEmptyRooms;
+
+  const remainingBedsToAssignTypography = (
+    <Stack spacing={1}>
+      <Typography variant="h6" textAlign={"center"}>
+        {t("guests.remainingPrefix")}&nbsp;
+        {remainingAdultsToAssign > 0 && (
+          <Typography
+            component="span"
+            variant="h6"
+            sx={{ fontWeight: "bold", color: "primary.main" }}
+          >
+            {t("guests.remainingAdults", {
+              count: remainingAdultsToAssign,
+            })}
+          </Typography>
+        )}
+        {remainingAdultsToAssign > 0 && remainingChildrenToAssign > 0 && (
+          <>&nbsp;a&nbsp;</>
+        )}
+        {remainingChildrenToAssign > 0 && (
+          <Typography
+            component="span"
+            variant="h6"
+            sx={{ fontWeight: "bold", color: "primary.main" }}
+          >
+            {t("guests.remainingChildren", {
+              count: remainingChildrenToAssign,
+            })}
+          </Typography>
+        )}
+      </Typography>
+    </Stack>
+  );
 
   return (
     <Stack flex={1}>
       <Stack
         alignItems={"center"}
         justifyContent={"center"}
-        p={2}
+        p={3}
         spacing={4}
         flex={1}
       >
         <Typography variant="h4">{t("guests.title")}</Typography>
-        <Stack spacing={1}>
-          <Typography variant="h6" textAlign={"center"}>
-            {t("guests.remainingPrefix")}&nbsp;
-            {remainingAdultsToAssign > 0 && (
-              <Typography
-                component="span"
-                variant="h6"
-                sx={{ fontWeight: "bold", color: "primary.main" }}
-              >
-                {t("guests.remainingAdults", {
-                  count: remainingAdultsToAssign,
-                })}
-              </Typography>
-            )}
-            {remainingAdultsToAssign > 0 && remainingChildrenToAssign > 0 && (
-              <>&nbsp;a&nbsp;</>
-            )}
-            {remainingChildrenToAssign > 0 && (
-              <Typography
-                component="span"
-                variant="h6"
-                sx={{ fontWeight: "bold", color: "primary.main" }}
-              >
-                {t("guests.remainingChildren", {
-                  count: remainingChildrenToAssign,
-                })}
-              </Typography>
-            )}
-          </Typography>
-        </Stack>
 
         <Grid container spacing={2} justifyContent={"center"}>
           {reservationState.rooms.map((room, index) => (
@@ -129,7 +133,9 @@ export default function HostSelect() {
               {t("guests.emptyRoomsError")}
             </Typography>
           )}
-          
+
+          {hasRemainingGuests && remainingBedsToAssignTypography}
+
           <Stack
             direction="row"
             justifyContent="space-between"
@@ -144,7 +150,6 @@ export default function HostSelect() {
               sx={{ minWidth: { xs: 0, sm: 120 }, flexShrink: 0 }}
             >
               {t("common.back")}
-            
             </Button>
             <Button
               variant="contained"

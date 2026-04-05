@@ -48,8 +48,8 @@ export default function InformationAndConfirmation() {
 
   return (
     <Stack flex={1}>
-      <Stack alignItems={"center"} justifyContent={"center"} p={3}>
-        <Stack spacing={4} width={{ xs: "100%", md: 700 }}>
+      <Stack alignItems={"center"} justifyContent={"center"} p={3} flex={1}>
+        <Stack spacing={4} width={{ xs: "100%", md: 700 }} >
           <Typography variant="h4">{t("info.title")}</Typography>
 
           <PersonalInformation />

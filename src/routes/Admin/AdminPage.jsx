@@ -29,7 +29,7 @@ import RoomsSection from "./sections/rooms/RoomsSection";
 import AnnouncementSection from "./sections/announcement/AnnouncementSection";
 import { useNavigate } from "react-router-dom";
 import GallerySection from "./sections/gallery/GallerySection";
-import CollectionsIcon from '@mui/icons-material/Collections';
+import CollectionsIcon from "@mui/icons-material/Collections";
 
 // Menu items s reálnými admin komponentami
 const menuItems = [
@@ -68,10 +68,15 @@ export default function AdminPage() {
   };
 
   const drawerContent = (
-    <Box sx={{ overflow: "auto" }}>
-      <Toolbar>
-        <Typography variant="h6"> Administrace</Typography>
-      </Toolbar>
+    <Box
+      sx={{
+        overflow: "auto",
+        paddingTop: isMobile ? "64px" : 0,
+      }}
+    >
+        <Toolbar>
+          <Typography variant="h6"> Administrace</Typography>
+        </Toolbar>
 
       <Divider />
 
@@ -116,17 +121,21 @@ export default function AdminPage() {
       {isMobile && (
         <AppBar
           position="fixed"
-          sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          sx={{
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+            minHeight: "64px",
+            justifyContent: "center",
+          }}
         >
-          <Toolbar>
+          <Toolbar sx={{ minHeight: "64px"}}>
             <IconButton
               onClick={() => setMobileOpen(!mobileOpen)}
-              sx={{ mr: 2, display: { md: "none" } }}
+              sx={{ mr: 2, display: { md: "none" },  }}
             >
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap color="black">
-              Admin Panel
+              Administrace
             </Typography>
           </Toolbar>
         </AppBar>
@@ -175,11 +184,10 @@ export default function AdminPage() {
 
       {/* Main Content */}
       <Box
-        component="main"
         sx={{
           flexGrow: 1,
           p: 3,
-          mt: isMobile ? 10 : 0,
+          mt: isMobile ? "64px" : 0,
           overflow: "auto",
         }}
       >

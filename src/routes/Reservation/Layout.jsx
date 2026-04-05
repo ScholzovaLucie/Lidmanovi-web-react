@@ -27,11 +27,11 @@ export default function Layout({ children }) {
         <Cart />
       </Drawer>
 
-      <Stack sx={{ minHeight: "100%" }} flex={1}>
+      <Stack sx={{ minHeight: "100vh"}} flex={1}>
         <AppBar
           position="sticky"
           sx={{
-            top: { xs: 79, md: 64 },
+            top: { xs: 64, md: 64 },
             zIndex: 1100,
             background:
               "linear-gradient(180deg, rgba(255,255,255,0.96), rgba(245,248,251,0.92))",

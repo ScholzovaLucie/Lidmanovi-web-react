@@ -10,6 +10,8 @@ import {
   Grid,
   IconButton,
   Stack,
+  Tab,
+  Tabs,
   TextField,
   Typography,
 } from "@mui/material";
@@ -27,9 +29,31 @@ import { formFieldStyles } from "../reservations/constants";
 import { useSnackbar } from "notistack";
 import dayjs from "dayjs";
 
+function TabPanel({ children, value, index, ...other }) {
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`language-tabpanel-${index}`}
+      aria-labelledby={`language-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ py: 2 }}>{children}</Box>}
+    </div>
+  );
+}
+
+const languages = [
+  { code: "cs", label: "Čeština" },
+  { code: "en", label: "Angličtina" },
+  { code: "pl", label: "Polština" },
+  { code: "de", label: "Němčina" },
+];
+
 export default function AnnouncementSection() {
   // Formulář state
-  const [message, setMessage] = useState("");
+  const [titleI18n, setTitleI18n] = useState({ cs: "", en: "", pl: "", de: "" });
+  const [activeTab, setActiveTab] = useState(0);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
@@ -60,7 +84,7 @@ export default function AnnouncementSection() {
 
   // Handlers
   const handleSubmit = async () => {
-    if (!message.trim() || !startDate || !endDate) {
+    if (!titleI18n.cs?.trim() || !startDate || !endDate) {
       enqueueSnackbar("Vyplňte prosím všechna pole", {
         variant: "error",
         autoHideDuration: 5000,
@@ -70,13 +94,15 @@ export default function AnnouncementSection() {
 
     try {
       await createInfoBox({
-        title: message,
+        title: titleI18n.cs,
+        title_i18n: titleI18n,
+        content_json: {},
         starts_at: startDate.format("YYYY-MM-DD"),
         ends_at: endDate.format("YYYY-MM-DD"),
       }).unwrap();
 
       // Reset formuláře
-      setMessage("");
+      setTitleI18n({ cs: "", en: "", pl: "", de: "" });
       setStartDate(null);
       setEndDate(null);
 
@@ -211,7 +237,7 @@ export default function AnnouncementSection() {
   }
 
   return (
-    <Stack p={{ sx: 1, md: 3 }} spacing={5}>
+    <Stack p={{ md: 3 }} spacing={5}>
       <Stack>
         <Typography variant="h4" gutterBottom>
           Oznámení
@@ -229,16 +255,47 @@ export default function AnnouncementSection() {
         </Typography>
         <AppCardCustomizable props={{ p: 2 }}>
           <Stack spacing={2}>
-            <TextField
-              multiline
-              rows={5}
-              fullWidth
-              label="Zpráva oznámení"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              sx={formFieldStyles}
-            />
-            <Stack direction="row" spacing={2} justifyContent="space-between">
+            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+              <Tabs
+                value={activeTab}
+                onChange={(_, newValue) => setActiveTab(newValue)}
+                aria-label="language tabs"
+                variant="scrollable"
+                scrollButtons="auto"
+              >
+                {languages.map((lang, index) => (
+                  <Tab
+                    key={lang.code}
+                    label={lang.label}
+                    id={`language-tab-${index}`}
+                    aria-controls={`language-tabpanel-${index}`}
+                  />
+                ))}
+              </Tabs>
+            </Box>
+
+            {languages.map((lang, index) => (
+              <TabPanel key={lang.code} value={activeTab} index={index}>
+                <TextField
+                  multiline
+                  rows={5}
+                  fullWidth
+                  label={`Zpráva oznámení (${lang.label})`}
+                  value={titleI18n[lang.code] || ""}
+                  onChange={(e) =>
+                    setTitleI18n({ ...titleI18n, [lang.code]: e.target.value })
+                  }
+                  required={lang.code === "cs"}
+                  placeholder={lang.code !== "cs" ? "Překlad oznámení" : ""}
+                  sx={formFieldStyles}
+                />
+              </TabPanel>
+            ))}
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              spacing={2}
+              justifyContent="space-between"
+            >
               <DatePicker
                 label="Od"
                 sx={{ width: "100%" }}
@@ -279,13 +336,6 @@ export default function AnnouncementSection() {
               totalCount: announcementsData?.count || announcements.length,
             }}
           />
-          {announcements.length === 0 && (
-            <Box textAlign="center" py={4}>
-              <Typography color="text.secondary">
-                Žádná oznámení nenalezena
-              </Typography>
-            </Box>
-          )}
         </AppCardCustomizable>
       </Stack>
 

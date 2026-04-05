@@ -6,12 +6,13 @@ export const guestApi = createApi({
   baseQuery: baseQueryWithAuth,
   endpoints: (builder) => ({
     guests: builder.query({
-      query: ({ page = 1, page_size = 10 } = {}) => ({
+      query: ({ page = 1, page_size = 10, queryString = "" } = {}) => ({
         url: "/pension/admin/guests/",
         method: "GET",
         params: {
           page,
           page_size,
+          queryString
         },
       }),
     }),

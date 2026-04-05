@@ -10,6 +10,7 @@ const reservationSlice = createSlice({
       num_adults: 1,
       num_children: 0,
       currency: "CZK",
+      note: "test",
       primary_guest: {
         first_name: "test",
         last_name: "test",
