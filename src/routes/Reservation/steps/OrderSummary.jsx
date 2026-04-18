@@ -1,4 +1,5 @@
-import { Box, Button, Divider, Stack, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Divider, FormControlLabel, Link, Stack, Typography } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 import { AppCardCustomizable } from "../../../components/containers/AppCard";
 import { Bed, Person } from "@mui/icons-material";
 import { CalendarIcon } from "@mui/x-date-pickers";
@@ -48,6 +49,7 @@ export function OrderSummary() {
   const { t } = useTranslation("rezervace");
   const [loading, setLoading] = useState(false);
   const [reservationNumber, setReservationNumber] = useState(null);
+  const [gdprConsent, setGdprConsent] = useState(false);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -339,13 +341,34 @@ export function OrderSummary() {
                 </Typography>
               </Stack>
 
+              <Box px={1}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={gdprConsent}
+                      onChange={(e) => setGdprConsent(e.target.checked)}
+                      size="small"
+                    />
+                  }
+                  label={
+                    <Typography variant="body2" color="text.secondary">
+                      Souhlasím se{" "}
+                      <Link component={RouterLink} to="/gdpr" target="_blank" rel="noopener noreferrer">
+                        zpracováním osobních údajů
+                      </Link>{" "}
+                      za účelem vyřízení rezervace.
+                    </Typography>
+                  }
+                />
+              </Box>
+
               <Box padding={1}>
                 <Button
                   variant="contained"
                   size="large"
                   fullWidth
                   onClick={handleSubmit}
-                  disabled={loading || reservationNumber !== null}
+                  disabled={loading || reservationNumber !== null || !gdprConsent}
                 >
                   {t("summary.submit")}
                 </Button>

@@ -50,10 +50,10 @@ export default function TwoCol({
 
   return (
     <Grid container spacing={3} alignItems="center">
-      <Grid item xs={12} md={6} order={{ xs: 2, md: imageLeft ? 1 : 2 }}>
+      <Grid size={{ xs: 12, md: 6 }} order={{ xs: 2, md: imageLeft ? 1 : 2 }}>
         {Text}
       </Grid>
-      <Grid item xs={12} md={6} order={{ xs: 1, md: imageLeft ? 2 : 1 }}>
+      <Grid size={{ xs: 12, md: 6 }} order={{ xs: 1, md: imageLeft ? 2 : 1 }}>
         {Image}
       </Grid>
     </Grid>

@@ -76,6 +76,11 @@ export const SEO_ROUTES = {
     description:
       "Online rezervace pobytu v Penzionu U Lidmanu. Vyberte termin a zajistete si ubytovani snadno online.",
   },
+  "/gdpr": {
+    title: "Ochrana osobních údajů",
+    description: "Informace o zpracování osobních údajů v Penzionu U Lidmanů dle nařízení GDPR.",
+    robots: "noindex, follow",
+  },
   "/pokoje": {
     title: "Pokoje",
     description:

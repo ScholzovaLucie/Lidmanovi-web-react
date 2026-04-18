@@ -236,7 +236,7 @@ export default function RoomSelect() {
                 justifyContent="center"
               >
                 {Array.from({ length: allHostsCount }).map((_, index) => (
-                  <Grid item key={index}>
+                  <Grid key={index}>
                     {index >= actuallySelectedCapacity ? (
                       <PersonOutline fontSize="medium" color="disabled" />
                     ) : (
