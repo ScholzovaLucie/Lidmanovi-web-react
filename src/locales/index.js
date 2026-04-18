@@ -13,6 +13,7 @@ import * as UBYTOVANI from "./translations_ubytovani";
 import * as BALICKY from "./translations_balicky";
 import * as CENIK from "./translation_cenik";
 import * as REZERVACE from "./translations_rezervace";
+import * as POKOJE from "./translations_pokoje";
 
 const SUPPORTED_LANGUAGES = ["cs", "en", "de", "pl"];
 
@@ -50,6 +51,7 @@ const resources = {
     balicky: getNamespaceResource(BALICKY, "cs"),
     cenik: getNamespaceResource(CENIK, "cs"),
     rezervace: getNamespaceResource(REZERVACE, "cs"),
+    pokoje: getNamespaceResource(POKOJE, "cs"),
   },
   en: {
     global: getNamespaceResource(GLOBAL, "en"),
@@ -62,6 +64,7 @@ const resources = {
     balicky: getNamespaceResource(BALICKY, "en"),
     cenik: getNamespaceResource(CENIK, "en"),
     rezervace: getNamespaceResource(REZERVACE, "en"),
+    pokoje: getNamespaceResource(POKOJE, "en"),
   },
   de: {
     global: getNamespaceResource(GLOBAL, "de"),
@@ -74,6 +77,7 @@ const resources = {
     balicky: getNamespaceResource(BALICKY, "de"),
     cenik: getNamespaceResource(CENIK, "de"),
     rezervace: getNamespaceResource(REZERVACE, "de"),
+    pokoje: getNamespaceResource(POKOJE, "de"),
   },
   pl: {
     global: getNamespaceResource(GLOBAL, "pl"),
@@ -86,6 +90,7 @@ const resources = {
     balicky: getNamespaceResource(BALICKY, "pl"),
     cenik: getNamespaceResource(CENIK, "pl"),
     rezervace: getNamespaceResource(REZERVACE, "pl"),
+    pokoje: getNamespaceResource(POKOJE, "pl"),
   },
 };
 
@@ -106,6 +111,7 @@ i18n.use(initReactI18next).init({
     "balicky",
     "cenik",
     "rezervace",
+    "pokoje",
   ],
 });
 

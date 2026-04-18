@@ -24,6 +24,7 @@ export default function RoomCard({
   onEdit,
   onDelete,
   isAdminMode = false,
+  isReadOnly = false,
 }) {
   const { t } = useTranslation("rezervace");
   const dispatch = useDispatch();
@@ -133,10 +134,10 @@ export default function RoomCard({
             width={"100%"}
             direction={"row"}
             alignItems={"end"}
-            justifyContent={isAdminMode ? "flex-start" : "space-between"}
+            justifyContent={isAdminMode || isReadOnly ? "flex-start" : "space-between"}
           >
             <Price room={room} />
-            {!isAdminMode && (
+            {!isAdminMode && !isReadOnly && (
               <Button
                 variant="contained"
                 size="large"

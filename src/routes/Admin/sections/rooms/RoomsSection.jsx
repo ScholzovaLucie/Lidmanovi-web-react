@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Box, Stack, Typography, Button, Grid } from "@mui/material";
 import { Add } from "@mui/icons-material";
@@ -157,9 +157,6 @@ export default function RoomsSection() {
     setDeletingRoomId(null);
   };
 
-  const filteredRooms = useMemo(() => {
-    return rooms; // No filtering since search was removed
-  }, [rooms]);
 
   return (
     <Stack p={{ md: 3 }} spacing={2}>
@@ -203,7 +200,7 @@ export default function RoomsSection() {
           </Box>
         ) : (
           <Grid container spacing={3}>
-            {filteredRooms.map((room) => (
+            {rooms.map((room) => (
               <Grid item key={room.id} xs={12} sm={6} md={4}>
                 <RoomCard
                   room={room}

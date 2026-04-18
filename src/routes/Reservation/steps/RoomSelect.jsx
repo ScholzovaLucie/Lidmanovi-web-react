@@ -50,21 +50,23 @@ export default function RoomSelect() {
     i18n.resolvedLanguage || i18n.language || "cs",
   ).split("-")[0];
 
+  const checkIn = useSelector((state) =>
+    dayjs(state.reservation.values.check_in_date).format("YYYY-MM-DD"),
+  );
+  const checkOut = useSelector((state) =>
+    dayjs(state.reservation.values.check_out_date).format("YYYY-MM-DD"),
+  );
+  const adults = useSelector((state) => state.reservation.values.num_adults);
+  const children = useSelector((state) => state.reservation.values.num_children);
+
   const {
     data: rooms,
     isLoading,
     error,
-  } = useAvailableRoomsQuery({
-    checkIn: useSelector((state) =>
-      dayjs(state.reservation.values.check_in_date).format("YYYY-MM-DD"),
-    ),
-    checkOut: useSelector((state) =>
-      dayjs(state.reservation.values.check_out_date).format("YYYY-MM-DD"),
-    ),
-    adults: useSelector((state) => state.reservation.values.num_adults),
-    children: useSelector((state) => state.reservation.values.num_children),
-    language: activeLang,
-  });
+  } = useAvailableRoomsQuery(
+    { checkIn, checkOut, adults, children, language: activeLang },
+    { skip: !checkIn || !checkOut },
+  );
 
   const [availableRooms, setAvailableRooms] = useState([]);
   const remainingCapacityToSelect = useSelector(
@@ -124,10 +126,9 @@ export default function RoomSelect() {
 
   useEffect(() => {
     if (isLoading || error || !rooms) return;
-    console.log("RECALCULATE");
     const available = filterOutSelectedRooms(roomsList, values.rooms);
     const sorted = sortRooms(available);
-    setAvailableRooms((prev) => (prev = sorted));
+    setAvailableRooms(sorted);
   }, [rooms, isLoading, error, remainingCapacityToSelect, values.rooms]);
 
   function handleNextStep() {
@@ -196,8 +197,8 @@ export default function RoomSelect() {
             </AppCardCustomizable>
           ) : (
             <Grid container spacing={2} justifyContent={"center"}>
-              {availableRooms.map((room, index) => (
-                <Grid key={index}>
+              {availableRooms.map((room) => (
+                <Grid key={room.id}>
                   <RoomCard room={room} />
                 </Grid>
               ))}

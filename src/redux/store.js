@@ -21,7 +21,7 @@ const loggerMiddleware = () => (next) => (action) => {
   return result;
 };
 
-const isReduxLoggerEnabled = true;
+const isReduxLoggerEnabled = import.meta.env.DEV && false;
 
 export const store = configureStore({
   reducer: {
