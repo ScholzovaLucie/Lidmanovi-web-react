@@ -9,28 +9,29 @@ export default function HomePage() {
   const asset = (path) =>
     `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
   const { data: announcements } = useGetInfoBoxesPublicQuery();
-
-  console.log(announcements);
+  const activeAnnouncements = announcements?.results?.filter((b) => b.is_active) ?? [];
 
   return (
     <>
       <Box sx={{ position: "relative" }}>
-        <Alert
-          severity="warning"
-          sx={{
-            position: "absolute",
-            top: 24,
-            left: "50%",
-            transform: "translateX(-50%)",
-            zIndex: 10,
-            boxShadow: 3,
-            width: { xs: "90%", sm: "80%", md: "60%" },
-          }}
-        >
-          {announcements?.results?.map((infoBox) => (
-            <div key={infoBox.id}>{infoBox.title}</div>
-          ))}
-        </Alert>
+        {activeAnnouncements.length > 0 && (
+          <Alert
+            severity="warning"
+            sx={{
+              position: "absolute",
+              top: 24,
+              left: "50%",
+              transform: "translateX(-50%)",
+              zIndex: 10,
+              boxShadow: 3,
+              width: { xs: "90%", sm: "80%", md: "60%" },
+            }}
+          >
+            {activeAnnouncements.map((infoBox) => (
+              <div key={infoBox.id}>{infoBox.title}</div>
+            ))}
+          </Alert>
+        )}
         <HeroCarousel
           variant="editorial"
           slides={[

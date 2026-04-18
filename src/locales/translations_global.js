@@ -13,6 +13,7 @@ export const translations_global = {
       priceList: "Ceník",
       gallery: "Galerie",
       reservation: "Rezervace",
+      rooms: "Pokoje",
     },
     auth: {
       login: "Přihlášení",
@@ -53,6 +54,7 @@ export const translations_global = {
       priceList: "Price list",
       gallery: "Gallery",
       reservation: "Reservation",
+      rooms: "Rooms",
     },
     auth: {
       login: "Login",
@@ -93,6 +95,7 @@ export const translations_global = {
       priceList: "Preisliste",
       gallery: "Galerie",
       reservation: "Reservierung",
+      rooms: "Zimmer",
     },
     auth: {
       login: "Anmelden",
@@ -133,6 +136,7 @@ export const translations_global = {
       priceList: "Cennik",
       gallery: "Galeria",
       reservation: "Rezerwacja",
+      rooms: "Pokoje",
     },
     auth: {
       login: "Logowanie",

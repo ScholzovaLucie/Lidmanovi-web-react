@@ -26,6 +26,7 @@ const AdminPage = lazy(() => import("./routes/Admin/AdminPage.jsx"));
 const ReservationPage2 = lazy(
   () => import("./routes/Reservation/ReservationPage.jsx"),
 );
+const PokojevPage = lazy(() => import("./routes/Pokoje/PokojevPage.jsx"));
 
 // Loading component
 const LoadingFallback = () => (
@@ -56,6 +57,7 @@ export default function App() {
           <Route path="/pobytove_balicky" element={<AccommodationPackages />} />
           <Route path="/cenik" element={<PriceList />} />
           <Route path="/galerie" element={<Galerie />} />
+          <Route path="/pokoje" element={<PokojevPage />} />
           <Route path="/rezervace" element={<ReservationPage2 />} />
         </Route>
         <Route

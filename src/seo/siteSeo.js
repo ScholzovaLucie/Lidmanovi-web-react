@@ -76,6 +76,12 @@ export const SEO_ROUTES = {
     description:
       "Online rezervace pobytu v Penzionu U Lidmanu. Vyberte termin a zajistete si ubytovani snadno online.",
   },
+  "/pokoje": {
+    title: "Pokoje",
+    description:
+      "Prohlédněte si pokoje Penzionu U Lidmanu v Machovské Lhotě. Útulné ubytování s vybavením pro pohodlný pobyt v srdci Broumovska.",
+    keywords: "pokoje penzion U Lidmanu, ubytování Machovská Lhota, pokoje Broumovsko",
+  },
   "/admin": {
     title: "Administrace",
     description: "Administracni cast webu.",
