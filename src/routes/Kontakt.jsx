@@ -107,10 +107,9 @@ export default function Kontakt() {
           alignItems="stretch"
           rowSpacing={2.5}
           columnSpacing={2.5}
-          sx={{ "& > .MuiGrid-item": { display: "flex" } }}
         >
           {blocks.map((block, i) => (
-            <Grid key={i} item xs={12} sm={6} md={4} lg={3} sx={{ display: "flex" }}>
+            <Grid key={i} size={{ xs: 12, sm: 6, md: 4, lg: 3 }} sx={{ display: "flex" }}>
               <InfoBlock
                 icon={block.icon}
                 title={block.title}

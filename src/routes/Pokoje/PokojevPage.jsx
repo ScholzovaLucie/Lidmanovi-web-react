@@ -42,7 +42,7 @@ export default function PokojevPage() {
         ) : (
           <Grid container spacing={3} justifyContent="center">
             {rooms.map((room) => (
-              <Grid item key={room.id} xs={12} sm={6} md={4}>
+              <Grid key={room.id} size={{ xs: 12, sm: 6, md: 4 }}>
                 <RoomCard room={room} isReadOnly />
               </Grid>
             ))}

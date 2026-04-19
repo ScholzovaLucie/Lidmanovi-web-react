@@ -27,6 +27,7 @@ const ReservationPage2 = lazy(
   () => import("./routes/Reservation/ReservationPage.jsx"),
 );
 const PokojevPage = lazy(() => import("./routes/Pokoje/PokojevPage.jsx"));
+const Gdpr = lazy(() => import("./routes/Gdpr.jsx"));
 
 // Loading component
 const LoadingFallback = () => (
@@ -59,6 +60,7 @@ export default function App() {
           <Route path="/galerie" element={<Galerie />} />
           <Route path="/pokoje" element={<PokojevPage />} />
           <Route path="/rezervace" element={<ReservationPage2 />} />
+          <Route path="/gdpr" element={<Gdpr />} />
         </Route>
         <Route
           path="/admin"

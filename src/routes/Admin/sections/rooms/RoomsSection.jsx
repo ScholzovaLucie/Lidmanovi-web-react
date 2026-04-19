@@ -201,7 +201,7 @@ export default function RoomsSection() {
         ) : (
           <Grid container spacing={3}>
             {rooms.map((room) => (
-              <Grid item key={room.id} xs={12} sm={6} md={4}>
+              <Grid key={room.id} size={{ xs: 12, sm: 6, md: 4 }}>
                 <RoomCard
                   room={room}
                   isAdminMode={true}
@@ -210,7 +210,7 @@ export default function RoomsSection() {
                 />
               </Grid>
             ))}
-            <Grid item xs={12} sm={6} md={4} display={"flex"} flexGrow={1} maxWidth={370}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} sx={{ display: "flex", flexGrow: 1, maxWidth: 370 }}>
               <AddRoomCard onClick={handleAddNewRoom} />
             </Grid>
           </Grid>

@@ -10,31 +10,17 @@ import { useAuth } from "../hooks/useAuth";
 import {
   useGetCmsPageByRouteLangQuery,
   useUpsertCmsPageMutation,
+  useUpsertCmsPageTranslationMutation,
 } from "../redux/api/cmsApi";
 import { EditorialEditorContext } from "./editorialEditorContext";
+import CmsBackend from "../locales/cmsBackend";
+import {
+  resolveCmsPathFromNamespace,
+  resolveCmsPathFromPath,
+  resolveNamespacesFromPath,
+} from "../locales/pageRoutes";
 
-const ROUTE_NAMESPACES = {
-  "/": ["home"],
-  "/o-nas": ["home"],
-  "/kontakt": ["kontakt"],
-  "/restaurace": ["restaurace"],
-  "/ubytovani": ["ubytovani"],
-  "/svatby": ["svatby"],
-  "/pobytove_balicky": ["balicky"],
-  "/cenik": ["cenik"],
-  "/galerie": ["galerie"],
-  "/rezervace": ["rezervace"],
-};
-
-function getCmsRoute(pathname) {
-  if (ROUTE_NAMESPACES[pathname]) return pathname;
-  return "/";
-}
-
-function resolveNamespaces(pathname) {
-  const cmsRoute = getCmsRoute(pathname);
-  return ["global", ...(ROUTE_NAMESPACES[cmsRoute] || [])];
-}
+const INLINE_EDITING_STORAGE_KEY = "editorialInlineEditing";
 
 function isFlatOverrideMap(value) {
   if (!value || typeof value !== "object" || Array.isArray(value)) return false;
@@ -171,8 +157,48 @@ function cloneTranslatableValue(value) {
   return value;
 }
 
+function setNestedValue(target, pathSegments, value) {
+  let cursor = target;
+
+  pathSegments.forEach((segment, index) => {
+    const isLast = index === pathSegments.length - 1;
+    const nextSegment = pathSegments[index + 1];
+    const nextIsIndex = /^\d+$/.test(String(nextSegment));
+    const currentIsIndex = /^\d+$/.test(String(segment));
+    const key = currentIsIndex ? Number(segment) : segment;
+
+    if (isLast) {
+      cursor[key] = cloneTranslatableValue(value);
+      return;
+    }
+
+    if (cursor[key] === undefined) {
+      cursor[key] = nextIsIndex ? [] : {};
+    }
+
+    cursor = cursor[key];
+  });
+}
+
+function buildContentJsonFromDraft(entries, namespace) {
+  const content = {};
+
+  Object.entries(entries).forEach(([compositeKey, value]) => {
+    const prefix = `${namespace}.`;
+    if (!String(compositeKey).startsWith(prefix)) return;
+    const localKey = compositeKey.slice(prefix.length);
+    if (!localKey) return;
+    setNestedValue(content, localKey.split("."), value);
+  });
+
+  return content;
+}
+
 export function EditorialEditorProvider({ children }) {
-  const [isInlineEditing, setIsInlineEditing] = useState(false);
+  const [isInlineEditing, setIsInlineEditing] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem(INLINE_EDITING_STORAGE_KEY) === "true";
+  });
   const [inlineDraft, setInlineDraft] = useState({});
   const [, setResourcesVersion] = useState(0);
   const lastAppliedSignatureRef = useRef("");
@@ -182,10 +208,15 @@ export function EditorialEditorProvider({ children }) {
   const { enqueueSnackbar } = useSnackbar();
   const { isAuthenticated } = useAuth();
   const [upsertCmsPage, { isLoading: isSaving }] = useUpsertCmsPageMutation();
+  const [upsertCmsPageTranslation, { isLoading: isSavingTranslation }] =
+    useUpsertCmsPageTranslationMutation();
 
   const currentLanguage = String(i18n.resolvedLanguage || i18n.language || "cs").split("-")[0];
-  const currentRoute = getCmsRoute(location.pathname);
-  const namespaces = useMemo(() => resolveNamespaces(location.pathname), [location.pathname]);
+  const currentRoute = resolveCmsPathFromPath(location.pathname);
+  const namespaces = useMemo(
+    () => resolveNamespacesFromPath(location.pathname),
+    [location.pathname],
+  );
 
   const { data: cmsPage } = useGetCmsPageByRouteLangQuery({
     path: currentRoute,
@@ -193,11 +224,11 @@ export function EditorialEditorProvider({ children }) {
   });
   const { data: globalCmsPage } = useGetCmsPageByRouteLangQuery(
     {
-      path: "/",
+      path: "/global",
       lang: currentLanguage,
     },
     {
-      skip: currentRoute === "/",
+      skip: currentRoute === "/global",
     },
   );
 
@@ -213,14 +244,14 @@ export function EditorialEditorProvider({ children }) {
     [cmsPage, currentRoute, currentLanguage, namespaces],
   );
   const globalTranslationMap = useMemo(() => {
-    if (currentRoute === "/") return {};
+    if (currentRoute === "/global") return {};
 
     const normalized = normalizeTranslations(
       globalCmsPage?.content_json,
       globalCmsPage?.content_i18n,
-      "/",
+      "/global",
       currentLanguage,
-      ["global", "home"],
+      ["global"],
     );
 
     return Object.fromEntries(
@@ -287,28 +318,80 @@ export function EditorialEditorProvider({ children }) {
 
   React.useEffect(() => {
     setInlineDraft({});
-    setIsInlineEditing(false);
   }, [currentRoute, currentLanguage]);
 
-  const savePayload = async (draftForCurrentLang) => {
-    const nextTranslations = { ...(routeTranslationMap || {}) };
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
 
-    Object.entries(draftForCurrentLang).forEach(([compositeKey, value]) => {
-      const existingLangMap = nextTranslations[compositeKey] || {};
-      nextTranslations[compositeKey] = {
-        ...existingLangMap,
-        [currentLanguage]: value,
-      };
+    if (!isAuthenticated) {
+      window.localStorage.removeItem(INLINE_EDITING_STORAGE_KEY);
+      return;
+    }
+
+    window.localStorage.setItem(
+      INLINE_EDITING_STORAGE_KEY,
+      isInlineEditing ? "true" : "false",
+    );
+  }, [isAuthenticated, isInlineEditing]);
+
+  const savePayload = async (draftForCurrentLang) => {
+    const draftEntries = Object.entries(draftForCurrentLang);
+    if (!draftEntries.length) return;
+
+    const payloadsByPath = new Map();
+
+    draftEntries.forEach(([compositeKey, value]) => {
+      const namespace = String(compositeKey).split(".")[0];
+      const cmsPath = resolveCmsPathFromNamespace(namespace) || currentRoute;
+      const existingEntries = payloadsByPath.get(cmsPath) || {};
+      payloadsByPath.set(cmsPath, {
+        ...existingEntries,
+        [compositeKey]: value,
+      });
     });
 
-    await upsertCmsPage({
-      path: currentRoute,
-      lang: currentLanguage,
-      content_json: {
-        schema_version: 2,
-        translations: nextTranslations,
-      },
-    }).unwrap();
+    await Promise.all(
+      Array.from(payloadsByPath.entries()).map(async ([cmsPath, pathDraft]) => {
+        const pageData = cmsPath === "/global" ? globalCmsPage : cmsPage;
+        const translationSource =
+          cmsPath === "/global" ? globalTranslationMap : routeTranslationMap;
+        const namespace =
+          cmsPath === "/global"
+            ? "global"
+            : namespaces.find((item) => item !== "global") || "global";
+        const mergedEntries = {};
+
+        Object.entries(translationSource || {}).forEach(([compositeKey, langMap]) => {
+          const value = pickLanguageValue(langMap, currentLanguage);
+          if (value !== undefined) {
+            mergedEntries[compositeKey] = value;
+          }
+        });
+
+        Object.assign(mergedEntries, pathDraft);
+
+        const content_json = buildContentJsonFromDraft(mergedEntries, namespace);
+
+        if (
+          pageData?.id &&
+          currentLanguage !== String(pageData?.lang || "cs").split("-")[0]
+        ) {
+          await upsertCmsPageTranslation({
+            pageId: pageData.id,
+            lang: currentLanguage,
+            content_json,
+          }).unwrap();
+        } else {
+          await upsertCmsPage({
+            path: cmsPath,
+            lang: currentLanguage,
+            content_json,
+          }).unwrap();
+        }
+
+        CmsBackend._clearRouteCache?.(cmsPath, currentLanguage);
+      }),
+    );
   };
 
   const startInlineEditing = () => {
@@ -381,10 +464,18 @@ export function EditorialEditorProvider({ children }) {
       listContentKeys,
       setInlineValue,
       saveInlineChanges,
-      isSaving,
+      isSaving: isSaving || isSavingTranslation,
       entryTypeMap,
     }),
-    [isAuthenticated, isInlineEditing, isSaving, inlineDraft, translationMap, entryTypeMap],
+    [
+      isAuthenticated,
+      isInlineEditing,
+      isSaving,
+      isSavingTranslation,
+      inlineDraft,
+      translationMap,
+      entryTypeMap,
+    ],
   );
 
   return (

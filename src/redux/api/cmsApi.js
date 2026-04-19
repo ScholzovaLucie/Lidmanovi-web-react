@@ -4,7 +4,7 @@ import { baseQueryWithReauth } from "../constants";
 export const cmsApi = createApi({
   reducerPath: "cmsApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["CmsPage"],
+  tagTypes: ["CmsPage", "CmsPageTranslation"],
   endpoints: (builder) => ({
     getCmsPageByRouteLang: builder.query({
       async queryFn(arg, api, extraOptions, baseQuery) {
@@ -40,11 +40,11 @@ export const cmsApi = createApi({
           return exact || exactPath || null;
         };
 
-        // Preferred: backend returns one route record with all translations in content_json.
+        // Primary contract from the translation API guide.
         const byPathResult = await baseQuery(
           {
             url: "/editorial_system/pages/",
-            params: { path: arg.path },
+            params: { path: arg.path, lang: arg.lang },
           },
           api,
           extraOptions,
@@ -54,11 +54,11 @@ export const cmsApi = createApi({
           if (byPathPick) return { data: byPathPick };
         }
 
-        // Compatibility: older backend variants filtering by path + lang.
+        // Compatibility fallback for older payload shapes.
         const filteredResult = await baseQuery(
           {
             url: "/editorial_system/pages/",
-            params: { path: arg.path, lang: arg.lang },
+            params: { path: arg.path },
           },
           api,
           extraOptions,
@@ -92,7 +92,21 @@ export const cmsApi = createApi({
         { type: "CmsPage", id: path },
       ],
     }),
+    upsertCmsPageTranslation: builder.mutation({
+      query: ({ pageId, lang, content_json }) => ({
+        url: `/editorial_system/pages/${pageId}/translations/`,
+        method: "PATCH",
+        body: { lang, content_json },
+      }),
+      invalidatesTags: (result, error, { pageId }) => [
+        { type: "CmsPageTranslation", id: pageId },
+      ],
+    }),
   }),
 });
 
-export const { useGetCmsPageByRouteLangQuery, useUpsertCmsPageMutation } = cmsApi;
+export const {
+  useGetCmsPageByRouteLangQuery,
+  useUpsertCmsPageMutation,
+  useUpsertCmsPageTranslationMutation,
+} = cmsApi;

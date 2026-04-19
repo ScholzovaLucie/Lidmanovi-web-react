@@ -184,7 +184,7 @@ export default function RoomEditDialog({
           </Typography>
 
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <SpinnerField
                 label="Max dospělých"
                 value={formData.max_adults}
@@ -196,7 +196,7 @@ export default function RoomEditDialog({
                 fullWidth
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <SpinnerField
                 label="Max dětí"
                 value={formData.max_children}
@@ -208,7 +208,7 @@ export default function RoomEditDialog({
                 fullWidth
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <TextField
                 label="Celková kapacita"
                 value={Math.max(
@@ -229,7 +229,7 @@ export default function RoomEditDialog({
           </Typography>
 
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Cena za dospělého"
                 value={formData.price_for_adult}
@@ -248,7 +248,7 @@ export default function RoomEditDialog({
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Cena za dítě"
                 value={formData.price_for_children}

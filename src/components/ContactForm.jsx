@@ -11,7 +11,9 @@ import {
   Snackbar,
   Alert,
   CircularProgress,
+  Link,
 } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -227,10 +229,15 @@ export default function ContactForm({
                   onBlur={handleBlur}
                 />
               }
-              label={tt(
-                "form.labels.consent",
-                "Souhlasím se zpracováním osobních údajů za účelem vyřízení mého dotazu.",
-              )}
+              label={
+                <span>
+                  Souhlasím se{" "}
+                  <Link component={RouterLink} to="/gdpr" target="_blank" rel="noopener noreferrer">
+                    zpracováním osobních údajů
+                  </Link>{" "}
+                  za účelem vyřízení mého dotazu.
+                </span>
+              }
             />
             {touched.consent && errors.consent && (
               <Typography variant="caption" color="error" sx={{ mt: -1 }}>

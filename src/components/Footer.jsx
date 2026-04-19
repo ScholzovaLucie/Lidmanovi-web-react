@@ -136,6 +136,19 @@ export default function Footer() {
             </Stack>
 
             <Stack direction="row" spacing={1.5} alignItems="center">
+              <Link
+                component={RouterLink}
+                to="/gdpr"
+                color="rgba(223,232,241,0.38)"
+                underline="none"
+                sx={{
+                  fontSize: "0.62rem",
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                }}
+              >
+                GDPR
+              </Link>
               {isAuthenticated ? (
                 <>
                   <Link
