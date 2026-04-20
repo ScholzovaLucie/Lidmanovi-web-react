@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://scholzovalucie.github.io/Lidmanovi-web-react/sitemap.xml
+Disallow: /admin
+Disallow: /gdpr
+
+Sitemap: https://www.ulidmanu.cz/sitemap.xml

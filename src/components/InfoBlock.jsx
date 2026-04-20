@@ -6,6 +6,7 @@ import { selectIsAuthenticated } from "../redux/slices/app/appSlice";
 export default function InfoBlock({
   icon,
   title,
+  titleNode,
   children,
   button,
   onButtonClick,
@@ -74,7 +75,7 @@ export default function InfoBlock({
             sx={{ width: 28, height: 28, flexShrink: 0 }}
           />
         )}
-        {title && (
+        {titleNode ?? (title && (
           <Typography
             sx={{
               fontFamily: '"Cormorant Garamond", Georgia, serif',
@@ -85,7 +86,7 @@ export default function InfoBlock({
           >
             {title}
           </Typography>
-        )}
+        ))}
       </Box>
 
       <Box sx={{ flex: 1, display: "flex", alignItems: "flex-start", width: "100%" }}>

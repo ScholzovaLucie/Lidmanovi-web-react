@@ -9,6 +9,7 @@ import InfoBlock from "../components/InfoBlock";
 import ContactForm from "../components/ContactForm";
 import SubpageBanner from "../components/SubpageBanner.jsx";
 import SectionIntro from "../components/SectionIntro.jsx";
+import EditableTranslationText from "../components/EditableTranslationText.jsx";
 import { useTranslation } from "react-i18next";
 
 export default function Kontakt() {
@@ -26,24 +27,40 @@ export default function Kontakt() {
   const blocks = [
     {
       icon: asset("/position.webp"),
-      title: t("info.address.title"),
+      titleNode: (
+        <EditableTranslationText
+          ns="kontakt"
+          i18nKey="info.address.title"
+          sx={{
+            fontFamily: '"Cormorant Garamond", Georgia, serif',
+            fontSize: { xs: "1.45rem", md: "1.65rem" },
+            lineHeight: 1.1,
+            color: "text.primary",
+          }}
+        />
+      ),
       content: (
         <>
-          <Typography>
-            {t("info.address.lines.0")}
-            <br />
-            {t("info.address.lines.1")}
-          </Typography>
+          <EditableTranslationText ns="kontakt" i18nKey="info.address.lines" />
           <Divider sx={{ my: 1.5 }} />
-          <Typography variant="body2" color="text.secondary">
-            {t("info.address.coords")}
-          </Typography>
+          <EditableTranslationText ns="kontakt" i18nKey="info.address.coords" variant="body2" sx={{ color: "text.secondary" }} />
         </>
       ),
     },
     {
       icon: asset("/phone-call.webp"),
-      title: t("info.phone.title"),
+      titleNode: (
+        <EditableTranslationText
+          ns="kontakt"
+          i18nKey="info.phone.title"
+          sx={{
+            fontFamily: '"Cormorant Garamond", Georgia, serif',
+            fontSize: { xs: "1.45rem", md: "1.65rem" },
+            lineHeight: 1.1,
+            color: "text.primary",
+          }}
+        />
+      ),
       content: (
         <Link href="tel:+420604341863" underline="hover" color="inherit">
           +420&nbsp;604&nbsp;341&nbsp;863
@@ -52,7 +69,18 @@ export default function Kontakt() {
     },
     {
       icon: asset("/mail.webp"),
-      title: t("info.email.title"),
+      titleNode: (
+        <EditableTranslationText
+          ns="kontakt"
+          i18nKey="info.email.title"
+          sx={{
+            fontFamily: '"Cormorant Garamond", Georgia, serif',
+            fontSize: { xs: "1.45rem", md: "1.65rem" },
+            lineHeight: 1.1,
+            color: "text.primary",
+          }}
+        />
+      ),
       content: (
         <Link href="mailto:info@ulidmanu.cz" underline="hover" color="inherit">
           info@ulidmanu.cz
@@ -61,25 +89,43 @@ export default function Kontakt() {
     },
     {
       icon: asset("/facebook2.webp"),
-      title: t("info.facebook.title"),
+      titleNode: (
+        <EditableTranslationText
+          ns="kontakt"
+          i18nKey="info.facebook.title"
+          sx={{
+            fontFamily: '"Cormorant Garamond", Georgia, serif',
+            fontSize: { xs: "1.45rem", md: "1.65rem" },
+            lineHeight: 1.1,
+            color: "text.primary",
+          }}
+        />
+      ),
       content: (
         <Link
           href="https://www.facebook.com/Pension-a-restaurace-U-Lidman%C5%AF-945259918825167"
           underline="hover"
           color="inherit"
         >
-          {t("info.facebook.label")}
+          <EditableTranslationText ns="kontakt" i18nKey="info.facebook.label" />
         </Link>
       ),
     },
     {
-      title: t("info.owner.title"),
+      titleNode: (
+        <EditableTranslationText
+          ns="kontakt"
+          i18nKey="info.owner.title"
+          sx={{
+            fontFamily: '"Cormorant Garamond", Georgia, serif',
+            fontSize: { xs: "1.45rem", md: "1.65rem" },
+            lineHeight: 1.1,
+            color: "text.primary",
+          }}
+        />
+      ),
       content: (
-        <Typography>
-          {t("info.owner.lines.0")}
-          <br />
-          {t("info.owner.lines.1")}
-        </Typography>
+        <EditableTranslationText ns="kontakt" i18nKey="info.owner.lines" />
       ),
     },
   ];
@@ -113,6 +159,7 @@ export default function Kontakt() {
               <InfoBlock
                 icon={block.icon}
                 title={block.title}
+                titleNode={block.titleNode}
                 button={block.button}
                 onButtonClick={block.onClick}
                 sx={{ flex: 1, height: "100%" }}

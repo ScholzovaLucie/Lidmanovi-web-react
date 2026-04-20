@@ -1,11 +1,13 @@
-const SITE_NAME = "Penzion U Lidmanu";
-const DEFAULT_TITLE = "Penzion U Lidmanu | Ubytovani, restaurace a svatby v Machovske Lhote";
+const SITE_NAME = "Penzion U Lidmanů";
+const SITE_URL = "https://www.ulidmanu.cz";
+const DEFAULT_TITLE = "Penzion U Lidmanů | Ubytování, restaurace a svatby v Machovské Lhotě";
 const DEFAULT_DESCRIPTION =
-  "Penzion U Lidmanu v Machovske Lhote nabizi ubytovani, restauraci, svatebni prostory, pobytove balicky i online rezervaci v srdci Broumovska.";
-const DEFAULT_IMAGE = "/logo_colour_pantone.webp";
+  "Penzion U Lidmanů v Machovské Lhotě nabízí ubytování, restauraci, svatební prostory, pobytové balíčky i online rezervaci v srdci Broumovska.";
+const DEFAULT_IMAGE = "/logolidman.webp";
 
 export const SEO_DEFAULTS = {
   siteName: SITE_NAME,
+  siteUrl: SITE_URL,
   defaultTitle: DEFAULT_TITLE,
   titleTemplate: `%s | ${SITE_NAME}`,
   defaultDescription: DEFAULT_DESCRIPTION,
@@ -17,64 +19,120 @@ export const SEO_ROUTES = {
     title: DEFAULT_TITLE,
     description: DEFAULT_DESCRIPTION,
     keywords:
-      "penzion U Lidmanu, Machovska Lhota, ubytovani Broumovsko, restaurace Machov, svatby Broumovsko, pobytove balicky",
+      "penzion U Lidmanů, Machovská Lhota, ubytování Broumovsko, restaurace Machov, svatby Broumovsko, pobytové balíčky",
     structuredData: {
       "@context": "https://schema.org",
       "@type": "LodgingBusiness",
-      name: "Penzion U Lidmanu",
-      url: "/",
+      name: "Penzion U Lidmanů",
+      url: SITE_URL,
       image: DEFAULT_IMAGE,
+      telephone: "+420604341863",
+      email: "info@ulidmanu.cz",
       address: {
         "@type": "PostalAddress",
-        addressLocality: "Machovska Lhota",
+        streetAddress: "Machovská Lhota 40",
+        addressLocality: "Machov",
+        postalCode: "549 31",
         addressCountry: "CZ",
       },
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: 50.4975831,
+        longitude: 16.2934947,
+      },
       amenityFeature: [
-        { "@type": "LocationFeatureSpecification", name: "Ubytovani", value: true },
+        { "@type": "LocationFeatureSpecification", name: "Ubytování", value: true },
         { "@type": "LocationFeatureSpecification", name: "Restaurace", value: true },
-        { "@type": "LocationFeatureSpecification", name: "Svatebni prostory", value: true },
+        { "@type": "LocationFeatureSpecification", name: "Svatební prostory", value: true },
       ],
     },
   },
   "/restaurace": {
     title: "Restaurace",
     description:
-      "Domaci restaurace Penzionu U Lidmanu pro hosty, rodinne oslavy, svatby i firemni akce v Machovske Lhote.",
+      "Domácí restaurace Penzionu U Lidmanů pro hosty, rodinné oslavy, svatby i firemní akce v Machovské Lhotě.",
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "Restaurant",
+      name: "Restaurace U Lidmanů",
+      url: `${SITE_URL}/restaurace`,
+      image: DEFAULT_IMAGE,
+      telephone: "+420604341863",
+      servesCuisine: "Czech",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "Machovská Lhota 40",
+        addressLocality: "Machov",
+        postalCode: "549 31",
+        addressCountry: "CZ",
+      },
+    },
   },
   "/svatby": {
     title: "Svatby",
     description:
-      "Svatebni misto v penzionu U Lidmanu. Prostory, zazemi, ubytovani i atmosfera pro svatbu v prirode Broumovska.",
+      "Svatební místo v penzionu U Lidmanů. Prostory, zázemí, ubytování i atmosféra pro svatbu v přírodě Broumovska.",
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "EventVenue",
+      name: "Svatební prostory U Lidmanů",
+      url: `${SITE_URL}/svatby`,
+      image: DEFAULT_IMAGE,
+      telephone: "+420604341863",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "Machovská Lhota 40",
+        addressLocality: "Machov",
+        postalCode: "549 31",
+        addressCountry: "CZ",
+      },
+    },
   },
   "/ubytovani": {
-    title: "Ubytovani",
+    title: "Ubytování",
     description:
-      "Komfortni ubytovani v Penzionu U Lidmanu v Machovske Lhote. Pokoje, zazemi a vyborna vychozi pozice pro vylety po Broumovsku.",
+      "Komfortní ubytování v Penzionu U Lidmanů v Machovské Lhotě. Pokoje, zázemí a vynikající výchozí pozice pro výlety po Broumovsku.",
   },
   "/pobytove_balicky": {
-    title: "Pobytove balicky",
+    title: "Pobytové balíčky",
     description:
-      "Vyhodne pobytove balicky v Penzionu U Lidmanu pro romanticke pobyty, relax i aktivni dovolenou.",
+      "Výhodné pobytové balíčky v Penzionu U Lidmanů pro romantické pobyty, relax i aktivní dovolenou.",
   },
   "/galerie": {
     title: "Galerie",
     description:
-      "Fotogalerie penzionu U Lidmanu, ubytovani, restaurace, svateb i okoli Machovske Lhoty a Broumovska.",
+      "Fotogalerie penzionu U Lidmanů – ubytování, restaurace, svatby i okolí Machovské Lhoty a Broumovska.",
   },
   "/kontakt": {
     title: "Kontakt",
     description:
-      "Kontaktujte Penzion U Lidmanu. Najdete zde adresu, kontaktni udaje i mapu pro snadnou cestu do Machovske Lhoty.",
+      "Kontaktujte Penzion U Lidmanů. Najdete zde adresu, kontaktní údaje i mapu pro snadnou cestu do Machovské Lhoty.",
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "Penzion U Lidmanů",
+      url: SITE_URL,
+      logo: DEFAULT_IMAGE,
+      telephone: "+420604341863",
+      email: "info@ulidmanu.cz",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "Machovská Lhota 40",
+        addressLocality: "Machov",
+        postalCode: "549 31",
+        addressCountry: "CZ",
+      },
+    },
   },
   "/cenik": {
-    title: "Cenik",
+    title: "Ceník",
     description:
-      "Aktualni cenik ubytovani a sluzeb Penzionu U Lidmanu v Machovske Lhote.",
+      "Aktuální ceník ubytování a služeb Penzionu U Lidmanů v Machovské Lhotě.",
   },
   "/rezervace": {
     title: "Rezervace",
     description:
-      "Online rezervace pobytu v Penzionu U Lidmanu. Vyberte termin a zajistete si ubytovani snadno online.",
+      "Online rezervace pobytu v Penzionu U Lidmanů. Vyberte termín a zajistěte si ubytování snadno online.",
   },
   "/gdpr": {
     title: "Ochrana osobních údajů",
@@ -84,13 +142,12 @@ export const SEO_ROUTES = {
   "/pokoje": {
     title: "Pokoje",
     description:
-      "Prohlédněte si pokoje Penzionu U Lidmanu v Machovské Lhotě. Útulné ubytování s vybavením pro pohodlný pobyt v srdci Broumovska.",
-    keywords: "pokoje penzion U Lidmanu, ubytování Machovská Lhota, pokoje Broumovsko",
+      "Prohlédněte si pokoje Penzionu U Lidmanů v Machovské Lhotě. Útulné ubytování s vybavením pro pohodlný pobyt v srdci Broumovska.",
+    keywords: "pokoje penzion U Lidmanů, ubytování Machovská Lhota, pokoje Broumovsko",
   },
   "/admin": {
     title: "Administrace",
-    description: "Administracni cast webu.",
+    description: "Administrační část webu.",
     robots: "noindex, nofollow",
   },
 };
-

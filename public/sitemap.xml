@@ -1,33 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://scholzovalucie.github.io/Lidmanovi-web-react/</loc>
+    <loc>https://www.ulidmanu.cz/</loc>
+    <priority>1.0</priority>
+    <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://scholzovalucie.github.io/Lidmanovi-web-react/restaurace</loc>
+    <loc>https://www.ulidmanu.cz/ubytovani</loc>
+    <priority>0.9</priority>
+    <changefreq>monthly</changefreq>
   </url>
   <url>
-    <loc>https://scholzovalucie.github.io/Lidmanovi-web-react/svatby</loc>
+    <loc>https://www.ulidmanu.cz/pokoje</loc>
+    <priority>0.9</priority>
+    <changefreq>monthly</changefreq>
   </url>
   <url>
-    <loc>https://scholzovalucie.github.io/Lidmanovi-web-react/ubytovani</loc>
+    <loc>https://www.ulidmanu.cz/restaurace</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
   </url>
   <url>
-    <loc>https://scholzovalucie.github.io/Lidmanovi-web-react/pobytove_balicky</loc>
+    <loc>https://www.ulidmanu.cz/svatby</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
   </url>
   <url>
-    <loc>https://scholzovalucie.github.io/Lidmanovi-web-react/galerie</loc>
+    <loc>https://www.ulidmanu.cz/pobytove_balicky</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
   </url>
   <url>
-    <loc>https://scholzovalucie.github.io/Lidmanovi-web-react/kontakt</loc>
+    <loc>https://www.ulidmanu.cz/cenik</loc>
+    <priority>0.7</priority>
+    <changefreq>monthly</changefreq>
   </url>
   <url>
-    <loc>https://scholzovalucie.github.io/Lidmanovi-web-react/cenik</loc>
+    <loc>https://www.ulidmanu.cz/rezervace</loc>
+    <priority>0.7</priority>
+    <changefreq>monthly</changefreq>
   </url>
   <url>
-    <loc>https://scholzovalucie.github.io/Lidmanovi-web-react/pokoje</loc>
+    <loc>https://www.ulidmanu.cz/galerie</loc>
+    <priority>0.6</priority>
+    <changefreq>monthly</changefreq>
   </url>
   <url>
-    <loc>https://scholzovalucie.github.io/Lidmanovi-web-react/rezervace</loc>
+    <loc>https://www.ulidmanu.cz/kontakt</loc>
+    <priority>0.6</priority>
+    <changefreq>yearly</changefreq>
   </url>
 </urlset>
