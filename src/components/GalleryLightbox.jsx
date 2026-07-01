@@ -87,8 +87,8 @@ export default function GalleryLightbox({
       PaperProps={{
         sx: {
           background:
-            "linear-gradient(180deg, rgba(14,17,21,0.96), rgba(12,14,17,0.98))",
-          backdropFilter: "blur(14px)",
+            "radial-gradient(circle at 50% 18%, rgba(70, 96, 119, 0.16), transparent 34%), linear-gradient(180deg, rgba(43, 38, 32, 0.98), rgba(28, 25, 21, 0.99))",
+          backdropFilter: "blur(18px)",
         },
       }}
     >
@@ -100,12 +100,16 @@ export default function GalleryLightbox({
           top: { xs: 12, md: 20 },
           right: { xs: 12, md: 20 },
           zIndex: 3,
-          width: 52,
-          height: 52,
-          bgcolor: "rgba(255,255,255,0.08)",
-          color: "white",
-          border: "1px solid rgba(255,255,255,0.1)",
-          "&:hover": { bgcolor: "rgba(255,255,255,0.14)" },
+          width: { xs: 46, md: 58 },
+          height: { xs: 46, md: 58 },
+          bgcolor: "rgba(248, 244, 236, 0.1)",
+          color: "primary.contrastText",
+          border: "1px solid rgba(226, 214, 194, 0.24)",
+          boxShadow: "0 16px 40px rgba(0,0,0,0.28)",
+          "&:hover": {
+            bgcolor: "rgba(248, 244, 236, 0.18)",
+            borderColor: "rgba(226, 214, 194, 0.42)",
+          },
         }}
       >
         <CloseIcon />
@@ -118,25 +122,40 @@ export default function GalleryLightbox({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          p: { xs: 2, md: 4.5 },
+          px: { xs: 1.5, md: 8, lg: 11 },
+          pt: { xs: 8, md: 9 },
+          pb: showThumbnails
+            ? { xs: "118px", md: "138px" }
+            : { xs: 4, md: 6 },
         }}
       >
         <Box
-          component="img"
-          key={images[index]}
-          src={images[index]}
-          alt=""
-          loading="eager"
           sx={{
-            maxWidth: "100%",
-            maxHeight: showThumbnails ? "calc(100% - 168px)" : "calc(100% - 56px)",
-            objectFit: "contain",
-            boxShadow: "0 30px 80px rgba(0,0,0,0.42)",
-            borderRadius: 2,
-            border: "1px solid rgba(255,255,255,0.08)",
-            transition: "opacity 180ms ease, transform 180ms ease",
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
-        />
+        >
+          <Box
+            component="img"
+            key={images[index]}
+            src={images[index]}
+            alt=""
+            loading="eager"
+            sx={{
+              maxWidth: "100%",
+              maxHeight: "100%",
+              objectFit: "contain",
+              boxShadow: "0 34px 90px rgba(0,0,0,0.46)",
+              borderRadius: { xs: 1, md: 1.5 },
+              border: "1px solid rgba(226, 214, 194, 0.22)",
+              bgcolor: "rgba(18, 16, 14, 0.48)",
+              transition: "opacity 180ms ease, transform 180ms ease",
+            }}
+          />
+        </Box>
       </Box>
 
       {count > 1 && (
@@ -150,12 +169,16 @@ export default function GalleryLightbox({
               top: "50%",
               transform: "translateY(-50%)",
               zIndex: 3,
-              width: { xs: 52, md: 58 },
-              height: { xs: 52, md: 58 },
-              bgcolor: "rgba(255,255,255,0.08)",
-              color: "white",
-              border: "1px solid rgba(255,255,255,0.1)",
-              "&:hover": { bgcolor: "rgba(255,255,255,0.14)" },
+              width: { xs: 48, md: 62 },
+              height: { xs: 48, md: 62 },
+              bgcolor: "rgba(248, 244, 236, 0.1)",
+              color: "primary.contrastText",
+              border: "1px solid rgba(226, 214, 194, 0.24)",
+              boxShadow: "0 16px 40px rgba(0,0,0,0.28)",
+              "&:hover": {
+                bgcolor: "rgba(248, 244, 236, 0.18)",
+                borderColor: "rgba(226, 214, 194, 0.42)",
+              },
             }}
           >
             <ChevronLeftIcon />
@@ -169,12 +192,16 @@ export default function GalleryLightbox({
               top: "50%",
               transform: "translateY(-50%)",
               zIndex: 3,
-              width: { xs: 52, md: 58 },
-              height: { xs: 52, md: 58 },
-              bgcolor: "rgba(255,255,255,0.08)",
-              color: "white",
-              border: "1px solid rgba(255,255,255,0.1)",
-              "&:hover": { bgcolor: "rgba(255,255,255,0.14)" },
+              width: { xs: 48, md: 62 },
+              height: { xs: 48, md: 62 },
+              bgcolor: "rgba(248, 244, 236, 0.1)",
+              color: "primary.contrastText",
+              border: "1px solid rgba(226, 214, 194, 0.24)",
+              boxShadow: "0 16px 40px rgba(0,0,0,0.28)",
+              "&:hover": {
+                bgcolor: "rgba(248, 244, 236, 0.18)",
+                borderColor: "rgba(226, 214, 194, 0.42)",
+              },
             }}
           >
             <ChevronRightIcon />
@@ -187,17 +214,18 @@ export default function GalleryLightbox({
               left: "50%",
               transform: "translateX(-50%)",
               zIndex: 2,
-              px: 1.6,
-              py: 0.7,
+              px: 2,
+              py: 0.8,
               borderRadius: 999,
-              bgcolor: "rgba(12,14,17,0.45)",
-              border: "1px solid rgba(255,255,255,0.08)",
+              bgcolor: "rgba(28, 25, 21, 0.72)",
+              border: "1px solid rgba(226, 214, 194, 0.2)",
+              boxShadow: "0 12px 34px rgba(0,0,0,0.24)",
             }}
           >
             <Typography
               sx={{
-                color: "rgba(255,255,255,0.82)",
-                fontSize: "0.72rem",
+                color: "rgba(248, 244, 236, 0.84)",
+                fontSize: "0.76rem",
                 letterSpacing: "0.18em",
                 textTransform: "uppercase",
               }}
@@ -216,10 +244,10 @@ export default function GalleryLightbox({
             left: 0,
             right: 0,
             bottom: 0,
-            py: 1.6,
+            py: { xs: 1.2, md: 1.6 },
             px: { xs: 1.5, md: 2.5 },
-            bgcolor: "rgba(12,14,17,0.74)",
-            borderTop: "1px solid rgba(255,255,255,0.08)",
+            bgcolor: "rgba(34, 30, 26, 0.88)",
+            borderTop: "1px solid rgba(226, 214, 194, 0.18)",
             display: "flex",
             gap: 1.1,
             overflowX: "auto",
@@ -237,23 +265,29 @@ export default function GalleryLightbox({
                 onClick={() => setIndex(i)}
                 ref={(el) => (thumbRefs.current[i] = el)}
                 sx={{
-                  width: thumbSize.w,
-                  height: thumbSize.h,
-                  borderRadius: 1.5,
+                  width: { xs: Math.max(76, thumbSize.w - 12), md: thumbSize.w + 16 },
+                  height: { xs: Math.max(54, thumbSize.h - 6), md: thumbSize.h + 12 },
+                  borderRadius: 1,
                   overflow: "hidden",
                   flex: "0 0 auto",
                   position: "relative",
-                  opacity: active ? 1 : 0.62,
-                  transform: active ? "translateY(-2px)" : "none",
+                  opacity: active ? 1 : 0.58,
+                  transform: active ? "translateY(-3px)" : "none",
                   transition:
                     "opacity 160ms ease, transform 160ms ease, outline-color 160ms ease, box-shadow 160ms ease",
                   outline: active ? "2px solid" : "1px solid",
                   outlineColor: active
-                    ? "#9a8060"
-                    : "rgba(255,255,255,0.16)",
+                    ? "#c8b28f"
+                    : "rgba(226, 214, 194, 0.2)",
                   boxShadow: active
-                    ? "0 0 0 1px rgba(255,255,255,0.08), 0 10px 24px rgba(0,0,0,0.28)"
+                    ? "0 0 0 1px rgba(248,244,236,0.1), 0 12px 28px rgba(0,0,0,0.34)"
                     : "none",
+                  "&:hover": {
+                    opacity: 1,
+                    outlineColor: active
+                      ? "#c8b28f"
+                      : "rgba(226, 214, 194, 0.46)",
+                  },
                 }}
               >
                 <Box

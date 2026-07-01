@@ -2,6 +2,7 @@
 export const translations_kontakt = {
   cs: {
     pageTitle: "Kontakt",
+    subtitle: "Rádi vám poradíme s termínem i programem pobytu.",
     heroAlt: [
       "Úvodní foto 1",
       "Úvodní foto 2",
@@ -9,6 +10,8 @@ export const translations_kontakt = {
       "Úvodní foto 4",
     ],
     info: {
+      gpsTitle: "GPS",
+      ratingTitle: "Hodnocení",
       address: {
         title: "Adresa",
         lines: ["Machovská Lhota 40", "Machov 549 31"],
@@ -37,6 +40,8 @@ export const translations_kontakt = {
     },
     form: {
       title: "Kontaktujte nás",
+      eyebrow: "Napište nám",
+      heading: "Pošlete zprávu",
       labels: {
         name: "Jméno *",
         email: "Email *",
@@ -71,6 +76,7 @@ export const translations_kontakt = {
 
   en: {
     pageTitle: "Contact",
+    subtitle: "We will gladly help you with your dates and stay programme.",
     heroAlt: [
       "Intro photo 1",
       "Intro photo 2",
@@ -78,6 +84,8 @@ export const translations_kontakt = {
       "Intro photo 4",
     ],
     info: {
+      gpsTitle: "GPS",
+      ratingTitle: "Rating",
       address: {
         title: "Address",
         lines: ["Machovská Lhota 40", "Machov 549 31"],
@@ -104,6 +112,8 @@ export const translations_kontakt = {
     map: { title: "Map" },
     form: {
       title: "Contact us",
+      eyebrow: "Write to us",
+      heading: "Send a message",
       labels: {
         name: "Name *",
         email: "Email *",
@@ -138,8 +148,11 @@ export const translations_kontakt = {
 
   de: {
     pageTitle: "Kontakt",
+    subtitle: "Wir beraten Sie gerne zu Termin und Programm Ihres Aufenthalts.",
     heroAlt: ["Intro-Foto 1", "Intro-Foto 2", "Intro-Foto 3", "Intro-Foto 4"],
     info: {
+      gpsTitle: "GPS",
+      ratingTitle: "Bewertung",
       address: {
         title: "Adresse",
         lines: ["Machovská Lhota 40", "Machov 549 31"],
@@ -166,6 +179,8 @@ export const translations_kontakt = {
     map: { title: "Karte" },
     form: {
       title: "Kontaktieren Sie uns",
+      eyebrow: "Schreiben Sie uns",
+      heading: "Nachricht senden",
       labels: {
         name: "Name *",
         email: "E-Mail *",
@@ -200,6 +215,7 @@ export const translations_kontakt = {
 
   pl: {
     pageTitle: "Kontakt",
+    subtitle: "Chętnie doradzimy w sprawie terminu i programu pobytu.",
     heroAlt: [
       "Zdjęcie wstępne 1",
       "Zdjęcie wstępne 2",
@@ -207,6 +223,8 @@ export const translations_kontakt = {
       "Zdjęcie wstępne 4",
     ],
     info: {
+      gpsTitle: "GPS",
+      ratingTitle: "Ocena",
       address: {
         title: "Adres",
         lines: ["Machovská Lhota 40", "Machov 549 31"],
@@ -233,6 +251,8 @@ export const translations_kontakt = {
     map: { title: "Mapa" },
     form: {
       title: "Skontaktuj się z nami",
+      eyebrow: "Napisz do nas",
+      heading: "Wyślij wiadomość",
       labels: {
         name: "Imię i nazwisko *",
         email: "E-mail *",

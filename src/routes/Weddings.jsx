@@ -1,46 +1,72 @@
 import React from "react";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
-import Paper from "@mui/material/Paper";
-import { useTranslation } from "react-i18next";
+import Button from "@mui/material/Button";
+import { Link as RouterLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import EditableTranslationText from "../components/EditableTranslationText";
-import SubpageBanner from "../components/SubpageBanner.jsx";
 import { selectIsAuthenticated } from "../redux/slices/app/appSlice";
 
 export default function Weddings() {
   const isAuthenticated = useSelector(selectIsAuthenticated);
-  const { t } = useTranslation("svatby");
   const asset = (path) =>
     `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
+  const statIndexes = [0, 1, 2];
 
   return (
     <>
-      <SubpageBanner
-        eyebrow={t("pageTitle")}
-        title={t("heading")}
-        image="/svatba/svatba3.webp"
-        slides={[
-          "/svatba/svatba3.webp",
-          "/svatba/svatba4.webp",
-          "/svatba/svatba6.webp",
-          "/svatba/svatba8.webp",
-        ]}
-      />
-      <Container maxWidth="md" sx={{ pt: { xs: 4, md: 5 }, pb: { xs: 5, md: 7 } }}>
-        <Paper
+      <Box
+        component="section"
+        sx={{
+          position: "relative",
+          minHeight: { xs: 360, md: 560 },
+          display: "flex",
+          alignItems: "flex-end",
+          justifyContent: "center",
+          overflow: "hidden",
+          backgroundImage: `linear-gradient(180deg, rgba(45,40,35,0.4), rgba(45,40,35,0.56)), url(${asset("/svatba/svatba3.webp")})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          color: "#fffaf0",
+          textAlign: "center",
+        }}
+      >
+        <Container maxWidth="lg" sx={{ pb: { xs: 5, md: 7 } }}>
+          <EditableTranslationText
+            ns="svatby"
+            i18nKey="heroEyebrow"
+            variant="subtitle1"
+            align="center"
+            sx={{
+              mb: 1.5,
+              color: "rgba(255,250,240,0.88)",
+              fontSize: "0.72rem",
+              fontWeight: 600,
+              letterSpacing: "0.35em",
+              textTransform: "uppercase",
+            }}
+          />
+          <EditableTranslationText
+            ns="svatby"
+            i18nKey="heroTitle"
+            variant="h1"
+            align="center"
+            sx={{
+              color: "#fffaf0",
+              textShadow: "0 10px 34px rgba(0,0,0,0.24)",
+            }}
+          />
+        </Container>
+      </Box>
+
+      <Container maxWidth="lg" sx={{ py: { xs: 6, md: 9 } }}>
+        <Box
           sx={{
             position: "relative",
-            p: { xs: 3, md: 4 },
-            overflow: "hidden",
-            border: "1px solid",
-            borderColor: isAuthenticated ? "secondary.main" : "rgba(85,116,143,0.12)",
-            background: "rgba(255,255,255,0.96)",
-            outline: isAuthenticated ? "1px dashed" : "none",
-            outlineColor: isAuthenticated ? "secondary.main" : "transparent",
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: "1.05fr 0.95fr" },
+            gap: { xs: 4, md: 8 },
+            alignItems: "center",
           }}
         >
           {isAuthenticated && (
@@ -62,87 +88,88 @@ export default function Weddings() {
             </Box>
           )}
 
-          <EditableTranslationText
-            ns="svatby"
-            i18nKey="intro"
-            variant="h5"
-            sx={{
-              position: "relative",
-              zIndex: 1,
-              textAlign: "center",
-              fontWeight: 400,
-              mb: { xs: 3, md: 4 },
-            }}
-            align="center"
-            multilineRows={4}
-          />
+          <Box>
+            <EditableTranslationText
+              ns="svatby"
+              i18nKey="sectionTitle"
+              variant="h2"
+              sx={{
+                mb: { xs: 2, md: 3 },
+              }}
+              multilineRows={2}
+            />
+            <EditableTranslationText
+              ns="svatby"
+              i18nKey="sectionText"
+              variant="body1"
+              sx={{
+                maxWidth: 660,
+                color: "text.secondary",
+                fontSize: { md: "1.08rem" },
+                lineHeight: 1.9,
+              }}
+              multilineRows={5}
+            />
+          </Box>
 
-          <List
+          <Box sx={{ display: "grid", gap: 2.5 }}>
+            {statIndexes.map((index) => (
+              <Box
+                key={index}
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: { xs: "72px 1fr", md: "96px 1fr" },
+                  alignItems: "center",
+                  gap: { xs: 2, md: 3 },
+                  px: { xs: 2.5, md: 4 },
+                  py: { xs: 2, md: 2.5 },
+                  border: "1px solid",
+                  borderColor: isAuthenticated ? "secondary.main" : "#dfd4c4",
+                  bgcolor: "background.paper",
+                }}
+              >
+                <EditableTranslationText
+                  ns="svatby"
+                  i18nKey={`stats.${index}.value`}
+                  variant="h2"
+                  sx={{
+                    mb: 0,
+                    color: "primary.main",
+                    fontSize: { xs: "2.4rem", md: "3rem" },
+                    lineHeight: 1,
+                  }}
+                  multilineRows={1}
+                />
+                <EditableTranslationText
+                  ns="svatby"
+                  i18nKey={`stats.${index}.text`}
+                  variant="body1"
+                  sx={{
+                    color: "text.secondary",
+                    fontWeight: 500,
+                    lineHeight: 1.5,
+                  }}
+                  multilineRows={2}
+                />
+              </Box>
+            ))}
+          </Box>
+        </Box>
+
+        <Box sx={{ display: "flex", justifyContent: "center", mt: { xs: 5, md: 7 } }}>
+          <Button
+            component={RouterLink}
+            to="/kontakt"
+            variant="contained"
             sx={{
-              position: "relative",
-              zIndex: 1,
-              width: "100%",
-              maxWidth: 760,
-              textAlign: "center",
-              mx: "auto",
-              "& .MuiListItem-root": {
-                py: 1.6,
-                borderTop: "1px solid rgba(85,116,143,0.08)",
-              },
-              "& .MuiListItem-root:first-of-type": {
-                borderTop: 0,
-              },
+              minWidth: { xs: "100%", sm: 420 },
+              py: 1.5,
+              px: 4,
             }}
           >
-            <ListItem disableGutters>
-              <ListItemText
-                primary={
-                  <>
-                    <EditableTranslationText ns="svatby" i18nKey="ceremonyTitle" align="center" />
-                    <EditableTranslationText ns="svatby" i18nKey="ceremonyText" align="center" />
-                  </>
-                }
-              />
-            </ListItem>
-            <ListItem disableGutters>
-              <ListItemText
-                primary={
-                  <>
-                    <EditableTranslationText ns="svatby" i18nKey="cateringTitle" align="center" />
-                    <EditableTranslationText ns="svatby" i18nKey="cateringText" align="center" />
-                  </>
-                }
-              />
-            </ListItem>
-            <ListItem disableGutters>
-              <ListItemText
-                primary={
-                  <>
-                    <EditableTranslationText ns="svatby" i18nKey="accommodationTitle" align="center" />
-                    <EditableTranslationText ns="svatby" i18nKey="accommodationText" align="center" />
-                  </>
-                }
-              />
-            </ListItem>
-          </List>
-
-          <Box
-            component="img"
-            src={asset("/two-hearts_roh_hnedy.webp")}
-            alt=""
-            sx={{
-              position: "absolute",
-              right: 0,
-              bottom: 0,
-              width: { xs: "20vw", md: "16vw" },
-              maxWidth: 220,
-              opacity: 0.26,
-              zIndex: 0,
-              pointerEvents: "none",
-              userSelect: "none",
-            }}
-          />
-        </Paper>
+            <EditableTranslationText ns="svatby" i18nKey="contactCta" />
+          </Button>
+        </Box>
       </Container>
     </>
   );

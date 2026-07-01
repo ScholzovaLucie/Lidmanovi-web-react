@@ -36,13 +36,14 @@ export default function SubpageBanner({
       sx={{
         position: "relative",
         minHeight: hasGalleryStrip
-          ? { xs: 320, md: 460 }
-          : minHeight,
-        pt: { xs: "84px", md: "90px" },
+          ? { xs: 300, md: 430 }
+          : { xs: 340, md: 520 },
+        pt: 0,
         display: "flex",
         alignItems: "flex-end",
+        justifyContent: "center",
         overflow: "hidden",
-        backgroundColor: "#30363e",
+        backgroundColor: "#2d2823",
       }}
     >
       {backgroundSlides.length > 0 &&
@@ -55,9 +56,9 @@ export default function SubpageBanner({
               backgroundImage: `url(${src})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
-              opacity: index === activeSlide ? 0.3 : 0,
+              opacity: index === activeSlide ? 0.72 : 0,
               transition: "opacity 900ms ease",
-              mixBlendMode: "screen",
+              mixBlendMode: "normal",
               transform: "scale(1.02)",
             }}
           />
@@ -69,8 +70,8 @@ export default function SubpageBanner({
           inset: 0,
           background:
             hasGalleryStrip
-              ? "linear-gradient(180deg, rgba(22,26,32,0.72) 0%, rgba(22,26,32,0.46) 34%, rgba(22,26,32,0.88) 100%)"
-              : "linear-gradient(180deg, rgba(30,35,42,0.52) 0%, rgba(30,35,42,0.22) 35%, rgba(30,35,42,0.72) 100%)",
+              ? "linear-gradient(180deg, rgba(45,40,35,0.56) 0%, rgba(45,40,35,0.32) 40%, rgba(45,40,35,0.68) 100%)"
+              : "linear-gradient(180deg, rgba(45,40,35,0.32) 0%, rgba(45,40,35,0.18) 35%, rgba(45,40,35,0.62) 100%)",
         }}
       />
 
@@ -80,26 +81,19 @@ export default function SubpageBanner({
           position: "relative",
           zIndex: 3,
           width: "100%",
-          pb: hasGalleryStrip ? { xs: 12, md: 15 } : { xs: 4.5, md: 6.5 },
+          pb: hasGalleryStrip ? { xs: 8, md: 10 } : { xs: 5, md: 7 },
+          textAlign: "center",
         }}
       >
         {eyebrow && (
           <Typography
             sx={{
-              mb: 1.5,
-              color: "rgba(196,170,136,0.92)",
-              fontSize: "0.66rem",
-              letterSpacing: "0.28em",
+              mb: 1.2,
+              color: "rgba(255,250,240,0.86)",
+              fontSize: "0.72rem",
+              fontWeight: 600,
+              letterSpacing: "0.35em",
               textTransform: "uppercase",
-              display: "flex",
-              alignItems: "center",
-              gap: 1.2,
-              "&::before": {
-                content: '""',
-                width: 28,
-                height: 1,
-                backgroundColor: "rgba(196,170,136,0.85)",
-              },
             }}
           >
             {eyebrow}
@@ -109,9 +103,10 @@ export default function SubpageBanner({
         <Typography
           variant="h1"
           sx={{
-            maxWidth: "12ch",
+            maxWidth: "16ch",
+            mx: "auto",
             color: "#fdfefe",
-            textShadow: "0 8px 32px rgba(0,0,0,0.18)",
+            textShadow: "0 10px 34px rgba(0,0,0,0.24)",
           }}
         >
           {title}
@@ -123,6 +118,7 @@ export default function SubpageBanner({
             sx={{
               mt: 1.5,
               maxWidth: "48ch",
+              mx: "auto",
               color: "rgba(238,243,247,0.72)",
             }}
           >

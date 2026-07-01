@@ -24,10 +24,11 @@ import EditableTranslationText from "./EditableTranslationText";
 export default function FullBleedTiles({
   items = [],
   translationNamespace,
+  variant = "bands",
   fluidHeight = true,
   imageAspect = { xs: "16 / 10", md: "16 / 9" },
   minHeight = null,
-  bandWidth = { xs: "100%", md: "70%" },
+  bandWidth = { xs: "100%", md: "100%" },
   overlay = "rgba(0,0,0,.25)",
   startWithImageLeft = true,
   fullBleedHack = false,
@@ -49,6 +50,175 @@ export default function FullBleedTiles({
 
   const toPublic = (p) => (p?.startsWith("/") ? p : `/${p || ""}`);
 
+  const renderText = (item, idx) => {
+    const textAlign = variant === "cards" ? "center" : "left";
+    const paras =
+      Array.isArray(item.paragraphs) && item.paragraphs.length
+        ? item.paragraphs
+        : toParagraphs(item.text);
+
+    return (
+      <>
+        {item.titleKey ? (
+          <EditableTranslationText
+            ns={item.ns || translationNamespace}
+            i18nKey={item.titleKey}
+            variant={variant === "cards" ? "h3" : "h2"}
+            sx={{ mb: 1.5, textAlign }}
+            align={textAlign}
+          />
+        ) : (
+          item.title && (
+            <Typography
+              component="h2"
+              sx={(theme) => ({
+                ...(variant === "cards" ? theme.typography.h3 : theme.typography.h2),
+                mb: 1.5,
+                textAlign,
+              })}
+            >
+              {item.title}
+            </Typography>
+          )
+        )}
+
+        {item.paragraphsKey ? (
+          <EditableTranslationText
+            ns={item.ns || translationNamespace}
+            i18nKey={item.paragraphsKey}
+            variant="body1"
+            sx={{ color: "text.secondary", textAlign }}
+            paragraphs
+            align={textAlign}
+            multilineRows={5}
+          />
+        ) : item.textKey ? (
+          <EditableTranslationText
+            ns={item.ns || translationNamespace}
+            i18nKey={item.textKey}
+            variant="body1"
+            sx={{ color: "text.secondary", textAlign }}
+            paragraph
+            align={textAlign}
+            multilineRows={4}
+          />
+        ) : (
+          (paras.length ? paras : [item.text].filter(Boolean)).map((p, i) => (
+            <Typography
+              key={i}
+              sx={{ color: "text.secondary", textAlign }}
+              paragraph
+            >
+              {p}
+            </Typography>
+          ))
+        )}
+      </>
+    );
+  };
+
+  if (variant === "cards") {
+    return (
+      <Box
+        component="section"
+        sx={{
+          position: "relative",
+          ...(fullBleedHack && {
+            left: "50%",
+            right: "50%",
+            marginLeft: "-50vw",
+            marginRight: "-50vw",
+            width: "100vw",
+            mt: 3,
+          }),
+          py: { xs: 5, md: 7 },
+          bgcolor: "background.paper",
+          borderTop: "1px solid #dfd4c4",
+        }}
+      >
+        <Container maxWidth={false} sx={{ maxWidth: 1640 }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              gap: { xs: 3, md: 3.5 },
+            }}
+          >
+            {items.map((item, idx) => (
+              <Box
+                key={`${idx}-${item.image || "tile"}`}
+                sx={{
+                  position: "relative",
+                  flex: {
+                    xs: "1 1 100%",
+                    sm: "1 1 calc(50% - 28px)",
+                    lg: "1 1 calc(33.333% - 28px)",
+                    xl: "1 1 calc(25% - 28px)",
+                  },
+                  maxWidth: { xs: "100%", sm: 520 },
+                  minWidth: { xs: 0, sm: 300 },
+                  border: "1px solid",
+                  borderColor: isAuthenticated ? "secondary.main" : "#dfd4c4",
+                  bgcolor: "background.paper",
+                  outline: isAuthenticated ? "1px dashed" : "none",
+                  outlineColor: isAuthenticated ? "secondary.main" : "transparent",
+                }}
+              >
+                {isAuthenticated && (
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: 8,
+                      right: 8,
+                      zIndex: 2,
+                      px: 1,
+                      py: 0.25,
+                      borderRadius: 1,
+                      bgcolor: "secondary.main",
+                      color: "secondary.contrastText",
+                      fontSize: 11,
+                      fontWeight: 700,
+                    }}
+                  >
+                    Editovatelný blok
+                  </Box>
+                )}
+                <Box
+                  component="img"
+                  src={toPublic(item.image)}
+                  alt={item.imageAlt || item.title || ""}
+                  sx={{
+                    display: "block",
+                    width: "100%",
+                    aspectRatio: imageAspect,
+                    objectFit: "cover",
+                    objectPosition: bgPosition,
+                    filter: overlay ? "brightness(0.86)" : "none",
+                  }}
+                />
+                <Box sx={{ p: { xs: 2.5, md: 3 }, minHeight: { md: 260 }, textAlign: "center" }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      mb: 1.25,
+                      color: "primary.main",
+                      fontSize: "0.76rem",
+                      textAlign: "center",
+                    }}
+                  >
+                    {String(idx + 1).padStart(2, "0")}
+                  </Typography>
+                  {renderText(item, idx)}
+                </Box>
+              </Box>
+            ))}
+          </Box>
+        </Container>
+      </Box>
+    );
+  }
+
   return (
     <Box
       component="section"
@@ -66,11 +236,6 @@ export default function FullBleedTiles({
     >
       {items.map((item, idx) => {
         const imageOnLeft = startWithImageLeft ? idx % 2 === 0 : idx % 2 === 1;
-        const paras =
-          Array.isArray(item.paragraphs) && item.paragraphs.length
-            ? item.paragraphs
-            : toParagraphs(item.text);
-
         return (
           <Box
             key={`${idx}-${item.image || "tile"}`}
@@ -78,11 +243,11 @@ export default function FullBleedTiles({
               position: "relative",
               width: bandWidth,
               mx: "auto",
-              mb: { xs: 4, md: 6 },
+              mb: 0,
               overflow: "hidden",
               borderTop: "1px solid",
-              borderBottom: "1px solid",
-              borderColor: isAuthenticated ? "secondary.main" : "rgba(85,116,143,0.12)",
+              borderBottom: idx === items.length - 1 ? "1px solid" : "none",
+              borderColor: isAuthenticated ? "secondary.main" : "#dfd4c4",
               outline: isAuthenticated ? "1px dashed" : "none",
               outlineColor: isAuthenticated ? "secondary.main" : "transparent",
               display: "flex",
@@ -91,7 +256,7 @@ export default function FullBleedTiles({
                   md: imageOnLeft ? "row" : "row-reverse",
                 },
               alignItems: "stretch",
-              background: idx % 2 === 1 ? "rgba(221,229,233,0.35)" : "background.paper",
+              background: "background.default",
             }}
           >
             {isAuthenticated && (
@@ -122,7 +287,7 @@ export default function FullBleedTiles({
                 flexBasis: { xs: "100%", md: "50%" },
                 flexGrow: 1,
                 ...(fluidHeight
-                  ? { aspectRatio: imageAspect } // výška z poměru stran
+                  ? { aspectRatio: { xs: imageAspect.xs, md: "16 / 10" } } // výška z poměru stran
                   : minHeight
                   ? { minHeight } // pevná minimální výška
                   : { minHeight: { xs: 300, md: 360 } }), // fallback, když nic nezadáš
@@ -151,72 +316,21 @@ export default function FullBleedTiles({
                 minWidth: 0,
               }}
             >
-              <Container maxWidth="sm" sx={{ py: { xs: 4, md: 6 }, px: { xs: 3, md: 5 } }}>
+              <Container maxWidth="sm" sx={{ py: { xs: 4, md: 7 }, px: { xs: 3, md: 6 } }}>
                 <Typography
                   variant="body2"
                   sx={{
                     mb: 1.5,
                     color: "primary.main",
-                    letterSpacing: "0.18em",
+                    letterSpacing: 0,
                     textTransform: "uppercase",
+                    fontSize: "0.76rem",
                   }}
                 >
                   {String(idx + 1).padStart(2, "0")}
                 </Typography>
 
-                {item.titleKey ? (
-                  <EditableTranslationText
-                    ns={item.ns || translationNamespace}
-                    i18nKey={item.titleKey}
-                    variant="h2"
-                    sx={{ mb: 2.2, textAlign: "left" }}
-                    align="left"
-                  />
-                ) : (
-                  item.title && (
-                    <Typography
-                      component="h2"
-                      sx={{
-                        ...((theme) => theme.typography.h2),
-                        mb: 2.2,
-                      }}
-                    >
-                      {item.title}
-                    </Typography>
-                  )
-                )}
-
-                {item.paragraphsKey ? (
-                  <EditableTranslationText
-                    ns={item.ns || translationNamespace}
-                    i18nKey={item.paragraphsKey}
-                    variant="body1"
-                    sx={{ color: "text.secondary", textAlign: "left" }}
-                    paragraphs
-                    align="left"
-                    multilineRows={5}
-                  />
-                ) : item.textKey ? (
-                  <EditableTranslationText
-                    ns={item.ns || translationNamespace}
-                    i18nKey={item.textKey}
-                    variant="body1"
-                    sx={{ color: "text.secondary", textAlign: "left" }}
-                    paragraph
-                    align="left"
-                    multilineRows={4}
-                  />
-                ) : (
-                  (paras.length ? paras : [item.text].filter(Boolean)).map((p, i) => (
-                    <Typography
-                      key={i}
-                      sx={{ color: "text.secondary", textAlign: "left" }}
-                      paragraph
-                    >
-                      {p}
-                    </Typography>
-                  ))
-                )}
+                {renderText(item, idx)}
               </Container>
             </Box>
           </Box>

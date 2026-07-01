@@ -12,6 +12,12 @@ export default function Restauration() {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const asset = (path) =>
     `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
+  const editableAreaSx = {
+    "& > .MuiBox-root": {
+      borderColor: "secondary.main",
+      backgroundColor: "rgba(255,253,248,0.84)",
+    },
+  };
 
   return (
     <>
@@ -27,97 +33,131 @@ export default function Restauration() {
         ]}
       />
       <Container
-        maxWidth="md"
-        sx={{ pt: { xs: 4, md: 5 }, pb: { xs: 5, md: 7 } }}
+        maxWidth="lg"
+        sx={{ py: { xs: 5, md: 7 } }}
         id="oteviraciDoba"
       >
-        <Paper
+        <Box
           sx={{
-            position: "relative",
-            p: { xs: 3, md: 4 },
-            textAlign: "center",
-            border: "1px solid",
-            borderColor: isAuthenticated ? "secondary.main" : "rgba(85,116,143,0.12)",
-            boxShadow: "none",
-            background: "rgba(255,255,255,0.96)",
-            outline: isAuthenticated ? "1px dashed" : "none",
-            outlineColor: isAuthenticated ? "secondary.main" : "transparent",
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: "1.05fr 0.95fr" },
+            gap: { xs: 4, md: 6 },
+            alignItems: "start",
           }}
         >
-          {isAuthenticated && (
+          <Box sx={{ pt: { md: 0.5 }, ...editableAreaSx }}>
+            <EditableTranslationText
+              ns="restaurace"
+              i18nKey="pageTitle"
+              variant="h2"
+              sx={{ mb: 2 }}
+            />
+            <EditableTranslationText
+              ns="restaurace"
+              i18nKey="tiles.0.text"
+              variant="body1"
+              sx={{ color: "text.secondary", maxWidth: 620 }}
+              multilineRows={5}
+            />
             <Box
               sx={{
-                position: "absolute",
-                top: 8,
-                right: 8,
-                px: 1,
-                py: 0.25,
-                borderRadius: 1,
-                bgcolor: "secondary.main",
-                color: "secondary.contrastText",
-                fontSize: 11,
-                fontWeight: 700,
+                mt: 3,
+                borderLeft: "4px solid",
+                borderColor: "primary.main",
+                bgcolor: "primary.50",
+                px: 2.5,
+                py: 2,
+                ...editableAreaSx,
               }}
             >
-              Editovatelný blok
+              <EditableTranslationText
+                ns="restaurace"
+                i18nKey="openingHours.note"
+                variant="body2"
+                sx={{ color: "primary.dark", fontStyle: "italic" }}
+              />
             </Box>
-          )}
-
-          <EditableTranslationText
-            ns="restaurace"
-            i18nKey="openingHours.heading"
-            variant="h5"
-            sx={{ fontWeight: 400, mb: 2.5 }}
-            align="center"
-          />
-
-          <Box sx={{ mb: 3 }}>
-            <EditableTranslationText ns="restaurace" i18nKey="openingHours.summer.season" variant="h6" sx={{ fontWeight: 600 }} align="center" />
-            <EditableTranslationText ns="restaurace" i18nKey="openingHours.summer.fri" align="center" />
-            <EditableTranslationText ns="restaurace" i18nKey="openingHours.summer.sat" align="center" />
-            <EditableTranslationText ns="restaurace" i18nKey="openingHours.summer.sun" align="center" />
           </Box>
 
-          <Divider sx={{ my: 2 }} />
+          <Paper
+            sx={{
+              position: "relative",
+              p: { xs: 3, md: 4 },
+              border: "1px solid",
+              borderColor: isAuthenticated ? "secondary.main" : "#dfd4c4",
+              boxShadow: "none",
+              background: "background.paper",
+              outline: isAuthenticated ? "1px dashed" : "none",
+              outlineColor: isAuthenticated ? "secondary.main" : "transparent",
+              ...editableAreaSx,
+            }}
+          >
+            {isAuthenticated && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 8,
+                  right: 8,
+                  px: 1,
+                  py: 0.25,
+                  borderRadius: 1,
+                  bgcolor: "secondary.main",
+                  color: "secondary.contrastText",
+                  fontSize: 11,
+                  fontWeight: 700,
+                }}
+              >
+                Editovatelný blok
+              </Box>
+            )}
 
-          <Box sx={{ mb: 3 }}>
-            <EditableTranslationText ns="restaurace" i18nKey="openingHours.winter.season" variant="h6" sx={{ fontWeight: 600 }} align="center" />
-            <EditableTranslationText ns="restaurace" i18nKey="openingHours.winter.fri" align="center" />
-            <EditableTranslationText ns="restaurace" i18nKey="openingHours.winter.sat" align="center" />
-            <EditableTranslationText ns="restaurace" i18nKey="openingHours.winter.sun" align="center" />
-          </Box>
+            <EditableTranslationText
+              ns="restaurace"
+              i18nKey="openingHours.heading"
+              variant="subtitle1"
+              sx={{ fontWeight: 700, mb: 2.5, color: "text.secondary" }}
+            />
 
-          <EditableTranslationText
-            ns="restaurace"
-            i18nKey="openingHours.note"
-            variant="body1"
-            sx={{ mt: 2, fontStyle: "italic" }}
-            align="center"
-          />
-        </Paper>
+            <Box sx={{ mb: 3 }}>
+              <EditableTranslationText ns="restaurace" i18nKey="openingHours.summer.season" variant="h5" sx={{ fontWeight: 400, mb: 1 }} />
+              <EditableTranslationText ns="restaurace" i18nKey="openingHours.summer.fri" />
+              <EditableTranslationText ns="restaurace" i18nKey="openingHours.summer.sat" />
+              <EditableTranslationText ns="restaurace" i18nKey="openingHours.summer.sun" />
+            </Box>
+
+            <Divider sx={{ my: 2 }} />
+
+            <Box>
+              <EditableTranslationText ns="restaurace" i18nKey="openingHours.winter.season" variant="h5" sx={{ fontWeight: 400, mb: 1 }} />
+              <EditableTranslationText ns="restaurace" i18nKey="openingHours.winter.fri" />
+              <EditableTranslationText ns="restaurace" i18nKey="openingHours.winter.sat" />
+              <EditableTranslationText ns="restaurace" i18nKey="openingHours.winter.sun" />
+            </Box>
+          </Paper>
+        </Box>
       </Container>
 
       <FullBleedTiles
         fullBleedHack
+        variant="cards"
         translationNamespace="restaurace"
+        imageAspect={{ xs: "16 / 10", md: "16 / 10" }}
         items={[
           {
-            image: asset("galerie/interier/100_HZ6_3979_Penzion_U_Lidmanu.webp"),
-            textKey: "tiles.0.text",
-            alt: t("tiles.0.alt"),
-          },
-          {
             image: asset("galerie/exterier/012_HZ6_3793_Penzion_U_Lidmanu.webp"),
+            titleKey: "tiles.1.alt",
             textKey: "tiles.1.text",
             alt: t("tiles.1.alt"),
           },
           {
             image: asset("galerie/interier/088_HZ6_3958_Penzion_U_Lidmanu.webp"),
+            titleKey: "tiles.2.alt",
             textKey: "tiles.2.text",
             alt: t("tiles.2.alt"),
           },
           {
             image: asset("galerie/sal/110_HZ6_3997_Penzion_U_Lidmanu.webp"),
+            titleKey: "tiles.3.alt",
             textKey: "tiles.3.text",
             alt: t("tiles.3.alt"),
           },

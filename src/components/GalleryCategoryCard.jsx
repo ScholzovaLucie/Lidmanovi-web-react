@@ -8,10 +8,11 @@ import {
  * Karta kategorie galerie.
  * Props:
  * - title: string
+ * - titleNode?: React.ReactNode
  * - cover: string  // náhledový obrázek (z public)
  * - onClick: () => void
  */
-export default function GalleryCategoryCard({ title, cover, onClick, index }) {
+export default function GalleryCategoryCard({ title, titleNode, cover, onClick, index }) {
   return (
     <Box
       component="button"
@@ -20,19 +21,16 @@ export default function GalleryCategoryCard({ title, cover, onClick, index }) {
       sx={{
         width: "100%",
         height: "100%",
-        border: "1px solid rgba(85,116,143,0.14)",
-        background: "rgba(255,255,255,0.96)",
+        border: 0,
+        background: "transparent",
         p: 0,
         textAlign: "left",
         cursor: "pointer",
         overflow: "hidden",
-        transition:
-          "border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease",
-        boxShadow: "0 16px 36px rgba(21,25,31,0.04)",
+        transition: "transform 180ms ease",
+        boxShadow: "none",
         "&:hover": {
-          transform: "translateY(-3px)",
-          borderColor: "rgba(154,128,96,0.45)",
-          boxShadow: "0 20px 44px rgba(21,25,31,0.08)",
+          transform: "translateY(-2px)",
         },
         "&:focus-visible": {
           outline: "1px solid rgba(154,128,96,0.55)",
@@ -48,14 +46,15 @@ export default function GalleryCategoryCard({ title, cover, onClick, index }) {
         sx={{
           display: "block",
           width: "100%",
-          aspectRatio: { xs: "4 / 5", sm: "4 / 4.2", lg: "4 / 3.35" },
+          aspectRatio: { xs: "4 / 3", sm: "4 / 3", lg: "4 / 2.55" },
           objectFit: "cover",
         }}
       />
-      <Box sx={{ p: { xs: 1.75, md: 2 } }}>
+      <Box sx={{ pt: 1.25, pb: 1 }}>
         {index != null && (
           <Typography
             sx={{
+              display: "none",
               mb: 0.35,
               fontSize: "0.62rem",
               letterSpacing: "0.18em",
@@ -66,17 +65,19 @@ export default function GalleryCategoryCard({ title, cover, onClick, index }) {
             {String(index + 1).padStart(2, "0")}
           </Typography>
         )}
-        <Typography
+        <Box
           sx={{
-            fontFamily: '"Cormorant Garamond", Georgia, serif',
-            fontSize: { xs: "1.4rem", md: "1.55rem", lg: "1.45rem" },
-            fontWeight: 400,
-            lineHeight: 1.1,
-            color: "text.primary",
+            "& .MuiTypography-root": {
+              fontFamily: '"Cormorant Garamond", Georgia, serif',
+              fontSize: { xs: "1.35rem", md: "1.45rem" },
+              fontWeight: 400,
+              lineHeight: 1.1,
+              color: "text.primary",
+            },
           }}
         >
-          {title}
-        </Typography>
+          {titleNode || <Typography>{title}</Typography>}
+        </Box>
       </Box>
     </Box>
   );

@@ -32,7 +32,9 @@ export default function HeroCarousel({
   fullBleedHack = false,
   eyebrow,
   title,
+  titleNode,
   description,
+  descriptionNode,
   primaryAction,
   secondaryAction,
   stats = [],
@@ -97,58 +99,94 @@ export default function HeroCarousel({
             : {
                 width: "100%",
               }),
-          minHeight: { xs: "auto", md: "100vh" },
+          minHeight: { xs: "auto", md: "calc(100vh - 64px)" },
           display: "grid",
-          gridTemplateColumns: { xs: "1fr", md: "minmax(0, 0.92fr) minmax(0, 1.08fr)" },
-          pt: { xs: "82px", md: "88px" },
-          backgroundColor: "background.paper",
-          borderBottom: "1px solid",
-          borderColor: "rgba(85,116,143,0.12)",
+          gridTemplateColumns: { xs: "1fr", md: "minmax(0, 1fr) minmax(0, 1fr)" },
+          backgroundColor: "background.default",
+          borderBottom: "1px solid #dfd4c4",
         }}
       >
         <Stack
           justifyContent="center"
           sx={{
-            px: { xs: 3, md: 5 },
+            px: { xs: 3, md: 6, lg: 8 },
             py: { xs: 5, md: 7 },
             minWidth: 0,
+            width: "100%",
           }}
         >
           {eyebrow && (
             <Typography
               variant="subtitle1"
               sx={{
-                mb: 2.5,
-                color: "primary.main",
-                display: "flex",
-                alignItems: "center",
-                gap: 1.5,
-                "&::before": {
-                  content: '""',
-                  width: 28,
-                  height: 1,
-                  backgroundColor: "primary.main",
-                },
+                mb: 1,
+                color: "primary.dark",
+                fontSize: "0.84rem",
+                letterSpacing: 0,
+                textTransform: "none",
               }}
             >
               {eyebrow}
             </Typography>
           )}
 
-          {title && (
-            <Typography variant="h1" sx={{ maxWidth: "11ch", mb: 2, color: "text.primary" }}>
-              {title}
+          {(titleNode || title) && (
+            <Typography
+              component="div"
+              variant="h1"
+              sx={{
+                width: "100%",
+                maxWidth: "none",
+                mb: 2.2,
+                color: "text.primary",
+                fontSize: { xs: "2.55rem", md: "3.55rem", lg: "4.05rem" },
+                "& .MuiTypography-root": {
+                  font: "inherit",
+                  color: "inherit",
+                  lineHeight: "inherit",
+                  width: "100%",
+                  maxWidth: "none",
+                },
+                "& > .MuiBox-root": {
+                  borderColor: "secondary.main",
+                  backgroundColor: "rgba(255,253,248,0.76)",
+                },
+                "& > .MuiBox-root .MuiInputBase-root": {
+                  font: "inherit",
+                  color: "inherit",
+                },
+              }}
+            >
+              {titleNode || title}
             </Typography>
           )}
 
-          {description && (
-            <Typography variant="body1" sx={{ maxWidth: "40ch", color: "text.secondary", mb: 3.5 }}>
-              {description}
+          {(descriptionNode || description) && (
+            <Typography
+              component="div"
+              variant="body1"
+              sx={{
+                width: "100%",
+                maxWidth: "none",
+                color: "text.secondary",
+                mb: 3,
+                "& .MuiTypography-root": {
+                  font: "inherit",
+                  color: "inherit",
+                  lineHeight: "inherit",
+                },
+                "& > .MuiBox-root": {
+                  borderColor: "secondary.main",
+                  backgroundColor: "rgba(255,253,248,0.76)",
+                },
+              }}
+            >
+              {descriptionNode || description}
             </Typography>
           )}
 
           {(primaryAction || secondaryAction) && (
-            <Stack direction="row" spacing={2.5} alignItems="center" sx={{ mb: 4, flexWrap: "wrap" }}>
+            <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 4, flexWrap: "wrap" }}>
               {primaryAction && (
                 <Button component={RouterLink} to={primaryAction.to} variant="contained" sx={{ px: 2.5, py: 1.15 }}>
                   {primaryAction.label}
@@ -158,11 +196,13 @@ export default function HeroCarousel({
                 <Button
                   component={RouterLink}
                   to={secondaryAction.to}
-                  variant="text"
+                  variant="outlined"
                   sx={{
-                    px: 0,
-                    color: "text.secondary",
-                    "&:hover": { bgcolor: "transparent", color: "text.primary" },
+                    px: 2.5,
+                    py: 1.05,
+                    color: "text.primary",
+                    borderColor: "#d8cbb8",
+                    "&:hover": { borderColor: "primary.main", bgcolor: "transparent" },
                   }}
                 >
                   {secondaryAction.label}
@@ -174,22 +214,37 @@ export default function HeroCarousel({
           {!!stats.length && (
             <Stack
               direction="row"
-              spacing={{ xs: 2.5, md: 4 }}
+              spacing={{ xs: 3, md: 5 }}
               sx={{
-                pt: 3,
-                borderTop: "1px solid",
-                borderColor: "rgba(85,116,143,0.12)",
+                pt: 1,
                 flexWrap: "wrap",
+                alignItems: "flex-start",
               }}
             >
               {stats.map((stat) => (
-                <Box key={stat.label}>
+                <Box
+                  key={stat.label}
+                  component={stat.href ? "a" : "div"}
+                  href={stat.href}
+                  target={stat.href ? "_blank" : undefined}
+                  rel={stat.href ? "noopener noreferrer" : undefined}
+                  sx={{
+                    textDecoration: "none",
+                    color: "inherit",
+                    minWidth: { xs: 92, md: 128 },
+                    "&:hover .hero-stat-value": {
+                      color: stat.href ? "primary.dark" : "primary.main",
+                    },
+                  }}
+                >
                   <Typography
+                    className="hero-stat-value"
                     sx={{
                       fontFamily: '"Cormorant Garamond", Georgia, serif',
-                      fontSize: { xs: "2rem", md: "2.4rem" },
+                      fontSize: { xs: "2.6rem", md: "3.7rem" },
                       lineHeight: 1,
-                      color: "text.primary",
+                      color: "primary.main",
+                      transition: "color 160ms ease",
                     }}
                   >
                     {stat.value}
@@ -198,9 +253,10 @@ export default function HeroCarousel({
                     variant="body2"
                     sx={{
                       mt: 0.4,
-                      letterSpacing: "0.14em",
+                      letterSpacing: "0.16em",
                       textTransform: "uppercase",
                       color: "text.secondary",
+                      fontWeight: 500,
                     }}
                   >
                     {stat.label}
@@ -214,31 +270,28 @@ export default function HeroCarousel({
         <Box
           sx={{
             position: "relative",
-            minHeight: { xs: 460, md: "auto" },
-            backgroundColor: "primary.50",
+            minHeight: { xs: 360, md: "auto" },
+            backgroundColor: "#e9dfd0",
             borderLeft: { xs: "none", md: "1px solid" },
             borderTop: { xs: "1px solid", md: "none" },
-            borderColor: "rgba(85,116,143,0.12)",
+            borderColor: "#dfd4c4",
           }}
         >
           <Box
             sx={{
               position: "absolute",
-              inset: { xs: 0, md: "0 0 0 -1.5rem" },
-              display: "grid",
-              gridTemplateColumns: "1.2fr 0.8fr",
-              gridTemplateRows: "1.16fr 0.84fr",
-              gap: "3px",
+              inset: 0,
               bgcolor: "background.paper",
             }}
           >
-            {heroSlides.map((slide, i) => (
+            {heroSlides.slice(0, 1).map((slide, i) => (
               <Box
                 key={slide.src}
                 sx={{
                   position: "relative",
                   overflow: "hidden",
-                  gridRow: i === 0 ? "1 / 3" : "auto",
+                  width: "100%",
+                  height: "100%",
                 }}
               >
                 <Box

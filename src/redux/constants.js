@@ -1,9 +1,13 @@
 import { fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { setTokens, clearAuth } from "./slices/app/appSlice";
-import { storeTokens, clearTokens, getStoredTokens } from "../utils/cookieUtils";
+import {
+  storeTokens,
+  clearTokens,
+  getStoredTokens,
+} from "../utils/cookieUtils";
 import { withLanguageHeader } from "./api/language";
 
-const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+const baseUrl = "http://localhost:8000";
 
 // Simple baseQuery without authentication
 export const baseQuery = fetchBaseQuery({

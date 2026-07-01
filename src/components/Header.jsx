@@ -27,8 +27,9 @@ export default function Header({ onLogin }) {
       sx={{
         top: 0,
         zIndex: (theme) => theme.zIndex.appBar + 20,
-        backgroundColor: "rgba(255,255,255,0.96)",
-        boxShadow: "0 10px 30px rgba(17,25,35,0.06)",
+        backgroundColor: "#fffaf0",
+        boxShadow: "none",
+        borderBottom: "1px solid #dfd4c4",
       }}
     >
       <Box sx={{ px: { xs: 0.5, md: 2 }, py: 0, maxHeight: "64px" }}>
@@ -62,8 +63,8 @@ export default function Header({ onLogin }) {
               size={window.innerWidth >= 1300 ? "medium" : "small"}
               sx={{
                 border: "1px solid",
-                borderColor: "divider",
-                borderRadius: 1.5,
+                borderColor: "#d8cbb8",
+                borderRadius: 0,
               }}
             >
               {mobileMenuOpen ? <CloseIcon /> : <MenuIcon />}

@@ -34,9 +34,9 @@ export default function Layout({ children }) {
             top: { xs: 64, md: 64 },
             zIndex: 1100,
             background:
-              "linear-gradient(180deg, rgba(255,255,255,0.96), rgba(245,248,251,0.92))",
-            boxShadow: "0 10px 30px rgba(25,33,43,0.08)",
-            borderBottom: "1px solid rgba(85,116,143,0.12)",
+              "#fffaf0",
+            boxShadow: "none",
+            borderBottom: "1px solid #dfd4c4",
           }}
         >
           <Box
@@ -46,7 +46,7 @@ export default function Layout({ children }) {
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              background: "rgba(55,75,95,0.95)",
+              background: "#446783",
               borderBottom: "1px solid rgba(255,255,255,0.06)",
             }}
           >
@@ -141,7 +141,7 @@ export default function Layout({ children }) {
           {/* Stepper */}
           <Box
             sx={{
-              py: 1.5,
+              py: 2,
               display: "flex",
               justifyContent: "center",
             }}
@@ -151,7 +151,7 @@ export default function Layout({ children }) {
             />
           </Box>
         </AppBar>
-        {children}
+        <Box sx={{ flex: 1, bgcolor: "background.default" }}>{children}</Box>
       </Stack>
     </>
   );

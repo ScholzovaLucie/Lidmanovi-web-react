@@ -14,6 +14,9 @@ export const roomsApi = createApi({
       query: ({ checkIn, checkOut, adults, children }) =>
         `/pension/public/rooms/available-rooms/?adults=${adults}&children=${children}&from_date=${checkIn}&to_date=${checkOut}`,
     }),
+    placeRating: builder.query({
+      query: () => "/pension/public/place-rating/",
+    }),
   }),
 });
 
@@ -61,6 +64,6 @@ export const adminRoomsApi = createApi({
   }),
 });
 
-export const { useRoomsQuery, useAvailableRoomsQuery } = roomsApi;
+export const { useRoomsQuery, useAvailableRoomsQuery, usePlaceRatingQuery } = roomsApi;
 
 export const { useAdminRoomsQuery, useUpdateRoomMutation, useCreateRoomMutation, useDeleteRoomMutation } = adminRoomsApi;

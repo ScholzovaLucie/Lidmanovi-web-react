@@ -10,7 +10,7 @@ const navLinkSx = {
   alignItems: "center",
   minHeight: 44,
   px: 1,
-  color: "text.secondary",
+  color: "#2d2823",
   textDecoration: "none",
   userSelect: "none",
   transition: "color 180ms ease",
@@ -19,13 +19,13 @@ const navLinkSx = {
     position: "absolute",
     left: 8, right: 8, bottom: 8,
     height: 2,
-    bgcolor: "#9a8060",
+    bgcolor: "primary.main",
     transform: "scaleX(0)",
     transformOrigin: "center",
     opacity: 0,
     transition: "transform 180ms ease, opacity 180ms ease",
   },
-  "&:hover, &.active": { color: "text.primary" },
+  "&:hover, &.active": { color: "primary.dark" },
   "&:hover::after, &.active::after": { transform: "scaleX(1)", opacity: 1 },
 };
 
@@ -40,10 +40,10 @@ const NavButton = ({ to, label, end }) => (
     <Typography
       component="span"
       sx={{
-        fontSize: "0.72rem",
+        fontSize: "0.82rem",
         fontWeight: 400,
-        letterSpacing: "0.14em",
-        textTransform: "uppercase",
+        letterSpacing: 0,
+        textTransform: "none",
         lineHeight: 1,
         ".active &": { fontWeight: 500 },
       }}
@@ -67,11 +67,11 @@ export function DesktopHeader({ navItems = [] }) {
         src="logolidman.webp"
         alt="U Lidmanů"
         onClick={() => navigate("/")}
-        sx={{ cursor: "pointer", minWidth: 190, pr: 2, userSelect: "none", height: 46, objectFit: "contain" }}
+        sx={{ cursor: "pointer", minWidth: 190, pr: 2, userSelect: "none", height: 48, objectFit: "contain" }}
       />
 
       <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center", px: 3 }}>
-        <Box component="nav" sx={{ display: "flex", alignItems: "center", gap: 3 }}>
+        <Box component="nav" sx={{ display: "flex", alignItems: "center", gap: 2.4 }}>
           {primaryNavItems.map(({ to, label, end }) => (
             <NavButton key={to} to={to} label={label} end={end} />
           ))}
@@ -88,7 +88,7 @@ export function DesktopHeader({ navItems = [] }) {
               onClick={() => i18n.changeLanguage(code)}
               sx={{
                 border: 0, p: 0, m: 0, background: "none", cursor: "pointer",
-                fontFamily: "inherit", fontSize: "0.68rem", letterSpacing: "0.12em",
+                fontFamily: "inherit", fontSize: "0.76rem", letterSpacing: 0,
                 textTransform: "uppercase",
                 color: activeLang === code ? "text.primary" : "text.secondary",
                 "&:hover": { color: "text.primary" },
@@ -105,10 +105,14 @@ export function DesktopHeader({ navItems = [] }) {
             to={reservationItem.to}
             variant="outlined"
             sx={{
-              minWidth: 116, borderRadius: 0, px: 2.25, py: 1,
-              borderColor: "rgba(85, 116, 143, 0.72)",
-              color: "text.primary",
-              "&:hover, &.active": { bgcolor: "transparent", borderColor: "primary.dark" },
+              minWidth: 116,
+              borderRadius: 0,
+              px: 2.25,
+              py: 1,
+              bgcolor: "primary.dark",
+              borderColor: "primary.dark",
+              color: "primary.contrastText",
+              "&:hover, &.active": { bgcolor: "primary.main", borderColor: "primary.main" },
             }}
           >
             {reservationItem.label}

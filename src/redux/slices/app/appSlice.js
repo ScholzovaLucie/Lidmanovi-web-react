@@ -1,12 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { getStoredTokens } from "../../../utils/cookieUtils";
+
+const storedTokens = getStoredTokens();
 
 const appSlice = createSlice({
   name: "app",
   initialState: {
     auth: {
-      accessToken: null,
-      refreshToken: null,
-      isAuthenticated: false,
+      accessToken: storedTokens.access || null,
+      refreshToken: storedTokens.refresh || null,
+      isAuthenticated: !!storedTokens.access,
     },
   },
   reducers: {

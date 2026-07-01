@@ -14,13 +14,11 @@ export default function Accommodations() {
     `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
   const sharedSectionSx = {
     position: "relative",
-    maxWidth: 920,
-    mx: "auto",
-    px: { xs: 3, md: 5 },
-    py: { xs: 3.5, md: 4.5 },
-    borderTop: "1px solid rgba(85,116,143,0.12)",
-    borderBottom: "1px solid rgba(85,116,143,0.12)",
-    background: "rgba(255,255,255,0.72)",
+    px: { xs: 3, md: 4 },
+    py: { xs: 3.5, md: 4 },
+    border: "1px solid",
+    borderColor: isAuthenticated ? "secondary.main" : "#dfd4c4",
+    background: "background.paper",
     boxShadow: "none",
     outline: isAuthenticated ? "1px dashed" : "none",
     outlineColor: isAuthenticated ? "secondary.main" : "transparent",
@@ -41,7 +39,38 @@ export default function Accommodations() {
         ]}
       />
       <Container maxWidth="lg" sx={{ py: { xs: 5, md: 7 } }}>
-        <Box sx={{ display: "grid", gap: { xs: 3, md: 4 } }}>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: "1.05fr 0.95fr" },
+            gap: { xs: 4, md: 6 },
+            alignItems: "start",
+            mb: { xs: 4, md: 5 },
+          }}
+        >
+          <Box>
+            <EditableTranslationText
+              ns="ubytovani"
+              i18nKey="roomsTitle"
+              variant="h2"
+              sx={{ mb: 2 }}
+            />
+            <EditableTranslationText
+              ns="ubytovani"
+              i18nKey="roomsText"
+              variant="body1"
+              sx={{ color: "text.secondary", mb: 2.5 }}
+              multilineRows={4}
+            />
+            <EditableTranslationText
+              ns="ubytovani"
+              i18nKey="intro"
+              variant="body1"
+              sx={{ color: "text.secondary" }}
+              multilineRows={4}
+            />
+          </Box>
+
           <Paper sx={sharedSectionSx}>
             {isAuthenticated && (
               <Box
@@ -65,39 +94,34 @@ export default function Accommodations() {
             <EditableTranslationText
               ns="ubytovani"
               i18nKey="openingHours.pension"
-              variant="h5"
+              variant="subtitle1"
               sx={{
                 mb: 0.5,
-                textAlign: "center",
-                fontFamily: '"Cormorant Garamond", Georgia, serif',
-                fontWeight: 400,
+                fontWeight: 700,
+                color: "text.secondary",
               }}
-              align="center"
             />
             <EditableTranslationText
               ns="ubytovani"
               i18nKey="openingHours.restaurantTitle"
-              variant="h5"
+              variant="subtitle1"
               sx={{
                 mb: 2.5,
-                textAlign: "center",
-                fontFamily: '"Cormorant Garamond", Georgia, serif',
-                fontWeight: 400,
+                fontWeight: 700,
+                color: "text.secondary",
               }}
-              align="center"
             />
 
-            <Box sx={{ maxWidth: 520, mx: "auto", textAlign: "center", mb: 3 }}>
+            <Box sx={{ mb: 3 }}>
               <EditableTranslationText
                 ns="ubytovani"
                 i18nKey="openingHours.monThu"
-                variant="h6"
+                variant="h5"
                 sx={{ fontWeight: 600, mb: 0.6 }}
-                align="center"
               />
-              <EditableTranslationText ns="ubytovani" i18nKey="openingHours.fri" align="center" sx={{ color: "text.secondary" }} />
-              <EditableTranslationText ns="ubytovani" i18nKey="openingHours.sat" align="center" sx={{ color: "text.secondary" }} />
-              <EditableTranslationText ns="ubytovani" i18nKey="openingHours.sun" align="center" sx={{ color: "text.secondary" }} />
+              <EditableTranslationText ns="ubytovani" i18nKey="openingHours.fri" sx={{ color: "text.secondary" }} />
+              <EditableTranslationText ns="ubytovani" i18nKey="openingHours.sat" sx={{ color: "text.secondary" }} />
+              <EditableTranslationText ns="ubytovani" i18nKey="openingHours.sun" sx={{ color: "text.secondary" }} />
             </Box>
 
             <Divider sx={{ my: 2.5 }} />
@@ -108,15 +132,14 @@ export default function Accommodations() {
               variant="body1"
               sx={{
                 maxWidth: 760,
-                mx: "auto",
-                textAlign: "center",
                 color: "text.secondary",
                 fontStyle: "italic",
               }}
-              align="center"
             />
           </Paper>
+        </Box>
 
+        <Box sx={{ display: "grid", gap: { xs: 3, md: 4 } }}>
           <Paper sx={sharedSectionSx}>
             {isAuthenticated && (
               <Box
@@ -143,19 +166,17 @@ export default function Accommodations() {
               variant="h5"
               sx={{
                 mb: 2.5,
-                textAlign: "center",
                 fontFamily: '"Cormorant Garamond", Georgia, serif',
                 fontWeight: 400,
               }}
-              align="center"
             />
 
             <Box sx={{ maxWidth: 760, mx: "auto" }}>
-              <EditableTranslationText ns="ubytovani" i18nKey="additionalInfo.item1" sx={{ mb: 1.2, textAlign: "center", color: "text.secondary" }} align="center" />
-              <EditableTranslationText ns="ubytovani" i18nKey="additionalInfo.item2" sx={{ mb: 1.2, textAlign: "center", color: "text.secondary" }} align="center" />
-              <EditableTranslationText ns="ubytovani" i18nKey="additionalInfo.item3" sx={{ mb: 1.2, textAlign: "center", color: "text.secondary" }} align="center" />
-              <EditableTranslationText ns="ubytovani" i18nKey="additionalInfo.item4" sx={{ mb: 1.2, textAlign: "center", color: "text.secondary" }} align="center" />
-              <EditableTranslationText ns="ubytovani" i18nKey="additionalInfo.item5" sx={{ textAlign: "center", color: "text.secondary" }} align="center" />
+              <EditableTranslationText ns="ubytovani" i18nKey="additionalInfo.item1" sx={{ mb: 1.2, color: "text.secondary" }} />
+              <EditableTranslationText ns="ubytovani" i18nKey="additionalInfo.item2" sx={{ mb: 1.2, color: "text.secondary" }} />
+              <EditableTranslationText ns="ubytovani" i18nKey="additionalInfo.item3" sx={{ mb: 1.2, color: "text.secondary" }} />
+              <EditableTranslationText ns="ubytovani" i18nKey="additionalInfo.item4" sx={{ mb: 1.2, color: "text.secondary" }} />
+              <EditableTranslationText ns="ubytovani" i18nKey="additionalInfo.item5" sx={{ color: "text.secondary" }} />
             </Box>
 
             <Divider sx={{ my: 2.5, maxWidth: 760, mx: "auto" }} />
@@ -166,17 +187,14 @@ export default function Accommodations() {
               variant="h5"
               sx={{
                 mb: 1,
-                textAlign: "center",
                 fontFamily: '"Cormorant Garamond", Georgia, serif',
                 fontWeight: 400,
               }}
-              align="center"
             />
             <EditableTranslationText
               ns="ubytovani"
               i18nKey="catering.text"
-              sx={{ maxWidth: 760, mx: "auto", textAlign: "center", color: "text.secondary" }}
-              align="center"
+              sx={{ maxWidth: 760, mx: "auto", color: "text.secondary" }}
             />
           </Paper>
         </Box>
@@ -184,25 +202,31 @@ export default function Accommodations() {
 
       <FullBleedTiles
         fullBleedHack
+        variant="cards"
         translationNamespace="ubytovani"
+        imageAspect={{ xs: "16 / 10", md: "16 / 10" }}
         items={[
           {
             image: asset("/ubytovani/ubytovani1.webp"),
+            titleKey: "tiles.0.alt",
             textKey: "tiles.0.text",
             alt: t("tiles.0.alt"),
           },
           {
             image: asset("/ubytovani/ubytovani3.webp"),
+            titleKey: "tiles.1.alt",
             textKey: "tiles.1.text",
             alt: t("tiles.1.alt"),
           },
           {
             image: asset("/ubytovani/ubytovani5.webp"),
+            titleKey: "tiles.2.alt",
             textKey: "tiles.2.text",
             alt: t("tiles.2.alt"),
           },
           {
             image: asset("/ubytovani/ubytovani7.webp"),
+            titleKey: "tiles.3.alt",
             textKey: "tiles.3.text",
             alt: t("tiles.3.alt"),
           },
