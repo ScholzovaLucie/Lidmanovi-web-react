@@ -3,8 +3,11 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 
-const toAsset = (path) =>
-  path ? `${import.meta.env.BASE_URL}${String(path).replace(/^\/+/, "")}` : null;
+const toAsset = (path) => {
+  if (!path) return null;
+  if (/^https?:\/\//.test(path)) return path;
+  return `${import.meta.env.BASE_URL}${String(path).replace(/^\/+/, "")}`;
+};
 
 export default function SubpageBanner({
   eyebrow,

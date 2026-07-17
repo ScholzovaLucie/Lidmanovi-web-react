@@ -8,8 +8,10 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { Link as RouterLink } from "react-router-dom";
 
-const asset = (path) =>
-  `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
+const asset = (path) => {
+  if (/^https?:\/\//.test(path)) return path;
+  return `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
+};
 
 /**
  * Props:
@@ -284,14 +286,15 @@ export default function HeroCarousel({
               bgcolor: "background.paper",
             }}
           >
-            {heroSlides.slice(0, 1).map((slide, i) => (
+            {heroSlides.map((slide, i) => (
               <Box
                 key={slide.src}
                 sx={{
-                  position: "relative",
+                  position: "absolute",
+                  inset: 0,
                   overflow: "hidden",
-                  width: "100%",
-                  height: "100%",
+                  opacity: i === index % heroSlides.length ? 1 : 0,
+                  transition: `opacity ${transition}ms ease`,
                 }}
               >
                 <Box

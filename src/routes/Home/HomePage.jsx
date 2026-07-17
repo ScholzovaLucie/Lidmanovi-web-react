@@ -8,6 +8,8 @@ import { Link as RouterLink } from "react-router-dom";
 import { useEditorialEditor } from "../../context/editorialEditorContext.js";
 import { useGoogleRating } from "../../hooks/useGoogleRating.js";
 import { GOOGLE_REVIEW_URL } from "../../utils/googleRating.js";
+import { usePhotoSequence } from "../../hooks/usePhotoSequence.js";
+import PhotoLocationEditor from "../../components/PhotoLocationEditor.jsx";
 
 function dateBoundary(value, boundary) {
   if (!value) return null;
@@ -56,6 +58,13 @@ export default function HomePage() {
     ) ?? [];
   const { isAuthenticated, isInlineEditing } = useEditorialEditor();
   const disableCardLinks = isAuthenticated && isInlineEditing;
+  const { urls: heroUrls } = usePhotoSequence("hero", [
+    asset("/uvod/uvod1.webp"),
+    asset("/uvod/uvod2.webp"),
+    asset("/uvod/uvod3.webp"),
+    asset("/uvod/uvod4.webp"),
+    asset("/uvod/nove5.webp"),
+  ]);
 
   return (
     <>
@@ -82,23 +91,7 @@ export default function HomePage() {
         )}
         <HeroCarousel
           variant="editorial"
-          slides={[
-            {
-              src: asset("/uvod/uvod1.webp"),
-            },
-            {
-              src: asset("/uvod/uvod2.webp"),
-            },
-            {
-              src: asset("/uvod/uvod3.webp"),
-            },
-            {
-              src: asset("/uvod/uvod4.webp"),
-            },
-            {
-              src: asset("/uvod/nove5.webp"),
-            },
-          ]}
+          slides={heroUrls.map((src) => ({ src }))}
           eyebrow={t("global:footer.brand")}
           title={t("global:footer.tagline")}
           titleNode={
@@ -140,6 +133,8 @@ export default function HomePage() {
           gradientTop="secondary.main"
         />
       </Box>
+
+      <PhotoLocationEditor location="hero" label="Hero (úvodní slideshow)" />
 
       <Box component="section" sx={{ py: { xs: 5, md: 7 }, bgcolor: "background.paper" }}>
         <Container maxWidth="lg">

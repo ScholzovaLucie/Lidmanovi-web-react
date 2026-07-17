@@ -5,6 +5,8 @@ import { useSelector } from "react-redux";
 import FullBleedTiles from "../components/FullBleedTiles.jsx";
 import EditableTranslationText from "../components/EditableTranslationText";
 import SubpageBanner from "../components/SubpageBanner.jsx";
+import PhotoLocationEditor from "../components/PhotoLocationEditor.jsx";
+import { usePhotoSequence } from "../hooks/usePhotoSequence.js";
 import { selectIsAuthenticated } from "../redux/slices/app/appSlice";
 
 export default function Restauration() {
@@ -18,19 +20,23 @@ export default function Restauration() {
       backgroundColor: "rgba(255,253,248,0.84)",
     },
   };
+  const { urls: introSlides } = usePhotoSequence("restaurace-uvod", [
+    "/restaurace/restaurace2.webp",
+    "/restaurace/restaurace3.webp",
+    "/restaurace/restaurace4.webp",
+    "/restaurace/restaurace5.webp",
+  ]);
 
   return (
     <>
       <SubpageBanner
         eyebrow={t("pageTitle")}
         title={t("pageTitle")}
-        image="/restaurace/restaurace2.webp"
-        slides={[
-          "/restaurace/restaurace2.webp",
-          "/restaurace/restaurace3.webp",
-          "/restaurace/restaurace4.webp",
-          "/restaurace/restaurace5.webp",
-        ]}
+        slides={introSlides}
+      />
+      <PhotoLocationEditor
+        location="restaurace-uvod"
+        label="Restaurace (úvodní fotky)"
       />
       <Container
         maxWidth="lg"

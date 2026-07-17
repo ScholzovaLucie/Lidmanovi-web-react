@@ -38,7 +38,7 @@ const menuItems = [
   { id: "guests", text: "Hosté", icon: People },
   { id: "rooms", text: "Pokoje", icon: BedIcon },
   { id: "announcement", text: "Oznámení", icon: CampaignIcon },
-  { id: "gallery", text: "Galerie", icon: CollectionsIcon },
+  { id: "gallery", text: "Fotky", icon: CollectionsIcon },
 ];
 
 const DRAWER_WIDTH = 200;

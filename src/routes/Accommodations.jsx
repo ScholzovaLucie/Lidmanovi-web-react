@@ -5,6 +5,8 @@ import { useSelector } from "react-redux";
 import FullBleedTiles from "../components/FullBleedTiles.jsx";
 import EditableTranslationText from "../components/EditableTranslationText";
 import SubpageBanner from "../components/SubpageBanner.jsx";
+import PhotoLocationEditor from "../components/PhotoLocationEditor.jsx";
+import { usePhotoSequence } from "../hooks/usePhotoSequence.js";
 import { selectIsAuthenticated } from "../redux/slices/app/appSlice";
 
 export default function Accommodations() {
@@ -12,6 +14,12 @@ export default function Accommodations() {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const asset = (path) =>
     `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
+  const { urls: introSlides } = usePhotoSequence("ubytovani-uvod", [
+    "/ubytovani/ubytovani2.webp",
+    "/ubytovani/ubytovani3.webp",
+    "/ubytovani/ubytovani5.webp",
+    "/ubytovani/ubytovani7.webp",
+  ]);
   const sharedSectionSx = {
     position: "relative",
     px: { xs: 3, md: 4 },
@@ -30,13 +38,11 @@ export default function Accommodations() {
         eyebrow={t("pageTitle")}
         title={t("heading")}
         subtitle={t("intro")}
-        image="/ubytovani/ubytovani2.webp"
-        slides={[
-          "/ubytovani/ubytovani2.webp",
-          "/ubytovani/ubytovani3.webp",
-          "/ubytovani/ubytovani5.webp",
-          "/ubytovani/ubytovani7.webp",
-        ]}
+        slides={introSlides}
+      />
+      <PhotoLocationEditor
+        location="ubytovani-uvod"
+        label="Ubytování (úvodní fotky)"
       />
       <Container maxWidth="lg" sx={{ py: { xs: 5, md: 7 } }}>
         <Box

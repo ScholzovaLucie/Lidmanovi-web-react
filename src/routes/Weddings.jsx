@@ -5,6 +5,8 @@ import Button from "@mui/material/Button";
 import { Link as RouterLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import EditableTranslationText from "../components/EditableTranslationText";
+import PhotoLocationEditor from "../components/PhotoLocationEditor.jsx";
+import { usePhotoSequence } from "../hooks/usePhotoSequence.js";
 import { selectIsAuthenticated } from "../redux/slices/app/appSlice";
 
 export default function Weddings() {
@@ -12,6 +14,18 @@ export default function Weddings() {
   const asset = (path) =>
     `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
   const statIndexes = [0, 1, 2];
+  const { urls: introSlides } = usePhotoSequence("svatby-uvod", [
+    asset("/svatba/svatba3.webp"),
+  ]);
+  const [activeSlide, setActiveSlide] = React.useState(0);
+
+  React.useEffect(() => {
+    if (introSlides.length <= 1) return;
+    const id = setInterval(() => {
+      setActiveSlide((current) => (current + 1) % introSlides.length);
+    }, 3500);
+    return () => clearInterval(id);
+  }, [introSlides.length]);
 
   return (
     <>
@@ -24,14 +38,25 @@ export default function Weddings() {
           alignItems: "flex-end",
           justifyContent: "center",
           overflow: "hidden",
-          backgroundImage: `linear-gradient(180deg, rgba(45,40,35,0.4), rgba(45,40,35,0.56)), url(${asset("/svatba/svatba3.webp")})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
           color: "#fffaf0",
           textAlign: "center",
         }}
       >
-        <Container maxWidth="lg" sx={{ pb: { xs: 5, md: 7 } }}>
+        {introSlides.map((src, index) => (
+          <Box
+            key={`${src}-${index}`}
+            sx={{
+              position: "absolute",
+              inset: 0,
+              backgroundImage: `linear-gradient(180deg, rgba(45,40,35,0.4), rgba(45,40,35,0.56)), url(${src})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              opacity: index === activeSlide ? 1 : 0,
+              transition: "opacity 900ms ease",
+            }}
+          />
+        ))}
+        <Container maxWidth="lg" sx={{ pb: { xs: 5, md: 7 }, position: "relative", zIndex: 1 }}>
           <EditableTranslationText
             ns="svatby"
             i18nKey="heroEyebrow"
@@ -58,6 +83,8 @@ export default function Weddings() {
           />
         </Container>
       </Box>
+
+      <PhotoLocationEditor location="svatby-uvod" label="Svatby (úvodní fotky)" />
 
       <Container maxWidth="lg" sx={{ py: { xs: 6, md: 9 } }}>
         <Box

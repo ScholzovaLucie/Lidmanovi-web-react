@@ -8,6 +8,7 @@ import reservationReducer from "./slices/reservation/reservationSlice";
 import { guestApi } from "./api/guestApi";
 import { cmsApi } from "./api/cmsApi";
 import { announcementApi, announcementApiPublic } from "./api/announcementApi";
+import { galleryApi } from "./api/galleryApi";
 
 // Logger middleware only for explicit debug sessions.
 const loggerMiddleware = () => (next) => (action) => {
@@ -36,6 +37,7 @@ export const store = configureStore({
     [cmsApi.reducerPath]: cmsApi.reducer,
     [announcementApi.reducerPath]: announcementApi.reducer,
     [announcementApiPublic.reducerPath]: announcementApiPublic.reducer,
+    [galleryApi.reducerPath]: galleryApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -49,6 +51,7 @@ export const store = configureStore({
         cmsApi.middleware,
         announcementApi.middleware,
         announcementApiPublic.middleware,
+        galleryApi.middleware,
       )
       .concat(isReduxLoggerEnabled ? loggerMiddleware : []),
 });
