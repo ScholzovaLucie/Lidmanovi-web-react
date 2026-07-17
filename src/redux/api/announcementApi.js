@@ -7,9 +7,12 @@ export const announcementApiPublic = createApi({
   tagTypes: ["InfoBoxPublic"],
   endpoints: (builder) => ({
     getInfoBoxesPublic: builder.query({
-      query: () => ({
+      query: ({ lang } = {}) => ({
         url: "/editorial_system/public/info-boxes/",
         method: "GET",
+        params: {
+          ...(lang && { lang }),
+        },
       }),
     }),
   }),

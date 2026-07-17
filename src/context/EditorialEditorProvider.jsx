@@ -484,6 +484,7 @@ export function EditorialEditorProvider({ children }) {
 
       {isAuthenticated && (
         <Stack
+          data-inline-editor-toolbar="true"
           spacing={1}
           sx={{
             position: "fixed",

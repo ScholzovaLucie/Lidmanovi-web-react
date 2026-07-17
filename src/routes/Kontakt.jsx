@@ -1,263 +1,297 @@
 import React from "react";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
 import Link from "@mui/material/Link";
-import InfoBlock from "../components/InfoBlock";
 import ContactForm from "../components/ContactForm";
-import SubpageBanner from "../components/SubpageBanner.jsx";
-import SectionIntro from "../components/SectionIntro.jsx";
 import EditableTranslationText from "../components/EditableTranslationText.jsx";
 import { useTranslation } from "react-i18next";
+import { useGoogleRating } from "../hooks/useGoogleRating.js";
+import { formatGoogleRating, GOOGLE_REVIEW_URL } from "../utils/googleRating.js";
 
 export default function Kontakt() {
   const { t } = useTranslation(["kontakt", "global"]);
+  const googleRating = useGoogleRating();
   const asset = (path) =>
     `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
 
-  const images = [
-    asset("/kontakt/DSCN0464.webp"),
-    asset("/kontakt/002_HZ6_3762_Penzion_U_Lidmanu.webp"),
-    asset("/kontakt/9c8f78d411bc1f0228e6.webp"),
-    asset("/kontakt/95f5c4089c2e069cf161.webp"),
-  ];
-
-  const blocks = [
+  const locationItems = [
     {
-      icon: asset("/position.webp"),
-      titleNode: (
-        <EditableTranslationText
-          ns="kontakt"
-          i18nKey="info.address.title"
-          sx={{
-            fontFamily: '"Cormorant Garamond", Georgia, serif',
-            fontSize: { xs: "1.45rem", md: "1.65rem" },
-            lineHeight: 1.1,
-            color: "text.primary",
-          }}
-        />
-      ),
-      content: (
-        <>
-          <EditableTranslationText ns="kontakt" i18nKey="info.address.lines" />
-          <Divider sx={{ my: 1.5 }} />
-          <EditableTranslationText ns="kontakt" i18nKey="info.address.coords" variant="body2" sx={{ color: "text.secondary" }} />
-        </>
+      labelKey: "info.address.title",
+      value: (
+        <EditableTranslationText ns="kontakt" i18nKey="info.address.lines" />
       ),
     },
     {
-      icon: asset("/phone-call.webp"),
-      titleNode: (
-        <EditableTranslationText
-          ns="kontakt"
-          i18nKey="info.phone.title"
-          sx={{
-            fontFamily: '"Cormorant Garamond", Georgia, serif',
-            fontSize: { xs: "1.45rem", md: "1.65rem" },
-            lineHeight: 1.1,
-            color: "text.primary",
-          }}
-        />
-      ),
-      content: (
-        <Link href="tel:+420604341863" underline="hover" color="inherit">
-          +420&nbsp;604&nbsp;341&nbsp;863
-        </Link>
+      labelKey: "info.gpsTitle",
+      value: (
+        <EditableTranslationText ns="kontakt" i18nKey="info.address.coords" />
       ),
     },
     {
-      icon: asset("/mail.webp"),
-      titleNode: (
-        <EditableTranslationText
-          ns="kontakt"
-          i18nKey="info.email.title"
-          sx={{
-            fontFamily: '"Cormorant Garamond", Georgia, serif',
-            fontSize: { xs: "1.45rem", md: "1.65rem" },
-            lineHeight: 1.1,
-            color: "text.primary",
-          }}
-        />
-      ),
-      content: (
-        <Link href="mailto:info@ulidmanu.cz" underline="hover" color="inherit">
-          info@ulidmanu.cz
-        </Link>
-      ),
-    },
-    {
-      icon: asset("/facebook2.webp"),
-      titleNode: (
-        <EditableTranslationText
-          ns="kontakt"
-          i18nKey="info.facebook.title"
-          sx={{
-            fontFamily: '"Cormorant Garamond", Georgia, serif',
-            fontSize: { xs: "1.45rem", md: "1.65rem" },
-            lineHeight: 1.1,
-            color: "text.primary",
-          }}
-        />
-      ),
-      content: (
+      labelKey: "info.ratingTitle",
+      value: (
         <Link
-          href="https://www.facebook.com/Pension-a-restaurace-U-Lidman%C5%AF-945259918825167"
+          href={GOOGLE_REVIEW_URL}
+          target="_blank"
+          rel="noopener noreferrer"
           underline="hover"
           color="inherit"
         >
-          <EditableTranslationText ns="kontakt" i18nKey="info.facebook.label" />
+          {formatGoogleRating(googleRating)}
+        </Link>
+      ),
+    },
+  ];
+
+  const contactItems = [
+    {
+      labelKey: "info.phone.title",
+      value: (
+        <Link href="tel:+420604341863" underline="hover" color="inherit">
+          <EditableTranslationText ns="kontakt" i18nKey="info.phone.value" />
         </Link>
       ),
     },
     {
-      titleNode: (
-        <EditableTranslationText
-          ns="kontakt"
-          i18nKey="info.owner.title"
-          sx={{
-            fontFamily: '"Cormorant Garamond", Georgia, serif',
-            fontSize: { xs: "1.45rem", md: "1.65rem" },
-            lineHeight: 1.1,
-            color: "text.primary",
-          }}
-        />
+      labelKey: "info.email.title",
+      value: (
+        <Link href="mailto:info@ulidmanu.cz" underline="hover" color="inherit">
+          <EditableTranslationText ns="kontakt" i18nKey="info.email.value" />
+        </Link>
       ),
-      content: (
-        <EditableTranslationText ns="kontakt" i18nKey="info.owner.lines" />
-      ),
+    },
+    {
+      labelKey: "info.owner.title",
+      value: <EditableTranslationText ns="kontakt" i18nKey="info.owner.lines" />,
     },
   ];
 
   return (
     <Box>
-      <SubpageBanner
-        eyebrow={t("global:footer.brand")}
-        title={t("pageTitle")}
-        image="/kontakt/002_HZ6_3762_Penzion_U_Lidmanu.webp"
-        slides={[
-          "/kontakt/002_HZ6_3762_Penzion_U_Lidmanu.webp",
-          "/kontakt/DSCN0464.webp",
-          "/kontakt/9c8f78d411bc1f0228e6.webp",
-          "/kontakt/95f5c4089c2e069cf161.webp",
-        ]}
-        galleryImages={images}
-      />
-
-      <Container maxWidth="lg" sx={{ py: { xs: 5, md: 7 } }}>
-        <Grid
-          container
-          columns={{ xs: 12, sm: 12, md: 12, lg: 15 }}
-          justifyContent="center"
-          alignItems="stretch"
-          rowSpacing={2.5}
-          columnSpacing={2.5}
-        >
-          {blocks.map((block, i) => (
-            <Grid key={i} size={{ xs: 12, sm: 6, md: 4, lg: 3 }} sx={{ display: "flex" }}>
-              <InfoBlock
-                icon={block.icon}
-                title={block.title}
-                titleNode={block.titleNode}
-                button={block.button}
-                onButtonClick={block.onClick}
-                sx={{ flex: 1, height: "100%" }}
-              >
-                {block.content}
-              </InfoBlock>
-            </Grid>
-          ))}
-        </Grid>
-      </Container>
-
-      <Container maxWidth="lg" sx={{ pb: { xs: 5, md: 7 } }}>
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: { xs: "1fr", md: "minmax(0, 1fr) minmax(0, 1fr)" },
-            gap: { xs: 3, md: 4 },
-            alignItems: "stretch",
-          }}
-        >
-          <Box>
+      <Box sx={{ bgcolor: "background.default", borderTop: "1px solid #dfd4c4" }}>
+        <Container maxWidth="xl" sx={{ py: { xs: 4, md: 6 } }}>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+              minHeight: { md: 760 },
+              border: "1px solid #dfd4c4",
+              bgcolor: "background.paper",
+              boxShadow: "0 18px 44px rgba(45,38,30,0.05)",
+            }}
+          >
             <Box
               sx={{
-                width: "100%",
-                border: "1px solid rgba(85,116,143,0.12)",
-                background: "rgba(255,255,255,0.98)",
-                minHeight: 560,
-                overflow: "hidden",
+                px: { xs: 3, sm: 5, md: 7 },
+                py: { xs: 4.5, md: 7 },
               }}
             >
-              <Box
+              <EditableTranslationText
+                ns="kontakt"
+                i18nKey="pageTitle"
+                variant="h1"
+                sx={{ mb: 1 }}
+              />
+              <EditableTranslationText
+                ns="kontakt"
+                i18nKey="subtitle"
+                variant="body1"
                 sx={{
-                  p: { xs: 3, md: 4 },
-                  borderBottom: "1px solid rgba(85,116,143,0.08)",
-                }}
-              >
-                <SectionIntro title={t("form.title")} />
-              </Box>
-              <ContactForm
-                title=""
-                translationNamespace="kontakt"
-                mailto="info@ulidmanu.cz"
-                maxWidth={false}
-                contentMaxWidth={false}
-                sx={{
-                  boxShadow: "none",
-                  border: 0,
-                  p: { xs: 3, md: 4 },
+                  color: "text.secondary",
+                  fontWeight: 600,
+                  mb: { xs: 4, md: 5 },
                 }}
               />
-            </Box>
-          </Box>
 
-          <Box>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+                  columnGap: { xs: 3, md: 6 },
+                  rowGap: { xs: 3, md: 4.2 },
+                }}
+              >
+                {[locationItems, contactItems].map((column, columnIndex) => (
+                  <Box
+                    key={columnIndex}
+                    sx={{
+                      display: "grid",
+                      alignContent: "start",
+                      gap: { xs: 3, md: 4.2 },
+                    }}
+                  >
+                    {column.map((item, index) => (
+                      <Box key={index}>
+                        <Box
+                          sx={{
+                            mb: 0.9,
+                            "& .MuiTypography-root": {
+                              color: "text.secondary",
+                              fontSize: "0.72rem",
+                              fontWeight: 800,
+                              letterSpacing: "0.22em",
+                              textTransform: "uppercase",
+                            },
+                          }}
+                        >
+                          <EditableTranslationText
+                            ns="kontakt"
+                            i18nKey={item.labelKey}
+                            multilineRows={1}
+                          />
+                        </Box>
+                        <Typography
+                          component="div"
+                          sx={{
+                            color: "text.primary",
+                            fontSize: { xs: "1rem", md: "1.08rem" },
+                            fontWeight: 500,
+                            lineHeight: 1.55,
+                            "& a": { fontWeight: 500 },
+                          }}
+                        >
+                          {item.value}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                ))}
+              </Box>
+
+              <Box
+                component="iframe"
+                title={t("map.title")}
+                src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d2537.9674639711725!2d16.2889786!3d50.4975633!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x470e686d9f1caccd%3A0x5443aff885131f52!2sPension%20-%20Restaurace%20U%20Lidman%C5%AF!5e0!3m2!1scs!2scz!4v1662476744005!5m2!1scs!2scz"
+                sx={{
+                  display: "block",
+                  width: "100%",
+                  height: { xs: 260, md: 300 },
+                  border: "1px solid #e6ddcf",
+                  mt: { xs: 4, md: 5 },
+                  filter: "saturate(0.82) contrast(0.95)",
+                }}
+                allowFullScreen=""
+                loading="eager"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </Box>
+
             <Box
-              component="section"
               sx={{
-                width: "100%",
-                height: "100%",
-                border: "1px solid rgba(85,116,143,0.12)",
-                background: "rgba(255,255,255,0.98)",
-                overflow: "hidden",
+                bgcolor: "primary.main",
+                color: "primary.contrastText",
+                px: { xs: 3, sm: 5, md: 7 },
+                py: { xs: 4.5, md: 7 },
+                display: "flex",
+                alignItems: "center",
               }}
             >
-              <Box
-                sx={{
-                  p: { xs: 3, md: 4 },
-                  background: "rgba(221,229,233,0.25)",
-                  borderBottom: "1px solid rgba(85,116,143,0.08)",
-                }}
-              >
-                <SectionIntro title={t("map.title")} />
-              </Box>
-              <Box
-                sx={{
-                  width: "100%",
-                  p: { xs: 3, md: 4 },
-                }}
-              >
-                <Box
-                  component="iframe"
-                  title={t("map.title")}
-                  src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d2537.9674639711725!2d16.2889786!3d50.4975633!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x470e686d9f1caccd%3A0x5443aff885131f52!2sPension%20-%20Restaurace%20U%20Lidman%C5%AF!5e0!3m2!1scs!2scz!4v1662476744005!5m2!1scs!2scz"
+              <Box sx={{ width: "100%" }}>
+                <EditableTranslationText
+                  ns="kontakt"
+                  i18nKey="form.eyebrow"
                   sx={{
-                    display: "block",
-                    width: "100%",
-                    height: { xs: 420, md: 520 },
-                    border: 0,
+                    fontFamily: '"Cormorant Garamond", Georgia, serif',
+                    fontStyle: "italic",
+                    fontSize: { xs: "1.35rem", md: "1.6rem" },
+                    fontWeight: 700,
+                    color: "rgba(255,255,255,0.86)",
+                    mb: 1,
                   }}
-                  allowFullScreen=""
-                  loading="eager"
-                  referrerPolicy="no-referrer-when-downgrade"
+                />
+                <EditableTranslationText
+                  ns="kontakt"
+                  i18nKey="form.heading"
+                  variant="h1"
+                  sx={{
+                    color: "primary.contrastText",
+                    fontSize: { xs: "2.7rem", md: "4rem" },
+                    mb: { xs: 3, md: 4 },
+                  }}
+                />
+
+                <ContactForm
+                  title=""
+                  translationNamespace="kontakt"
+                  mailto="info@ulidmanu.cz"
+                  maxWidth={false}
+                  contentMaxWidth={false}
+                  sx={{
+                    boxShadow: "none",
+                    border: 0,
+                    p: 0,
+                    bgcolor: "transparent",
+                    color: "primary.contrastText",
+                    "& .MuiStack-root": { gap: 2.4 },
+                    "& .MuiInputBase-root": {
+                      color: "primary.contrastText",
+                      bgcolor: "transparent",
+                      borderRadius: 0,
+                    },
+                    "& .MuiInputBase-input, & textarea": {
+                      px: 0,
+                      color: "primary.contrastText",
+                      fontSize: "1.02rem",
+                    },
+                    "& .MuiInputBase-input::placeholder, & textarea::placeholder": {
+                      color: "rgba(255,255,255,0.58)",
+                      opacity: 1,
+                    },
+                    "& .MuiInputLabel-root": {
+                      color: "rgba(255,255,255,0.78)",
+                      fontSize: "0.72rem",
+                      fontWeight: 800,
+                      letterSpacing: "0.2em",
+                      textTransform: "uppercase",
+                    },
+                    "& .MuiInputLabel-root.Mui-focused": {
+                      color: "primary.contrastText",
+                    },
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderWidth: "0 0 2px 0",
+                      borderRadius: 0,
+                      borderColor: "rgba(255,255,255,0.34)",
+                    },
+                    "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "rgba(255,255,255,0.56)",
+                    },
+                    "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "rgba(255,255,255,0.86)",
+                      borderWidth: "0 0 2px 0",
+                    },
+                    "& .MuiFormControlLabel-label, & .MuiTypography-root, & a": {
+                      color: "rgba(255,255,255,0.82)",
+                    },
+                    "& .MuiCheckbox-root": {
+                      color: "rgba(255,255,255,0.82)",
+                    },
+                    "& .MuiCheckbox-root.Mui-checked": {
+                      color: "background.paper",
+                    },
+                    "& .MuiSvgIcon-root": {
+                      filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.25))",
+                    },
+                    "& .MuiButton-contained": {
+                      mt: 1,
+                      bgcolor: "background.paper",
+                      color: "text.primary",
+                      borderRadius: 0,
+                      px: 4,
+                      py: 1.5,
+                      boxShadow: "none",
+                      "&:hover": {
+                        bgcolor: "#f3ece1",
+                        boxShadow: "none",
+                      },
+                    },
+                  }}
                 />
               </Box>
             </Box>
           </Box>
-        </Box>
-      </Container>
+        </Container>
+      </Box>
 
       <Box
         component="section"

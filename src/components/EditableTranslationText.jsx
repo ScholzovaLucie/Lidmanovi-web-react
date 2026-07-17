@@ -80,7 +80,11 @@ export default function EditableTranslationText({
     : String(mergedValue ?? "");
 
   return (
-    <Box sx={{ border: "1px dashed", borderColor: "secondary.main", borderRadius: 1, p: 1 }}>
+    <Box
+      data-inline-edit-field="true"
+      onClick={(event) => event.stopPropagation()}
+      sx={{ border: "1px dashed", borderColor: "secondary.main", borderRadius: 1, p: 1 }}
+    >
       <TextField
         fullWidth
         multiline

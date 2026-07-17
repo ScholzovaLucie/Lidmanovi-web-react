@@ -9,6 +9,7 @@ import {
   IconButton,
   Paper,
   Chip,
+  Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
@@ -16,7 +17,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
 import EditableTranslationText from "../components/EditableTranslationText";
 import PackageCard from "../components/PackageCard.jsx";
-import SubpageBanner from "../components/SubpageBanner.jsx";
 import { useEditorialEditor } from "../context/editorialEditorContext";
 
 const asset = (path) =>
@@ -24,7 +24,6 @@ const asset = (path) =>
 
 export default function AccommodationPackages() {
   const { t } = useTranslation("balicky");
-  const heroTitle = t("nav.packages", { ns: "global", defaultValue: t("pageTitle") });
   const {
     isAuthenticated,
     isInlineEditing,
@@ -110,18 +109,14 @@ export default function AccommodationPackages() {
 
   return (
     <>
-      <SubpageBanner
-        eyebrow={heroTitle}
-        title={heroTitle}
-        image="/pobytoveBalicky/b4387.webp"
-        slides={[
-          "/pobytoveBalicky/b4387.webp",
-          "/pobytoveBalicky/b4460.webp",
-          "/pobytoveBalicky/b4345.webp",
-          "/pobytoveBalicky/br1560.webp",
-        ]}
-      />
-      <Container maxWidth="lg" sx={{ py: { xs: 5, md: 7 } }}>
+      <Container maxWidth="lg" sx={{ py: { xs: 6, md: 9 } }}>
+        <Box sx={{ textAlign: "center", mb: { xs: 4, md: 5 } }}>
+          <EditableTranslationText
+            ns="balicky"
+            i18nKey="pageTitle"
+            variant="h1"
+          />
+        </Box>
         {isAuthenticated && isInlineEditing && (
           <Box
             sx={{
@@ -131,6 +126,7 @@ export default function AccommodationPackages() {
             }}
           >
             <Button
+              data-inline-edit-allow-action="true"
               variant="contained"
               startIcon={<AddIcon />}
               onClick={handleAddPackage}
@@ -141,7 +137,7 @@ export default function AccommodationPackages() {
           </Box>
         )}
 
-        {featuredPackage && (
+        {false && featuredPackage && (
           <Box
             sx={{
               display: "grid",
@@ -223,7 +219,7 @@ export default function AccommodationPackages() {
             gap: 3,
           }}
         >
-          {(remainingPackages.length ? remainingPackages : packages).map(
+          {packages.map(
             (pkg, index) => (
               <Box
                 key={pkg.id}
@@ -234,7 +230,7 @@ export default function AccommodationPackages() {
                 }}
               >
                 <PackageCard
-                  index={remainingPackages.length ? index + 1 : index}
+                  index={index}
                   titleNode={
                     <EditableTranslationText
                       ns="balicky"
@@ -327,6 +323,7 @@ export default function AccommodationPackages() {
                   </Box>
                   {isInlineEditing && (
                     <Button
+                      data-inline-edit-allow-action="true"
                       variant="outlined"
                       size="small"
                       color="error"

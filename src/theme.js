@@ -6,25 +6,25 @@ export const createAppTheme = () =>
     palette: {
       mode: "light",
       background: {
-        default: "#f5f7fa",
-        paper: "#ffffff",
+        default: "#f4efe6",
+        paper: "#fffdf8",
       },
       text: {
-        primary: "#15191f",
-        secondary: "#5e6a78",
+        primary: "#2d2823",
+        secondary: "#74695d",
       },
       primary: {
-        main: "#55748f",
-        light: "#dfe8f1",
-        dark: "#38536a",
+        main: "#446783",
+        light: "#e8f0f6",
+        dark: "#2f4f6c",
         contrastText: "#ffffff",
-        50: "#f3f7fb",
-        100: "#e3edf6",
+        50: "#edf4f8",
+        100: "#dce9f1",
       },
       secondary: {
-        main: "#8c98a4",
-        light: "#e8edf2",
-        dark: "#697583",
+        main: "#a28d6f",
+        light: "#eee5d7",
+        dark: "#786246",
       },
       success: {
         main: "#2e7d32",
@@ -55,24 +55,24 @@ export const createAppTheme = () =>
       fontFamily: `"Jost", "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif`,
       h1: {
         fontFamily: `"Cormorant Garamond", Georgia, serif`,
-        fontSize: "clamp(34px, 5vw, 58px)",
+        fontSize: "clamp(48px, 7vw, 92px)",
         fontWeight: 400,
-        lineHeight: 1.04,
-        letterSpacing: "-0.025em",
+        lineHeight: 1.02,
+        letterSpacing: 0,
       },
       h2: {
         fontFamily: `"Cormorant Garamond", Georgia, serif`,
-        fontSize: "clamp(28px, 3vw, 40px)",
+        fontSize: "clamp(38px, 4.4vw, 54px)",
         fontWeight: 400,
-        lineHeight: 1.08,
+        lineHeight: 1.05,
         marginBottom: 12,
-        letterSpacing: "-0.02em",
+        letterSpacing: 0,
       },
       h3: {
         fontFamily: `"Cormorant Garamond", Georgia, serif`,
-        fontSize: "clamp(22px, 2.4vw, 30px)",
-        fontWeight: 500,
-        lineHeight: 1.2,
+        fontSize: "clamp(28px, 3vw, 38px)",
+        fontWeight: 400,
+        lineHeight: 1.12,
       },
       subtitle1: {
         letterSpacing: "0.14em",
@@ -86,26 +86,26 @@ export const createAppTheme = () =>
       // tvůj klíčový breakpoint je 800px → posuneme md
       values: { xs: 0, sm: 600, md: 800, lg: 1200, xl: 1536 },
     },
-    shape: { borderRadius: 10 },
+    shape: { borderRadius: 2 },
     components: {
       MuiCssBaseline: {
         styleOverrides: {
           body: {
-            backgroundImage:
-              "radial-gradient(circle at top, rgba(85,116,143,0.08), transparent 32%)",
+            backgroundColor: "#f4efe6",
+            backgroundImage: "none",
           },
           "::selection": {
-            backgroundColor: "rgba(85,116,143,0.2)",
+            backgroundColor: "rgba(68,103,131,0.2)",
           },
         },
       },
       MuiAppBar: {
         styleOverrides: {
           root: {
-            backdropFilter: "blur(18px)",
-            backgroundImage:
-              "linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.84))",
-            borderBottom: "1px solid rgba(85,116,143,0.10)",
+            backdropFilter: "none",
+            backgroundColor: "#fffaf0",
+            backgroundImage: "none",
+            borderBottom: "1px solid #dfd4c4",
           },
         },
       },
@@ -114,20 +114,20 @@ export const createAppTheme = () =>
         styleOverrides: {
           root: {
             textTransform: "none",
-            borderRadius: 4,
+            borderRadius: 0,
             paddingInline: 16,
             paddingBlock: 9,
-            fontWeight: 400,
-            letterSpacing: "0.16em",
+            fontWeight: 700,
+            letterSpacing: 0,
           },
           contained: {
-            boxShadow: "0 10px 24px rgba(85,116,143,0.18)",
+            boxShadow: "none",
           },
           outlined: {
-            borderWidth: 1.5,
+            borderWidth: 1,
           },
           text: {
-            borderRadius: 4,
+            borderRadius: 0,
           },
         },
       },
@@ -137,7 +137,7 @@ export const createAppTheme = () =>
             backgroundImage: "none",
           },
           rounded: {
-            borderRadius: 12,
+            borderRadius: 2,
           },
         },
       },
@@ -159,9 +159,34 @@ export const createAppTheme = () =>
         styleOverrides: {
           paper: {
             marginTop: 8,
-            borderRadius: 10,
-            border: "1px solid rgba(85,116,143,0.12)",
-            boxShadow: "0 20px 50px rgba(29,42,56,0.16)",
+            borderRadius: 2,
+            border: "1px solid #dfd4c4",
+            boxShadow: "0 18px 45px rgba(45,40,35,0.14)",
+          },
+        },
+      },
+      MuiOutlinedInput: {
+        styleOverrides: {
+          root: {
+            borderRadius: 2,
+            backgroundColor: "#fffdf8",
+          },
+          notchedOutline: {
+            borderColor: "#d8cbb8",
+          },
+        },
+      },
+      MuiTableCell: {
+        styleOverrides: {
+          root: {
+            borderBottomColor: "#e2d7c8",
+          },
+          head: {
+            color: "#928675",
+            fontSize: "0.68rem",
+            fontWeight: 700,
+            letterSpacing: "0.16em",
+            textTransform: "uppercase",
           },
         },
       },

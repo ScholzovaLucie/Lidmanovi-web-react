@@ -72,31 +72,50 @@ export default function AdminPage() {
       sx={{
         overflow: "auto",
         paddingTop: isMobile ? "64px" : 0,
+        height: "100%",
+        bgcolor: "#292520",
+        color: "#fffaf0",
       }}
     >
         <Toolbar>
-          <Typography variant="h6"> Administrace</Typography>
+          <Typography
+            sx={{
+              fontFamily: '"Cormorant Garamond", Georgia, serif',
+              fontSize: 26,
+              color: "#fffaf0",
+            }}
+          >
+            Administrace
+          </Typography>
         </Toolbar>
 
-      <Divider />
+      <Divider sx={{ borderColor: "rgba(255,250,240,0.08)" }} />
 
       <ListItem disablePadding>
-        <ListItemButton onClick={() => navigate("/")}>
-          <ListItemIcon>
+        <ListItemButton onClick={() => navigate("/")} sx={{ color: "#c7b89f" }}>
+          <ListItemIcon sx={{ color: "#c7b89f", minWidth: 34 }}>
             <ArrowBack />
           </ListItemIcon>
           <ListItemText primary="Zpět na web" />
         </ListItemButton>
       </ListItem>
 
-      <Divider />
+      <Divider sx={{ borderColor: "rgba(255,250,240,0.08)" }} />
 
       {menuItems.map(({ id, text, icon: Icon }) => (
         <ListItem key={id} disablePadding>
-          <ListItemButton onClick={() => handleMenuClick(id)}>
+          <ListItemButton
+            onClick={() => handleMenuClick(id)}
+            sx={{
+              bgcolor: activeComponent === id ? "primary.main" : "transparent",
+              color: "#fffaf0",
+              "&:hover": { bgcolor: activeComponent === id ? "primary.main" : "rgba(255,250,240,0.07)" },
+            }}
+          >
             <ListItemIcon
               sx={{
-                color: activeComponent === id ? "black" : "rgba(0,0,0,0.6)",
+                color: "#fffaf0",
+                minWidth: 34,
               }}
             >
               <Icon />
@@ -105,7 +124,8 @@ export default function AdminPage() {
               primary={text}
               sx={{
                 "& .MuiListItemText-primary": {
-                  fontWeight: activeComponent === id ? "bold" : "light",
+                  fontWeight: activeComponent === id ? 700 : 400,
+                  fontSize: "0.92rem",
                 },
               }}
             />
@@ -160,6 +180,7 @@ export default function AdminPage() {
             "& .MuiDrawer-paper": {
               width: DRAWER_WIDTH,
               boxSizing: "border-box",
+              bgcolor: "#292520",
             },
           }}
         >
@@ -174,6 +195,8 @@ export default function AdminPage() {
             "& .MuiDrawer-paper": {
               width: DRAWER_WIDTH,
               boxSizing: "border-box",
+              bgcolor: "#292520",
+              borderRight: "1px solid #201c18",
             },
           }}
           open
@@ -186,9 +209,10 @@ export default function AdminPage() {
       <Box
         sx={{
           flexGrow: 1,
-          p: 3,
+          p: { xs: 2, md: 4 },
           mt: isMobile ? "64px" : 0,
           overflow: "auto",
+          bgcolor: "background.default",
         }}
       >
         {renderActiveComponent()}

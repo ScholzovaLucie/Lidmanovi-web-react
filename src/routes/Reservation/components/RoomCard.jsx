@@ -91,18 +91,26 @@ export default function RoomCard({
         )}
 
         <img
-          src="https://www.thespruce.com/thmb/Afg3IVBq0tV-7DHBME5woSNCZxQ=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/put-together-a-perfect-guest-room-1976987-hero-223e3e8f697e4b13b62ad4fe898d492d.jpg"
+          src={`${import.meta.env.BASE_URL}ubytovani/ubytovani1.webp`}
           alt="Room"
           style={{
             width: "100%",
-            borderTopLeftRadius: 8,
-            borderTopRightRadius: 8,
+            aspectRatio: "16 / 9",
+            objectFit: "cover",
+            display: "block",
           }}
         />
         <Stack alignItems={"start"} spacing={3} flex={1} padding={3}>
           {/* top */}
           <Stack alignItems={"start"} spacing={1.5} width={"100%"}>
-            <Typography fontSize={24} fontWeight={"bold"} textAlign={"start"}>
+            <Typography
+              sx={{
+                fontFamily: '"Cormorant Garamond", Georgia, serif',
+                fontSize: 30,
+                fontWeight: 400,
+              }}
+              textAlign={"start"}
+            >
               {room.name}
             </Typography>
             <Stack direction={"row"} spacing={2} alignItems={"center"}>

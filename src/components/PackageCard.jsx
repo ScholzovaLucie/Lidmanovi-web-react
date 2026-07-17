@@ -16,22 +16,22 @@ export default function PackageCard({ title, titleNode, image, onClick, index })
       sx={{
         position: "relative",
         width: "100%",
-        maxWidth: 380,
+        maxWidth: 390,
         display: "block",
         textAlign: "left",
         border: "1px solid",
-        borderColor: isAuthenticated ? "secondary.main" : "rgba(85,116,143,0.14)",
-        backgroundColor: "rgba(255,255,255,0.97)",
+        borderColor: isAuthenticated ? "secondary.main" : "#dfd4c4",
+        backgroundColor: "background.paper",
         overflow: "hidden",
         transition:
           "transform 140ms ease, box-shadow 180ms ease, border-color 180ms ease",
-        boxShadow: "0 14px 34px rgba(21,25,31,0.05)",
+        boxShadow: "none",
         outline: isAuthenticated ? "1px dashed" : "none",
         outlineColor: isAuthenticated ? "secondary.main" : "transparent",
         "&:hover": {
           transform: "translateY(-3px)",
-          boxShadow: "0 20px 46px rgba(21,25,31,0.08)",
-          borderColor: "rgba(154,128,96,0.4)",
+          boxShadow: "0 10px 28px rgba(45,40,35,0.08)",
+          borderColor: "primary.main",
         },
         "&:focus-visible": {
           outline: "1px solid rgba(154,128,96,0.55)",
@@ -78,20 +78,13 @@ export default function PackageCard({ title, titleNode, image, onClick, index })
 
         <Box
           sx={{
-            p: { xs: 2, md: 2.5 },
-            minHeight: 138,
+            p: { xs: 2.5, md: 3 },
+            minHeight: 160,
           }}
         >
           {index != null && (
             <Typography
-              sx={{
-                mb: 0.25,
-                fontFamily: '"Cormorant Garamond", Georgia, serif',
-                fontSize: "3rem",
-                lineHeight: 0.9,
-                color: "rgba(85,116,143,0.12)",
-                userSelect: "none",
-              }}
+              sx={{ display: "none" }}
             >
               {String(index + 1).padStart(2, "0")}
             </Typography>

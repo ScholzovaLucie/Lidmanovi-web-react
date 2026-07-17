@@ -1,9 +1,9 @@
 import React from "react";
 import { Box, Container } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import EditableTranslationText from "../components/EditableTranslationText.jsx";
 import GalleryCategoryCard from "../components/GalleryCategoryCard.jsx";
 import GalleryLightbox from "../components/GalleryLightbox.jsx";
-import SubpageBanner from "../components/SubpageBanner.jsx";
 
 const asset = (path) =>
   `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
@@ -132,39 +132,40 @@ export default function Galerie() {
 
   return (
     <>
-      <SubpageBanner
-        eyebrow={t("global:footer.brand")}
-        title={t("pageTitle")}
-        subtitle={t("heading")}
-        image="/galerie/exterier/132_HZ6_4056_Penzion_U_Lidmanu.webp"
-        slides={[
-          "/galerie/exterier/132_HZ6_4056_Penzion_U_Lidmanu.webp",
-          "/galerie/pokoje/039_HZ6_3852_Penzion_U_Lidmanu.webp",
-          "/galerie/interier/099_HZ6_3978_Penzion_U_Lidmanu.webp",
-          "/galerie/svadba/075A5198.webp",
-        ]}
-      />
-      <Container maxWidth="lg" sx={{ py: { xs: 4, md: 5 } }}>
+      <Container maxWidth="lg" sx={{ py: { xs: 5, md: 7 } }}>
+        <EditableTranslationText
+          ns="galerie"
+          i18nKey="pageTitle"
+          variant="h1"
+          sx={{ mb: 1 }}
+        />
+        <Box sx={{ width: 56, height: 2, bgcolor: "primary.main", mb: { xs: 3, md: 4 } }} />
         <Box
           sx={{
             pt: { xs: 0, md: 0 },
             display: "grid",
             gridTemplateColumns: {
               xs: "minmax(0, 1fr)",
-              sm: "repeat(2, minmax(260px, 320px))",
-              lg: "repeat(3, minmax(260px, 320px))",
+              sm: "repeat(2, minmax(0, 1fr))",
+              lg: "repeat(3, minmax(0, 1fr))",
             },
-            justifyContent: "center",
-            gap: { xs: 2, md: 3 },
+            gap: { xs: 1.5, md: 2 },
           }}
         >
           {GALLERIES.map((gallery, index) => (
-            <Box key={gallery.id} sx={{ width: "100%", maxWidth: 320, mx: "auto" }}>
+            <Box key={gallery.id} sx={{ width: "100%" }}>
               <GalleryCategoryCard
                 index={index}
                 title={t(`categories.${gallery.id}`, {
                   defaultValue: gallery.title,
                 })}
+                titleNode={
+                  <EditableTranslationText
+                    ns="galerie"
+                    i18nKey={`categories.${gallery.id}`}
+                    multilineRows={1}
+                  />
+                }
                 cover={gallery.cover}
                 onClick={() => openGallery(gallery.images, 0)}
               />
