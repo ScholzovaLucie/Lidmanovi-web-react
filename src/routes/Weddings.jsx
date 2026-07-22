@@ -5,7 +5,7 @@ import Button from "@mui/material/Button";
 import { Link as RouterLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import EditableTranslationText from "../components/EditableTranslationText";
-import PhotoLocationEditor from "../components/PhotoLocationEditor.jsx";
+import PhotoEditBadge from "../components/PhotoEditBadge.jsx";
 import { usePhotoSequence } from "../hooks/usePhotoSequence.js";
 import { selectIsAuthenticated } from "../redux/slices/app/appSlice";
 
@@ -82,9 +82,8 @@ export default function Weddings() {
             }}
           />
         </Container>
+        <PhotoEditBadge location="svatby-uvod" singlePhoto={false} sx={{ top: 16, right: 16, zIndex: 10 }} />
       </Box>
-
-      <PhotoLocationEditor location="svatby-uvod" label="Svatby (úvodní fotky)" />
 
       <Container maxWidth="lg" sx={{ py: { xs: 6, md: 9 } }}>
         <Box

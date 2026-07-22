@@ -7,7 +7,7 @@ import {
 } from "../utils/cookieUtils";
 import { withLanguageHeader } from "./api/language";
 
-const baseUrl = "http://localhost:8000";
+const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
 // Simple baseQuery without authentication
 export const baseQuery = fetchBaseQuery({

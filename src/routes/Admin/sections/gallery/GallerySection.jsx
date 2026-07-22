@@ -6,17 +6,24 @@ import {
   Grid,
   Paper,
   IconButton,
+  Button,
   CircularProgress,
   Pagination,
-  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
-import { Add, Delete } from "@mui/icons-material";
+import { Add, Delete, DeleteSweep } from "@mui/icons-material";
 import { useSnackbar } from "notistack";
 import {
   useGetPhotosQuery,
+  useLazyGetPhotosQuery,
   useUploadPhotosMutation,
   useDeletePhotoMutation,
 } from "../../../../redux/api/galleryApi";
+import { resolveMediaUrl } from "../../../../utils/resolveMediaUrl";
 
 const PAGE_SIZE = 24;
 const DEFAULT_CATEGORY = "galerie";
@@ -25,7 +32,8 @@ export default function GallerySection() {
   const fileInputRef = useRef(null);
   const { enqueueSnackbar } = useSnackbar();
   const [page, setPage] = useState(1);
-  const [category, setCategory] = useState(DEFAULT_CATEGORY);
+  const [confirmDeleteAllOpen, setConfirmDeleteAllOpen] = useState(false);
+  const [isDeletingAll, setIsDeletingAll] = useState(false);
 
   const { data, isLoading, error } = useGetPhotosQuery({ page, pageSize: PAGE_SIZE });
 
@@ -35,6 +43,7 @@ export default function GallerySection() {
 
   const [uploadPhotos, { isLoading: isUploading }] = useUploadPhotosMutation();
   const [deletePhoto, { isLoading: isRemoving }] = useDeletePhotoMutation();
+  const [fetchAllPhotos] = useLazyGetPhotosQuery();
 
   const handleAddClick = () => {
     if (!isUploading) fileInputRef.current?.click();
@@ -46,7 +55,7 @@ export default function GallerySection() {
     if (!files.length) return;
 
     try {
-      await uploadPhotos({ category: category || DEFAULT_CATEGORY, files }).unwrap();
+      await uploadPhotos({ category: DEFAULT_CATEGORY, files }).unwrap();
       enqueueSnackbar("Fotky byly úspěšně nahrány", {
         variant: "success",
         autoHideDuration: 3000,
@@ -76,18 +85,77 @@ export default function GallerySection() {
     }
   };
 
+  const handleDeleteAll = async () => {
+    setConfirmDeleteAllOpen(false);
+    setIsDeletingAll(true);
+    try {
+      const all = await fetchAllPhotos({
+        page: 1,
+        pageSize: totalCount || PAGE_SIZE,
+      }).unwrap();
+      const ids = (all?.results || []).map((photo) => photo.id);
+      for (const id of ids) {
+        await deletePhoto(id).unwrap();
+      }
+      setPage(1);
+      enqueueSnackbar("Všechny fotky byly smazány", {
+        variant: "success",
+        autoHideDuration: 3000,
+      });
+    } catch (err) {
+      console.error("Chyba při mazání všech fotek:", err);
+      enqueueSnackbar("Chyba při mazání všech fotek", {
+        variant: "error",
+        autoHideDuration: 5000,
+      });
+    } finally {
+      setIsDeletingAll(false);
+    }
+  };
+
   return (
     <Stack p={{ md: 3 }} spacing={2}>
-      <Stack>
-        <Typography variant="h4" gutterBottom>
-          Fotky
-        </Typography>
-        <Typography variant="body1">
-          Zde je knihovna všech nahraných fotek. Přiřazení fotky na konkrétní
-          místo webu (úvodní slideshow, galerie, úvodní fotky stránek) se dělá
-          přímo na dané stránce pomocí "Inline editace".
-        </Typography>
+      <Stack direction="row" alignItems="flex-start" justifyContent="space-between" spacing={2}>
+        <Stack>
+          <Typography variant="h4" gutterBottom>
+            Fotky
+          </Typography>
+          <Typography variant="body1">
+            Zde je knihovna všech nahraných fotek. Přiřazení fotky na konkrétní
+            místo webu (úvodní slideshow, galerie, úvodní fotky stránek) se dělá
+            přímo na dané stránce pomocí "Inline editace".
+          </Typography>
+        </Stack>
+        <Button
+          variant="outlined"
+          color="error"
+          startIcon={
+            isDeletingAll ? <CircularProgress size={16} color="inherit" /> : <DeleteSweep />
+          }
+          disabled={isDeletingAll || isLoading || totalCount === 0}
+          onClick={() => setConfirmDeleteAllOpen(true)}
+          sx={{ whiteSpace: "nowrap" }}
+        >
+          Smazat vše
+        </Button>
       </Stack>
+
+      <Dialog open={confirmDeleteAllOpen} onClose={() => setConfirmDeleteAllOpen(false)}>
+        <DialogTitle>Smazat všechny fotky?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Smažou se všechny fotky v knihovně ({totalCount}) a zároveň zmizí ze
+            všech míst na webu, kde jsou aktuálně použité (úvodní slideshow,
+            dlaždice, galerie stránek). Tuto akci nelze vrátit zpět.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmDeleteAllOpen(false)}>Zrušit</Button>
+          <Button onClick={handleDeleteAll} color="error" variant="contained">
+            Smazat vše
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <input
         ref={fileInputRef}
@@ -126,28 +194,18 @@ export default function GallerySection() {
                 {isUploading ? (
                   <CircularProgress size={28} />
                 ) : (
-                  <>
-                    <TextField
-                      label="Kategorie"
-                      value={category}
-                      onChange={(e) => setCategory(e.target.value)}
-                      size="small"
-                      onClick={(e) => e.stopPropagation()}
-                      sx={{ width: "100%" }}
-                    />
-                    <Stack
-                      alignItems="center"
-                      onClick={handleAddClick}
-                      sx={{
-                        cursor: "pointer",
-                        color: "text.secondary",
-                        "&:hover": { color: "primary.main" },
-                      }}
-                    >
-                      <Add sx={{ fontSize: 32 }} />
-                      <Typography variant="body2">Nahrát fotky</Typography>
-                    </Stack>
-                  </>
+                  <Stack
+                    alignItems="center"
+                    onClick={handleAddClick}
+                    sx={{
+                      cursor: "pointer",
+                      color: "text.secondary",
+                      "&:hover": { color: "primary.main" },
+                    }}
+                  >
+                    <Add sx={{ fontSize: 32 }} />
+                    <Typography variant="body2">Nahrát fotky</Typography>
+                  </Stack>
                 )}
               </Stack>
             </Grid>
@@ -165,7 +223,7 @@ export default function GallerySection() {
                 >
                   <Box
                     component="img"
-                    src={photo.url}
+                    src={resolveMediaUrl(photo.url)}
                     alt=""
                     sx={{
                       width: "100%",
@@ -189,7 +247,7 @@ export default function GallerySection() {
                   </Typography>
                   <IconButton
                     onClick={() => handleDelete(photo.id)}
-                    disabled={isRemoving}
+                    disabled={isRemoving || isDeletingAll}
                     size="small"
                     sx={{
                       position: "absolute",

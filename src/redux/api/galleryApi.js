@@ -102,6 +102,7 @@ export const galleryApi = createApi({
 
 export const {
   useGetPhotosQuery,
+  useLazyGetPhotosQuery,
   useGetPhotoPlacementsQuery,
   useUploadPhotosMutation,
   useDeletePhotoMutation,

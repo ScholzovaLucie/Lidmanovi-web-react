@@ -17,6 +17,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
 import EditableTranslationText from "../components/EditableTranslationText";
 import PackageCard from "../components/PackageCard.jsx";
+import PhotoLocationEditor from "../components/PhotoLocationEditor.jsx";
+import { usePhotoSequence } from "../hooks/usePhotoSequence.js";
 import { useEditorialEditor } from "../context/editorialEditorContext";
 
 const asset = (path) =>
@@ -33,12 +35,12 @@ export default function AccommodationPackages() {
   } = useEditorialEditor();
   const [open, setOpen] = React.useState(false);
   const [active, setActive] = React.useState(null);
-  const packageImages = [
+  const { urls: packageImages } = usePhotoSequence("balicky-obrazky", [
     asset("/pobytoveBalicky/b4387.webp"),
     asset("/pobytoveBalicky/b4460.webp"),
     asset("/pobytoveBalicky/b4345.webp"),
     asset("/pobytoveBalicky/br1560.webp"),
-  ];
+  ]);
 
   const rawOrder = getInlineValue(
     "balicky.packagesOrder",
@@ -117,6 +119,15 @@ export default function AccommodationPackages() {
             variant="h1"
           />
         </Box>
+        {isAuthenticated && isInlineEditing && (
+          <Box sx={{ mb: 3 }}>
+            <PhotoLocationEditor
+              location="balicky-obrazky"
+              label="Fotky balíčků"
+              compact
+            />
+          </Box>
+        )}
         {isAuthenticated && isInlineEditing && (
           <Box
             sx={{

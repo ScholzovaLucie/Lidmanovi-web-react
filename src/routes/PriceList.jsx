@@ -7,6 +7,8 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import { useTranslation } from "react-i18next";
 import EditableTranslationText from "../components/EditableTranslationText";
+import PhotoEditBadge from "../components/PhotoEditBadge.jsx";
+import { usePhotoSequence } from "../hooks/usePhotoSequence.js";
 import { useEditorialEditor } from "../context/editorialEditorContext";
 
 export default function PriceList() {
@@ -19,6 +21,9 @@ export default function PriceList() {
   } = useEditorialEditor();
   const asset = (path) =>
     `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
+  const { urls: bannerUrls } = usePhotoSequence("cenik-banner", [
+    asset("/galerie/pokoje/039_HZ6_3852_Penzion_U_Lidmanu.webp"),
+  ]);
 
   const roomsItems = getInlineValue(
     "cenik.rooms.items",
@@ -79,13 +84,16 @@ export default function PriceList() {
           alignItems: "flex-end",
           overflow: "hidden",
           color: "primary.contrastText",
-          backgroundImage: `linear-gradient(90deg, rgba(39, 35, 30, 0.76), rgba(39, 35, 30, 0.42)), url(${asset("/galerie/pokoje/039_HZ6_3852_Penzion_U_Lidmanu.webp")})`,
+          backgroundImage:
+            `linear-gradient(90deg, rgba(39, 35, 30, 0.76), rgba(39, 35, 30, 0.42)), ` +
+            `url(${bannerUrls[0]})`,
           backgroundSize: "cover",
           backgroundPosition: "center 42%",
           px: { xs: 0, md: 0 },
           py: { xs: 5, md: 6.5 },
         }}
       >
+        <PhotoEditBadge location="cenik-banner" sx={{ top: 12, right: 12 }} />
         <Container maxWidth="xl">
           <Box
             sx={{

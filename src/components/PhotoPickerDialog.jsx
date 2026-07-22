@@ -14,14 +14,21 @@ import {
   Typography,
   Pagination,
   Stack,
+  IconButton,
+  Select,
+  MenuItem,
+  Divider,
 } from "@mui/material";
-import { Check, CloudUpload } from "@mui/icons-material";
+import { Check, CloudUpload, Delete } from "@mui/icons-material";
 import { useSnackbar } from "notistack";
 import {
   useGetPhotosQuery,
   useUploadPhotosMutation,
   useCreatePhotoPlacementMutation,
+  useDeletePhotoPlacementMutation,
+  useUpdatePhotoPlacementOrderMutation,
 } from "../redux/api/galleryApi";
+import { resolveMediaUrl } from "../utils/resolveMediaUrl";
 
 const LIBRARY_PAGE_SIZE = 24;
 
@@ -29,14 +36,20 @@ export default function PhotoPickerDialog({
   open,
   onClose,
   location,
-  existingPhotoIds = [],
-  currentCount = 0,
+  existingPlacements = [],
+  singlePhoto = false,
 }) {
   const { enqueueSnackbar } = useSnackbar();
   const [tab, setTab] = useState(0);
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState([]);
   const fileInputRef = useRef(null);
+
+  const existingPhotoIds = existingPlacements
+    .map((p) => p.photo?.id)
+    .filter(Boolean);
+  const currentCount = existingPlacements.length;
+  const sortedExisting = [...existingPlacements].sort((a, b) => a.order - b.order);
 
   const { data, isLoading } = useGetPhotosQuery(
     { page, pageSize: LIBRARY_PAGE_SIZE },
@@ -48,8 +61,50 @@ export default function PhotoPickerDialog({
   const [uploadPhotos, { isLoading: isUploading }] = useUploadPhotosMutation();
   const [createPhotoPlacement, { isLoading: isPlacing }] =
     useCreatePhotoPlacementMutation();
+  const [deletePhotoPlacement, { isLoading: isRemoving }] =
+    useDeletePhotoPlacementMutation();
+  const [updatePhotoPlacementOrder] = useUpdatePhotoPlacementOrderMutation();
 
-  const isBusy = isUploading || isPlacing;
+  const isBusy = isUploading || isPlacing || isRemoving;
+
+  const handleRemoveExisting = async (placementId) => {
+    try {
+      await deletePhotoPlacement(placementId).unwrap();
+    } catch (err) {
+      console.error("Chyba při odebírání fotky:", err);
+      enqueueSnackbar("Chyba při odebírání fotky", {
+        variant: "error",
+        autoHideDuration: 5000,
+      });
+    }
+  };
+
+  const handleMoveExisting = async (placementId, newPosition) => {
+    const oldIndex = sortedExisting.findIndex((p) => p.id === placementId);
+    const newIndex = newPosition - 1;
+    if (oldIndex === -1 || oldIndex === newIndex) return;
+
+    const reordered = [...sortedExisting];
+    const [moved] = reordered.splice(oldIndex, 1);
+    reordered.splice(newIndex, 0, moved);
+
+    try {
+      await Promise.all(
+        reordered
+          .map((p, idx) => ({ id: p.id, order: idx, changed: p.order !== idx }))
+          .filter(({ changed }) => changed)
+          .map(({ id, order }) =>
+            updatePhotoPlacementOrder({ id, order }).unwrap(),
+          ),
+      );
+    } catch (err) {
+      console.error("Chyba při změně pořadí:", err);
+      enqueueSnackbar("Chyba při změně pořadí", {
+        variant: "error",
+        autoHideDuration: 5000,
+      });
+    }
+  };
 
   const handleClose = () => {
     if (isBusy) return;
@@ -59,6 +114,10 @@ export default function PhotoPickerDialog({
   };
 
   const toggleSelect = (photoId) => {
+    if (singlePhoto) {
+      setSelectedIds([photoId]);
+      return;
+    }
     if (existingPhotoIds.includes(photoId)) return;
     setSelectedIds((prev) =>
       prev.includes(photoId)
@@ -68,7 +127,12 @@ export default function PhotoPickerDialog({
   };
 
   const placePhotos = async (photoIds) => {
-    let nextOrder = currentCount;
+    if (singlePhoto) {
+      await Promise.all(
+        existingPlacements.map((p) => deletePhotoPlacement(p.id).unwrap()),
+      );
+    }
+    let nextOrder = singlePhoto ? 0 : currentCount;
     for (const photoId of photoIds) {
       await createPhotoPlacement({
         photo: photoId,
@@ -128,12 +192,81 @@ export default function PhotoPickerDialog({
       fullWidth
       slotProps={{ paper: { "data-inline-edit-allow-action": "true" } }}
     >
-      <DialogTitle>Přidat fotky</DialogTitle>
+      <DialogTitle>{singlePhoto ? "Vybrat fotku" : "Spravovat fotky"}</DialogTitle>
       <Tabs value={tab} onChange={(_, value) => setTab(value)} sx={{ px: 3 }}>
         <Tab label="Vybrat z knihovny" />
         <Tab label="Nahrát nové" />
       </Tabs>
       <DialogContent dividers>
+        {!singlePhoto && sortedExisting.length > 0 && (
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="subtitle2" sx={{ mb: 1 }}>
+              Aktuální fotky
+            </Typography>
+            <Stack direction="row" spacing={1.5} flexWrap="wrap" useFlexGap>
+              {sortedExisting.map((placement, index) => (
+                <Box
+                  key={placement.id}
+                  sx={{
+                    position: "relative",
+                    width: 88,
+                    height: 66,
+                    borderRadius: 1,
+                    overflow: "hidden",
+                    border: "1px solid",
+                    borderColor: "divider",
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src={resolveMediaUrl(placement.photo?.url)}
+                    alt=""
+                    sx={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      display: "block",
+                    }}
+                  />
+                  <IconButton
+                    onClick={() => handleRemoveExisting(placement.id)}
+                    disabled={isRemoving}
+                    size="small"
+                    sx={{
+                      position: "absolute",
+                      top: 2,
+                      right: 2,
+                      p: 0.25,
+                      bgcolor: "rgba(255,255,255,0.85)",
+                      "&:hover": { bgcolor: "rgba(255,255,255,1)" },
+                    }}
+                  >
+                    <Delete fontSize="inherit" color="error" />
+                  </IconButton>
+                  <Select
+                    value={index + 1}
+                    onChange={(e) => handleMoveExisting(placement.id, e.target.value)}
+                    size="small"
+                    sx={{
+                      position: "absolute",
+                      bottom: 2,
+                      left: 2,
+                      bgcolor: "rgba(255,255,255,0.85)",
+                      "& .MuiSelect-select": { py: 0, px: 0.75, fontSize: "0.75rem" },
+                    }}
+                  >
+                    {sortedExisting.map((_, pos) => (
+                      <MenuItem key={pos} value={pos + 1}>
+                        {pos + 1}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </Box>
+              ))}
+            </Stack>
+            <Divider sx={{ mt: 2.5 }} />
+          </Box>
+        )}
         {tab === 0 ? (
           isLoading ? (
             <Box sx={{ textAlign: "center", py: 6 }}>
@@ -143,7 +276,8 @@ export default function PhotoPickerDialog({
             <>
               <Grid container spacing={1.5}>
                 {photos.map((photo) => {
-                  const alreadyPlaced = existingPhotoIds.includes(photo.id);
+                  const alreadyPlaced =
+                    !singlePhoto && existingPhotoIds.includes(photo.id);
                   const isSelected = selectedIds.includes(photo.id);
                   return (
                     <Grid key={photo.id} size={{ xs: 4, sm: 3, md: 2 }}>
@@ -163,7 +297,7 @@ export default function PhotoPickerDialog({
                       >
                         <Box
                           component="img"
-                          src={photo.url}
+                          src={resolveMediaUrl(photo.url)}
                           alt=""
                           sx={{
                             width: "100%",
@@ -245,7 +379,9 @@ export default function PhotoPickerDialog({
             variant="contained"
             disabled={!selectedIds.length || isBusy}
           >
-            Přidat vybrané ({selectedIds.length})
+            {singlePhoto
+              ? "Použít vybranou fotku"
+              : `Přidat vybrané (${selectedIds.length})`}
           </Button>
         )}
       </DialogActions>

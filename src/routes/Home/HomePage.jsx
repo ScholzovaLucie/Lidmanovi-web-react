@@ -9,7 +9,8 @@ import { useEditorialEditor } from "../../context/editorialEditorContext.js";
 import { useGoogleRating } from "../../hooks/useGoogleRating.js";
 import { GOOGLE_REVIEW_URL } from "../../utils/googleRating.js";
 import { usePhotoSequence } from "../../hooks/usePhotoSequence.js";
-import PhotoLocationEditor from "../../components/PhotoLocationEditor.jsx";
+import PhotoEditBadge from "../../components/PhotoEditBadge.jsx";
+import EditablePhotoSpot from "../../components/EditablePhotoSpot.jsx";
 
 function dateBoundary(value, boundary) {
   if (!value) return null;
@@ -64,6 +65,15 @@ export default function HomePage() {
     asset("/uvod/uvod3.webp"),
     asset("/uvod/uvod4.webp"),
     asset("/uvod/nove5.webp"),
+  ]);
+  const { urls: tile1Urls } = usePhotoSequence("home-tile-1", [
+    asset("galerie/exterier/132_HZ6_4056_Penzion_U_Lidmanu.webp"),
+  ]);
+  const { urls: tile2Urls } = usePhotoSequence("home-tile-2", [
+    asset("/galerie/exterier/022_HZ6_3836_Penzion_U_Lidmanu.webp"),
+  ]);
+  const { urls: tile3Urls } = usePhotoSequence("home-tile-3", [
+    asset("/galerie/interier/opona.webp"),
   ]);
 
   return (
@@ -132,9 +142,8 @@ export default function HomePage() {
           transition={100} // délka fade
           gradientTop="secondary.main"
         />
+        <PhotoEditBadge location="hero" singlePhoto={false} sx={{ top: 16, right: 16, zIndex: 10 }} />
       </Box>
-
-      <PhotoLocationEditor location="hero" label="Hero (úvodní slideshow)" />
 
       <Box component="section" sx={{ py: { xs: 5, md: 7 }, bgcolor: "background.paper" }}>
         <Container maxWidth="lg">
@@ -147,7 +156,8 @@ export default function HomePage() {
           >
             {[
               {
-                image: asset("/uvod/uvod1.webp"),
+                location: "home-card-ubytovani",
+                fallback: [asset("/uvod/uvod1.webp")],
                 to: "/ubytovani",
                 titleNs: "global",
                 titleKey: "nav.accommodation",
@@ -155,7 +165,8 @@ export default function HomePage() {
                 textKey: "uvod",
               },
               {
-                image: asset("galerie/interier/100_HZ6_3979_Penzion_U_Lidmanu.webp"),
+                location: "home-card-restaurace",
+                fallback: [asset("galerie/interier/100_HZ6_3979_Penzion_U_Lidmanu.webp")],
                 to: "/restaurace",
                 titleNs: "global",
                 titleKey: "nav.restaurant",
@@ -163,7 +174,8 @@ export default function HomePage() {
                 textKey: "lokace",
               },
               {
-                image: asset("/galerie/interier/opona.webp"),
+                location: "home-card-svatby",
+                fallback: [asset("/galerie/interier/opona.webp")],
                 to: "/svatby",
                 titleNs: "global",
                 titleKey: "nav.weddings",
@@ -185,17 +197,16 @@ export default function HomePage() {
                   },
                 }}
               >
-                <Box
-                  component="img"
-                  src={card.image}
-                  alt=""
-                  sx={{
+                <EditablePhotoSpot
+                  location={card.location}
+                  fallback={card.fallback}
+                  imgSx={{
                     display: "block",
                     width: "100%",
                     aspectRatio: "16 / 10",
                     objectFit: "cover",
-                    mb: 2,
                   }}
+                  wrapperSx={{ mb: 2 }}
                 />
                 <Box sx={{ mb: 0.5 }}>
                   <EditableTranslationText
@@ -236,21 +247,21 @@ export default function HomePage() {
         imageAspect={{ xs: "16 / 11", md: "16 / 10" }}
         items={[
           {
-            image: asset(
-              "galerie/exterier/132_HZ6_4056_Penzion_U_Lidmanu.webp",
-            ),
-            title: t("global:footer.brand"),
+            image: tile1Urls[0],
+            photoLocation: "home-tile-1",
+            titleKey: "footer.brand",
+            ns: "global",
             textKey: "lokace",
           },
           {
-            image: asset(
-              "/galerie/exterier/022_HZ6_3836_Penzion_U_Lidmanu.webp",
-            ),
+            image: tile2Urls[0],
+            photoLocation: "home-tile-2",
             titleKey: "jablon.nadpis",
             textKey: "jablon.text",
           },
           {
-            image: asset("/galerie/interier/opona.webp"),
+            image: tile3Urls[0],
+            photoLocation: "home-tile-3",
             titleKey: "pribeh.nadpis",
             paragraphsKey: "pribeh.text",
           },

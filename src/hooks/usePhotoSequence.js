@@ -1,4 +1,5 @@
 import { useGetPhotoPlacementsQuery } from "../redux/api/galleryApi";
+import { resolveMediaUrl } from "../utils/resolveMediaUrl";
 
 const DEFAULT_PAGE_SIZE = 100;
 
@@ -11,7 +12,9 @@ export function usePhotoSequence(location, fallbackUrls = []) {
 
   const placements = data?.results || [];
   const sorted = [...placements].sort((a, b) => a.order - b.order);
-  const apiUrls = sorted.map((p) => p.photo?.url).filter(Boolean);
+  const apiUrls = sorted
+    .map((p) => resolveMediaUrl(p.photo?.url))
+    .filter(Boolean);
 
   return {
     urls: apiUrls.length ? apiUrls : fallbackUrls,

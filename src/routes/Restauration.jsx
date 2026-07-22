@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import FullBleedTiles from "../components/FullBleedTiles.jsx";
 import EditableTranslationText from "../components/EditableTranslationText";
 import SubpageBanner from "../components/SubpageBanner.jsx";
-import PhotoLocationEditor from "../components/PhotoLocationEditor.jsx";
+import PhotoEditBadge from "../components/PhotoEditBadge.jsx";
 import { usePhotoSequence } from "../hooks/usePhotoSequence.js";
 import { selectIsAuthenticated } from "../redux/slices/app/appSlice";
 
@@ -26,18 +26,26 @@ export default function Restauration() {
     "/restaurace/restaurace4.webp",
     "/restaurace/restaurace5.webp",
   ]);
+  const { urls: tile1Urls } = usePhotoSequence("restaurace-tile-1", [
+    asset("galerie/exterier/012_HZ6_3793_Penzion_U_Lidmanu.webp"),
+  ]);
+  const { urls: tile2Urls } = usePhotoSequence("restaurace-tile-2", [
+    asset("galerie/interier/088_HZ6_3958_Penzion_U_Lidmanu.webp"),
+  ]);
+  const { urls: tile3Urls } = usePhotoSequence("restaurace-tile-3", [
+    asset("galerie/sal/110_HZ6_3997_Penzion_U_Lidmanu.webp"),
+  ]);
 
   return (
     <>
-      <SubpageBanner
-        eyebrow={t("pageTitle")}
-        title={t("pageTitle")}
-        slides={introSlides}
-      />
-      <PhotoLocationEditor
-        location="restaurace-uvod"
-        label="Restaurace (úvodní fotky)"
-      />
+      <Box sx={{ position: "relative" }}>
+        <SubpageBanner
+          eyebrow={t("pageTitle")}
+          title={t("pageTitle")}
+          slides={introSlides}
+        />
+        <PhotoEditBadge location="restaurace-uvod" singlePhoto={false} sx={{ top: 16, right: 16, zIndex: 10 }} />
+      </Box>
       <Container
         maxWidth="lg"
         sx={{ py: { xs: 5, md: 7 } }}
@@ -150,19 +158,22 @@ export default function Restauration() {
         imageAspect={{ xs: "16 / 10", md: "16 / 10" }}
         items={[
           {
-            image: asset("galerie/exterier/012_HZ6_3793_Penzion_U_Lidmanu.webp"),
+            image: tile1Urls[0],
+            photoLocation: "restaurace-tile-1",
             titleKey: "tiles.1.alt",
             textKey: "tiles.1.text",
             alt: t("tiles.1.alt"),
           },
           {
-            image: asset("galerie/interier/088_HZ6_3958_Penzion_U_Lidmanu.webp"),
+            image: tile2Urls[0],
+            photoLocation: "restaurace-tile-2",
             titleKey: "tiles.2.alt",
             textKey: "tiles.2.text",
             alt: t("tiles.2.alt"),
           },
           {
-            image: asset("galerie/sal/110_HZ6_3997_Penzion_U_Lidmanu.webp"),
+            image: tile3Urls[0],
+            photoLocation: "restaurace-tile-3",
             titleKey: "tiles.3.alt",
             textKey: "tiles.3.text",
             alt: t("tiles.3.alt"),

@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import FullBleedTiles from "../components/FullBleedTiles.jsx";
 import EditableTranslationText from "../components/EditableTranslationText";
 import SubpageBanner from "../components/SubpageBanner.jsx";
-import PhotoLocationEditor from "../components/PhotoLocationEditor.jsx";
+import PhotoEditBadge from "../components/PhotoEditBadge.jsx";
 import { usePhotoSequence } from "../hooks/usePhotoSequence.js";
 import { selectIsAuthenticated } from "../redux/slices/app/appSlice";
 
@@ -19,6 +19,18 @@ export default function Accommodations() {
     "/ubytovani/ubytovani3.webp",
     "/ubytovani/ubytovani5.webp",
     "/ubytovani/ubytovani7.webp",
+  ]);
+  const { urls: tile1Urls } = usePhotoSequence("ubytovani-tile-1", [
+    asset("/ubytovani/ubytovani1.webp"),
+  ]);
+  const { urls: tile2Urls } = usePhotoSequence("ubytovani-tile-2", [
+    asset("/ubytovani/ubytovani3.webp"),
+  ]);
+  const { urls: tile3Urls } = usePhotoSequence("ubytovani-tile-3", [
+    asset("/ubytovani/ubytovani5.webp"),
+  ]);
+  const { urls: tile4Urls } = usePhotoSequence("ubytovani-tile-4", [
+    asset("/ubytovani/ubytovani7.webp"),
   ]);
   const sharedSectionSx = {
     position: "relative",
@@ -34,16 +46,15 @@ export default function Accommodations() {
 
   return (
     <>
-      <SubpageBanner
-        eyebrow={t("pageTitle")}
-        title={t("heading")}
-        subtitle={t("intro")}
-        slides={introSlides}
-      />
-      <PhotoLocationEditor
-        location="ubytovani-uvod"
-        label="Ubytování (úvodní fotky)"
-      />
+      <Box sx={{ position: "relative" }}>
+        <SubpageBanner
+          eyebrow={t("pageTitle")}
+          title={t("heading")}
+          subtitle={t("intro")}
+          slides={introSlides}
+        />
+        <PhotoEditBadge location="ubytovani-uvod" singlePhoto={false} sx={{ top: 16, right: 16, zIndex: 10 }} />
+      </Box>
       <Container maxWidth="lg" sx={{ py: { xs: 5, md: 7 } }}>
         <Box
           sx={{
@@ -213,25 +224,29 @@ export default function Accommodations() {
         imageAspect={{ xs: "16 / 10", md: "16 / 10" }}
         items={[
           {
-            image: asset("/ubytovani/ubytovani1.webp"),
+            image: tile1Urls[0],
+            photoLocation: "ubytovani-tile-1",
             titleKey: "tiles.0.alt",
             textKey: "tiles.0.text",
             alt: t("tiles.0.alt"),
           },
           {
-            image: asset("/ubytovani/ubytovani3.webp"),
+            image: tile2Urls[0],
+            photoLocation: "ubytovani-tile-2",
             titleKey: "tiles.1.alt",
             textKey: "tiles.1.text",
             alt: t("tiles.1.alt"),
           },
           {
-            image: asset("/ubytovani/ubytovani5.webp"),
+            image: tile3Urls[0],
+            photoLocation: "ubytovani-tile-3",
             titleKey: "tiles.2.alt",
             textKey: "tiles.2.text",
             alt: t("tiles.2.alt"),
           },
           {
-            image: asset("/ubytovani/ubytovani7.webp"),
+            image: tile4Urls[0],
+            photoLocation: "ubytovani-tile-4",
             titleKey: "tiles.3.alt",
             textKey: "tiles.3.text",
             alt: t("tiles.3.alt"),

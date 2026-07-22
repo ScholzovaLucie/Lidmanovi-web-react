@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography";
 import { useSelector } from "react-redux";
 import { selectIsAuthenticated } from "../redux/slices/app/appSlice";
 import EditableTranslationText from "./EditableTranslationText";
+import PhotoEditBadge from "./PhotoEditBadge";
 
 /**
  * Střídající pásy (obrázek ↔ text) bez nutnosti 50% výšky.
@@ -48,7 +49,11 @@ export default function FullBleedTiles({
       .filter(Boolean);
   };
 
-  const toPublic = (p) => (p?.startsWith("/") ? p : `/${p || ""}`);
+  const toPublic = (p) => {
+    if (!p) return "";
+    if (/^https?:\/\//.test(p) || p.startsWith("data:")) return p;
+    return p.startsWith("/") ? p : `/${p}`;
+  };
 
   const renderText = (item, idx) => {
     const textAlign = variant === "cards" ? "center" : "left";
@@ -184,6 +189,9 @@ export default function FullBleedTiles({
                     Editovatelný blok
                   </Box>
                 )}
+                {item.photoLocation && (
+                  <PhotoEditBadge location={item.photoLocation} sx={{ top: 8, left: 8 }} />
+                )}
                 <Box
                   component="img"
                   src={toPublic(item.image)}
@@ -277,6 +285,9 @@ export default function FullBleedTiles({
               >
                 Editovatelný blok
               </Box>
+            )}
+            {item.photoLocation && (
+              <PhotoEditBadge location={item.photoLocation} sx={{ top: 8, left: 8 }} />
             )}
             {/* Obrázek jako background */}
             <Box
