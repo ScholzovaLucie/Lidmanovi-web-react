@@ -28,10 +28,17 @@ export default function InlineEditClickGuard({ children }) {
 
       const target = event.target;
       if (!(target instanceof Element)) return;
-      if (target.closest(ALLOW_SELECTOR)) return;
 
       const action = target.closest(ACTION_SELECTOR);
       if (!action) return;
+
+      if (target.closest(ALLOW_SELECTOR)) {
+        // The click landed on an editable field (e.g. a button's label being
+        // edited inline). Let the field itself work normally, but still stop
+        // the surrounding link/button (navigation, submit, ...) from firing.
+        event.preventDefault();
+        return;
+      }
 
       event.preventDefault();
       event.stopPropagation();

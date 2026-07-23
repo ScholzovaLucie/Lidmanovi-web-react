@@ -10,9 +10,9 @@ const NS = "global";
 function flattenNavKeys(items) {
   const result = [];
   items.forEach((item) => {
-    result.push({ i18nKey: `nav.${item.key}`, indent: false });
+    result.push({ i18nKey: `nav.${item.key}`, fallback: item.fallback, indent: false });
     (item.children || []).forEach((child) => {
-      result.push({ i18nKey: `nav.${child.key}`, indent: true });
+      result.push({ i18nKey: `nav.${child.key}`, fallback: child.fallback, indent: true });
     });
   });
   return result;
@@ -70,13 +70,13 @@ export default function MenuSection() {
       </Stack>
 
       <Stack spacing={2} sx={{ maxWidth: 480 }}>
-        {items.map(({ i18nKey, indent }) => {
+        {items.map(({ i18nKey, fallback, indent }) => {
           const compositeKey = `${NS}.${i18nKey}`;
           return (
             <TextField
               key={i18nKey}
               label={i18nKey}
-              value={getInlineValue(compositeKey, t(i18nKey))}
+              value={getInlineValue(compositeKey, t(i18nKey, { defaultValue: fallback }))}
               onChange={(e) => setInlineValue(compositeKey, e.target.value)}
               size="small"
               fullWidth

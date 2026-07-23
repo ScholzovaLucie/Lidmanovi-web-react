@@ -2,14 +2,24 @@ export const navConfig = [
   {
     to: "/ubytovani",
     key: "accommodation",
-    children: [{ to: "/cenik", key: "priceList" }],
+    fallback: "Ubytování",
+    children: [{ to: "/cenik", key: "priceList", fallback: "Ceník" }],
   },
-  { to: "/pobytove_balicky", key: "packages" },
-  { to: "/svatby", key: "weddings" },
-  { to: "/restaurace", key: "restaurant" },
-  { to: "/galerie", key: "gallery" },
-  { to: "/kontakt", key: "contact" },
-  { to: "/rezervace", key: "reservation" },
+  { to: "/pobytove_balicky", key: "packages", fallback: "Pobyty" },
+  {
+    to: "/sal",
+    key: "weddings",
+    fallback: "Sál",
+    children: [
+      { to: "/svatby", key: "weddingsSvatby", fallback: "Svatby" },
+      { to: "/oslavy", key: "weddingsOslavy", fallback: "Oslavy" },
+      { to: "/ostatni", key: "weddingsOstatni", fallback: "Ostatní" },
+    ],
+  },
+  { to: "/restaurace", key: "restaurant", fallback: "Restaurace" },
+  { to: "/galerie", key: "gallery", fallback: "Galerie" },
+  { to: "/kontakt", key: "contact", fallback: "Kontakt" },
+  { to: "/rezervace", key: "reservation", fallback: "Rezervace" },
 ];
 
 export const langOptions = [

@@ -12,12 +12,12 @@ export default function Header({ onLogin }) {
   const navigate = useNavigate();
   const { t } = useTranslation("global");
 
-  const allNavItems = navConfig.map(({ key, children, ...rest }) => ({
+  const allNavItems = navConfig.map(({ key, fallback, children, ...rest }) => ({
     ...rest,
-    label: t(`nav.${key}`),
-    children: children?.map(({ key: childKey, ...childRest }) => ({
+    label: t(`nav.${key}`, { defaultValue: fallback }),
+    children: children?.map(({ key: childKey, fallback: childFallback, ...childRest }) => ({
       ...childRest,
-      label: t(`nav.${childKey}`),
+      label: t(`nav.${childKey}`, { defaultValue: childFallback }),
     })),
   }));
 

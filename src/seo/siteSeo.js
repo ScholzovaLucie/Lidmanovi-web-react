@@ -68,6 +68,11 @@ export const SEO_ROUTES = {
       },
     },
   },
+  "/sal": {
+    title: "Sál",
+    description:
+      "Společenský sál v penzionu U Lidmanů v Machovské Lhotě — prostor pro svatby, oslavy i firemní akce v přírodě Broumovska.",
+  },
   "/svatby": {
     title: "Svatby",
     description:
@@ -87,6 +92,16 @@ export const SEO_ROUTES = {
         addressCountry: "CZ",
       },
     },
+  },
+  "/oslavy": {
+    title: "Oslavy",
+    description:
+      "Sál pro narozeninové oslavy, výročí a rodinná setkání v penzionu U Lidmanů v Machovské Lhotě.",
+  },
+  "/ostatni": {
+    title: "Sál pro akce",
+    description:
+      "Sál pro firemní akce, školení, semináře a soukromé večírky v penzionu U Lidmanů v Machovské Lhotě.",
   },
   "/ubytovani": {
     title: "Ubytování",

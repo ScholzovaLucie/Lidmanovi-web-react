@@ -21,6 +21,13 @@ function flattenObjectValue(value) {
   return [String(value)];
 }
 
+function isEmptyValue(value) {
+  if (value === undefined || value === null || value === "") return true;
+  if (Array.isArray(value)) return value.length === 0;
+  if (typeof value === "object") return Object.keys(value).length === 0;
+  return false;
+}
+
 export default function EditableTranslationText({
   ns,
   i18nKey,
@@ -30,6 +37,7 @@ export default function EditableTranslationText({
   multilineRows = 2,
   paragraphs = false,
   align = "inherit",
+  fallback,
 }) {
   const { t } = useTranslation(ns);
   const {
@@ -40,7 +48,9 @@ export default function EditableTranslationText({
     entryTypeMap,
   } = useEditorialEditor();
 
-  const raw = t(i18nKey, { returnObjects: true });
+  const translated = t(i18nKey, { returnObjects: true });
+  const raw =
+    fallback !== undefined && isEmptyValue(translated) ? fallback : translated;
   const isArray = Array.isArray(raw) || !!entryTypeMap[`${ns}.${i18nKey}`];
   const compositeKey = `${ns}.${i18nKey}`;
   const mergedValue = normalizeValue(getInlineValue(compositeKey, raw), raw);
