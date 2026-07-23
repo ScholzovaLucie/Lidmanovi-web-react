@@ -15,9 +15,12 @@ import {
   Tab,
   Box,
 } from "@mui/material";
-import { Save, Cancel } from "@mui/icons-material";
+import { Save, Cancel, Edit } from "@mui/icons-material";
 import { useState } from "react";
 import SpinnerField from "./SpinnerField";
+import { useGetPhotoPlacementsQuery } from "../../../../../redux/api/galleryApi.js";
+import { resolveMediaUrl } from "../../../../../utils/resolveMediaUrl.js";
+import PhotoPickerDialog from "../../../../../components/PhotoPickerDialog.jsx";
 
 // Tab Panel component pro jazykové taby
 function TabPanel(props) {
@@ -46,6 +49,17 @@ export default function RoomEditDialog({
   isUpdating,
 }) {
   const [activeTab, setActiveTab] = useState(0);
+  const [photoDialogOpen, setPhotoDialogOpen] = useState(false);
+
+  const photoLocation = editingRoom ? `pokoj-${editingRoom.id}` : null;
+  const { data: photoData } = useGetPhotoPlacementsQuery(
+    { location: photoLocation, page: 1, pageSize: 10 },
+    { skip: !photoLocation },
+  );
+  const photoPlacements = photoData?.results || [];
+  const currentPhotoUrl =
+    resolveMediaUrl(photoPlacements[0]?.photo?.url) ||
+    `${import.meta.env.BASE_URL}ubytovani/ubytovani1.webp`;
 
   // Jazykové varianty
   const languages = [
@@ -177,6 +191,40 @@ export default function RoomEditDialog({
               </Stack>
             </TabPanel>
           ))}
+
+          {/* Fotka pokoje */}
+          <Typography variant="h6" sx={{ mb: -1, mt: 2 }}>
+            Fotka pokoje
+          </Typography>
+
+          {editingRoom ? (
+            <Stack direction="row" spacing={2} alignItems="center">
+              <Box
+                component="img"
+                src={currentPhotoUrl}
+                alt=""
+                sx={{
+                  width: 140,
+                  height: 100,
+                  objectFit: "cover",
+                  borderRadius: 1,
+                  border: "1px solid",
+                  borderColor: "divider",
+                }}
+              />
+              <Button
+                variant="outlined"
+                startIcon={<Edit />}
+                onClick={() => setPhotoDialogOpen(true)}
+              >
+                Změnit fotku
+              </Button>
+            </Stack>
+          ) : (
+            <Typography variant="body2" color="text.secondary">
+              Fotku půjde nastavit po uložení pokoje.
+            </Typography>
+          )}
 
           {/* Kapacita */}
           <Typography variant="h6" sx={{ mb: -1, mt: 2 }}>
@@ -311,6 +359,16 @@ export default function RoomEditDialog({
               : "Přidat pokoj"}
         </Button>
       </DialogActions>
+
+      {photoLocation && (
+        <PhotoPickerDialog
+          open={photoDialogOpen}
+          onClose={() => setPhotoDialogOpen(false)}
+          location={photoLocation}
+          existingPlacements={photoPlacements}
+          singlePhoto
+        />
+      )}
     </Dialog>
   );
 }

@@ -17,6 +17,7 @@ import CollapsableText from "./CollapsableText";
 import Price from "./Price";
 import { useTranslation } from "react-i18next";
 import HotelOutlinedIcon from "@mui/icons-material/HotelOutlined";
+import { usePhotoSequence } from "../../../hooks/usePhotoSequence";
 
 export default function RoomCard({
   room,
@@ -28,6 +29,10 @@ export default function RoomCard({
 }) {
   const { t } = useTranslation("rezervace");
   const dispatch = useDispatch();
+  const photoLocation = `pokoj-${room.id}`;
+  const { urls: roomPhotoUrls } = usePhotoSequence(photoLocation, [
+    `${import.meta.env.BASE_URL}ubytovani/ubytovani1.webp`,
+  ]);
 
   return (
     <AppCardCustomizable>
@@ -91,8 +96,8 @@ export default function RoomCard({
         )}
 
         <img
-          src={`${import.meta.env.BASE_URL}ubytovani/ubytovani1.webp`}
-          alt="Room"
+          src={roomPhotoUrls[0]}
+          alt={room.name || "Room"}
           style={{
             width: "100%",
             aspectRatio: "16 / 9",

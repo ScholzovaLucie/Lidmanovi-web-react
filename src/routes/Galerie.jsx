@@ -1,9 +1,15 @@
 import React from "react";
-import { Box, Container } from "@mui/material";
+import { Box, Container, Stack, Typography } from "@mui/material";
+import { Collections } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import EditableTranslationText from "../components/EditableTranslationText.jsx";
 import GalleryCategoryCard from "../components/GalleryCategoryCard.jsx";
 import GalleryLightbox from "../components/GalleryLightbox.jsx";
+import PhotoEditBadge from "../components/PhotoEditBadge.jsx";
+import PhotoPickerDialog from "../components/PhotoPickerDialog.jsx";
+import { usePhotoSequence } from "../hooks/usePhotoSequence.js";
+import { useEditorialEditor } from "../context/editorialEditorContext.js";
+import { useGetPhotoPlacementsQuery } from "../redux/api/galleryApi.js";
 
 const asset = (path) =>
   `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
@@ -118,6 +124,104 @@ const GALLERIES = [
   },
 ];
 
+function GalleryCategoryTile({ gallery, index, t, onOpen }) {
+  const { isAuthenticated, isInlineEditing } = useEditorialEditor();
+  const showEditUi = isAuthenticated && isInlineEditing;
+  const [managerOpen, setManagerOpen] = React.useState(false);
+
+  const galleryLocation = `galerie-${gallery.id}`;
+  const { urls: coverUrls } = usePhotoSequence(`${galleryLocation}-cover`, [gallery.cover]);
+  const { urls: imageUrls } = usePhotoSequence(galleryLocation, gallery.images);
+
+  const { data } = useGetPhotoPlacementsQuery(
+    { location: galleryLocation, page: 1, pageSize: 100 },
+    { skip: !showEditUi },
+  );
+  const placements = data?.results || [];
+
+  return (
+    <Box sx={{ width: "100%" }}>
+      <Box sx={{ position: "relative" }}>
+        <GalleryCategoryCard
+          index={index}
+          title={t(`categories.${gallery.id}`, {
+            defaultValue: gallery.title,
+          })}
+          titleNode={
+            <EditableTranslationText
+              ns="galerie"
+              i18nKey={`categories.${gallery.id}`}
+              multilineRows={1}
+            />
+          }
+          cover={coverUrls[0]}
+          onClick={() => onOpen(imageUrls, 0)}
+        />
+        <PhotoEditBadge
+          location={`${galleryLocation}-cover`}
+          singlePhoto
+          label="Úvodní foto"
+          showLabel
+          sx={{ top: 8, left: 8 }}
+        />
+      </Box>
+
+      {showEditUi && (
+        <Stack
+          direction="row"
+          alignItems="center"
+          spacing={1}
+          data-inline-edit-allow-action="true"
+          onClick={() => setManagerOpen(true)}
+          sx={{
+            mt: 1,
+            p: 0.75,
+            borderRadius: 1,
+            border: "1px dashed",
+            borderColor: "primary.main",
+            cursor: "pointer",
+            overflowX: "auto",
+            "&:hover": { bgcolor: "primary.50" },
+          }}
+        >
+          <Collections fontSize="small" sx={{ color: "primary.main", flexShrink: 0 }} />
+          <Typography
+            variant="caption"
+            sx={{ flexShrink: 0, fontWeight: 600, color: "primary.main" }}
+          >
+            Fotky galerie ({imageUrls.length})
+          </Typography>
+          <Stack direction="row" spacing={0.5}>
+            {imageUrls.map((src, i) => (
+              <Box
+                key={`${src}-${i}`}
+                component="img"
+                src={src}
+                alt=""
+                sx={{
+                  width: 40,
+                  height: 30,
+                  objectFit: "cover",
+                  borderRadius: 0.5,
+                  flexShrink: 0,
+                }}
+              />
+            ))}
+          </Stack>
+        </Stack>
+      )}
+
+      <PhotoPickerDialog
+        open={managerOpen}
+        onClose={() => setManagerOpen(false)}
+        location={galleryLocation}
+        existingPlacements={placements}
+        singlePhoto={false}
+      />
+    </Box>
+  );
+}
+
 export default function Galerie() {
   const { t } = useTranslation(["galerie", "global"]);
   const [open, setOpen] = React.useState(false);
@@ -153,23 +257,13 @@ export default function Galerie() {
           }}
         >
           {GALLERIES.map((gallery, index) => (
-            <Box key={gallery.id} sx={{ width: "100%" }}>
-              <GalleryCategoryCard
-                index={index}
-                title={t(`categories.${gallery.id}`, {
-                  defaultValue: gallery.title,
-                })}
-                titleNode={
-                  <EditableTranslationText
-                    ns="galerie"
-                    i18nKey={`categories.${gallery.id}`}
-                    multilineRows={1}
-                  />
-                }
-                cover={gallery.cover}
-                onClick={() => openGallery(gallery.images, 0)}
-              />
-            </Box>
+            <GalleryCategoryTile
+              key={gallery.id}
+              gallery={gallery}
+              index={index}
+              t={t}
+              onOpen={openGallery}
+            />
           ))}
         </Box>
 
