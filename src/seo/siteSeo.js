@@ -139,12 +139,6 @@ export const SEO_ROUTES = {
     description: "Informace o zpracování osobních údajů v Penzionu U Lidmanů dle nařízení GDPR.",
     robots: "noindex, follow",
   },
-  "/pokoje": {
-    title: "Pokoje",
-    description:
-      "Prohlédněte si pokoje Penzionu U Lidmanů v Machovské Lhotě. Útulné ubytování s vybavením pro pohodlný pobyt v srdci Broumovska.",
-    keywords: "pokoje penzion U Lidmanů, ubytování Machovská Lhota, pokoje Broumovsko",
-  },
   "/admin": {
     title: "Administrace",
     description: "Administrační část webu.",

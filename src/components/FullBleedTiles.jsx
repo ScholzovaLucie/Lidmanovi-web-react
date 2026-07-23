@@ -35,6 +35,8 @@ export default function FullBleedTiles({
   fullBleedHack = false,
   bgPosition = "center",
   bgSize = "cover",
+  sectionBgcolor = "background.paper",
+  sectionBorderTop = "1px solid #dfd4c4",
 }) {
   const isAuthenticated = useSelector(selectIsAuthenticated);
 
@@ -137,8 +139,8 @@ export default function FullBleedTiles({
             mt: 3,
           }),
           py: { xs: 5, md: 7 },
-          bgcolor: "background.paper",
-          borderTop: "1px solid #dfd4c4",
+          bgcolor: sectionBgcolor,
+          borderTop: sectionBorderTop,
         }}
       >
         <Container maxWidth={false} sx={{ maxWidth: 1640 }}>

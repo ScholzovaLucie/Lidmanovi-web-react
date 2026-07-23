@@ -11,7 +11,6 @@ export const NAMESPACE_TO_CMS_PATH = {
   balicky: "/balicky",
   rezervace: "/rezervace",
   cenik: "/cenik",
-  pokoje: "/pokoje",
   gdpr: "/gdpr",
 };
 
@@ -27,7 +26,6 @@ const FRONTEND_PATH_TO_CMS_CONFIG = {
   "/galerie": { cmsPath: "/galerie", namespaces: ["galerie"] },
   "/rezervace": { cmsPath: "/rezervace", namespaces: ["rezervace"] },
   "/cenik": { cmsPath: "/cenik", namespaces: ["cenik"] },
-  "/pokoje": { cmsPath: "/pokoje", namespaces: ["pokoje"] },
   "/gdpr": { cmsPath: "/gdpr", namespaces: ["gdpr"] },
 };
 

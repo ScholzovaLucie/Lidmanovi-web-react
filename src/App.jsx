@@ -26,7 +26,6 @@ const AdminPage = lazy(() => import("./routes/Admin/AdminPage.jsx"));
 const ReservationPage2 = lazy(
   () => import("./routes/Reservation/ReservationPage.jsx"),
 );
-const PokojevPage = lazy(() => import("./routes/Pokoje/PokojevPage.jsx"));
 const Gdpr = lazy(() => import("./routes/Gdpr.jsx"));
 
 // Loading component
@@ -58,7 +57,7 @@ export default function App() {
           <Route path="/pobytove_balicky" element={<AccommodationPackages />} />
           <Route path="/cenik" element={<PriceList />} />
           <Route path="/galerie" element={<Galerie />} />
-          <Route path="/pokoje" element={<PokojevPage />} />
+          <Route path="/pokoje" element={<Navigate to="/ubytovani" replace />} />
           <Route path="/rezervace" element={<ReservationPage2 />} />
           <Route path="/gdpr" element={<Gdpr />} />
         </Route>

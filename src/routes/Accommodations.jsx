@@ -1,12 +1,14 @@
 import React from "react";
-import { Box, Container, Divider, Paper } from "@mui/material";
+import { Box, Container, Divider, Grid, Paper, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import FullBleedTiles from "../components/FullBleedTiles.jsx";
 import EditableTranslationText from "../components/EditableTranslationText";
 import SubpageBanner from "../components/SubpageBanner.jsx";
 import PhotoEditBadge from "../components/PhotoEditBadge.jsx";
+import RoomCard from "./Reservation/components/RoomCard.jsx";
 import { usePhotoSequence } from "../hooks/usePhotoSequence.js";
+import { useRoomsQuery } from "../redux/api/roomsApi.js";
 import { selectIsAuthenticated } from "../redux/slices/app/appSlice";
 
 export default function Accommodations() {
@@ -14,6 +16,14 @@ export default function Accommodations() {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const asset = (path) =>
     `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
+  const {
+    data: roomsData,
+    isLoading: roomsLoading,
+    error: roomsError,
+  } = useRoomsQuery();
+  const rooms = (roomsData?.results ?? (Array.isArray(roomsData) ? roomsData : [])).filter(
+    (r) => r.is_active,
+  );
   const { urls: introSlides } = usePhotoSequence("ubytovani-uvod", [
     "/ubytovani/ubytovani2.webp",
     "/ubytovani/ubytovani3.webp",
@@ -65,7 +75,26 @@ export default function Accommodations() {
             mb: { xs: 4, md: 5 },
           }}
         >
-          <Box>
+          <Paper sx={sharedSectionSx}>
+            {isAuthenticated && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 8,
+                  right: 8,
+                  px: 1,
+                  py: 0.25,
+                  borderRadius: 1,
+                  bgcolor: "secondary.main",
+                  color: "secondary.contrastText",
+                  fontSize: 11,
+                  fontWeight: 700,
+                }}
+              >
+                Editovatelný blok
+              </Box>
+            )}
+
             <EditableTranslationText
               ns="ubytovani"
               i18nKey="roomsTitle"
@@ -86,7 +115,7 @@ export default function Accommodations() {
               sx={{ color: "text.secondary" }}
               multilineRows={4}
             />
-          </Box>
+          </Paper>
 
           <Paper sx={sharedSectionSx}>
             {isAuthenticated && (
@@ -217,11 +246,97 @@ export default function Accommodations() {
         </Box>
       </Container>
 
+      <Box
+        component="section"
+        sx={{
+          position: "relative",
+          bgcolor: "background.paper",
+          py: { xs: 5, md: 7 },
+        }}
+      >
+        <Container maxWidth="lg">
+          <Box
+            sx={{
+              position: "relative",
+              textAlign: "center",
+              maxWidth: 720,
+              mx: "auto",
+              mb: { xs: 4, md: 5 },
+              ...(isAuthenticated && {
+                px: { xs: 3, md: 4 },
+                py: { xs: 2.5, md: 3 },
+                outline: "1px dashed",
+                outlineColor: "secondary.main",
+              }),
+            }}
+          >
+            {isAuthenticated && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 8,
+                  right: 8,
+                  px: 1,
+                  py: 0.25,
+                  borderRadius: 1,
+                  bgcolor: "secondary.main",
+                  color: "secondary.contrastText",
+                  fontSize: 11,
+                  fontWeight: 700,
+                }}
+              >
+                Editovatelný blok
+              </Box>
+            )}
+
+            <EditableTranslationText
+              ns="ubytovani"
+              i18nKey="roomsListTitle"
+              variant="h2"
+              align="center"
+              sx={{ mb: 1.5 }}
+            />
+            <EditableTranslationText
+              ns="ubytovani"
+              i18nKey="roomsListText"
+              variant="body1"
+              align="center"
+              sx={{ color: "text.secondary" }}
+              multilineRows={3}
+            />
+          </Box>
+
+          {roomsLoading ? (
+            <Box sx={{ textAlign: "center", py: 6 }}>
+              <Typography color="text.secondary">{t("roomsLoading")}</Typography>
+            </Box>
+          ) : roomsError ? (
+            <Box sx={{ textAlign: "center", py: 6 }}>
+              <Typography color="error">{t("roomsError")}</Typography>
+            </Box>
+          ) : rooms.length === 0 ? (
+            <Box sx={{ textAlign: "center", py: 6 }}>
+              <Typography color="text.secondary">{t("roomsEmpty")}</Typography>
+            </Box>
+          ) : (
+            <Grid container spacing={3} justifyContent="center">
+              {rooms.map((room) => (
+                <Grid key={room.id} size={{ xs: 12, sm: 6, md: 4 }}>
+                  <RoomCard room={room} isReadOnly />
+                </Grid>
+              ))}
+            </Grid>
+          )}
+        </Container>
+      </Box>
+
       <FullBleedTiles
         fullBleedHack
         variant="cards"
         translationNamespace="ubytovani"
         imageAspect={{ xs: "16 / 10", md: "16 / 10" }}
+        sectionBgcolor="background.default"
+        sectionBorderTop="none"
         items={[
           {
             image: tile1Urls[0],

@@ -31,7 +31,6 @@ i18n
       "balicky",
       "cenik",
       "rezervace",
-      "pokoje",
       "gdpr",
     ],
     defaultNS: "global",
