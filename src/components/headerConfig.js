@@ -1,11 +1,14 @@
 export const navConfig = [
-  { to: "/restaurace", key: "restaurant" },
-  { to: "/svatby", key: "weddings" },
-  { to: "/ubytovani", key: "accommodation" },
+  {
+    to: "/ubytovani",
+    key: "accommodation",
+    children: [{ to: "/cenik", key: "priceList" }],
+  },
   { to: "/pobytove_balicky", key: "packages" },
+  { to: "/svatby", key: "weddings" },
+  { to: "/restaurace", key: "restaurant" },
   { to: "/galerie", key: "gallery" },
   { to: "/kontakt", key: "contact" },
-  { to: "/cenik", key: "priceList" },
   { to: "/rezervace", key: "reservation" },
 ];
 

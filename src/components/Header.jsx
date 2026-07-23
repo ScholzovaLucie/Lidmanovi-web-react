@@ -12,9 +12,13 @@ export default function Header({ onLogin }) {
   const navigate = useNavigate();
   const { t } = useTranslation("global");
 
-  const allNavItems = navConfig.map(({ key, ...rest }) => ({
+  const allNavItems = navConfig.map(({ key, children, ...rest }) => ({
     ...rest,
     label: t(`nav.${key}`),
+    children: children?.map(({ key: childKey, ...childRest }) => ({
+      ...childRest,
+      label: t(`nav.${childKey}`),
+    })),
   }));
 
   return (

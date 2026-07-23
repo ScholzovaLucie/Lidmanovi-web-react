@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Box, Button, Typography } from "@mui/material";
+import { KeyboardArrowDown } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { langOptions } from "./headerConfig";
 
@@ -53,6 +54,100 @@ const NavButton = ({ to, label, end }) => (
   </Box>
 );
 
+const NavButtonWithChildren = ({ to, label, end, items }) => (
+  <Box
+    sx={{
+      position: "relative",
+      "&:hover > .dropdown-menu, &:focus-within > .dropdown-menu": {
+        opacity: 1,
+        visibility: "visible",
+        transform: "translate(-50%, 0)",
+      },
+      "&:hover .chevron": { transform: "rotate(180deg)" },
+    }}
+  >
+    <Box
+      component={NavLink}
+      to={to}
+      end={end}
+      className={({ isActive }) => (isActive ? "active" : "")}
+      sx={{ ...navLinkSx, gap: 0.3 }}
+    >
+      <Typography
+        component="span"
+        sx={{
+          fontSize: "0.82rem",
+          fontWeight: 400,
+          letterSpacing: 0,
+          textTransform: "none",
+          lineHeight: 1,
+          ".active &": { fontWeight: 500 },
+        }}
+      >
+        {label}
+      </Typography>
+      <KeyboardArrowDown
+        className="chevron"
+        sx={{ fontSize: 17, opacity: 0.55, transition: "transform 200ms ease" }}
+      />
+    </Box>
+
+    <Box
+      className="dropdown-menu"
+      sx={{
+        position: "absolute",
+        top: "100%",
+        left: "50%",
+        pt: 1.25,
+        minWidth: 190,
+        opacity: 0,
+        visibility: "hidden",
+        transform: "translate(-50%, -6px)",
+        transition: "opacity 180ms ease, transform 180ms ease, visibility 180ms",
+        zIndex: 5,
+      }}
+    >
+      <Box
+        sx={{
+          bgcolor: "#fffaf0",
+          borderRadius: 2,
+          border: "1px solid #ecdfc9",
+          boxShadow: "0 20px 45px rgba(45,40,35,0.16)",
+          overflow: "hidden",
+          py: 0.75,
+        }}
+      >
+        {items.map((item) => (
+          <Box
+            key={item.to}
+            component={NavLink}
+            to={item.to}
+            className={({ isActive }) => (isActive ? "active" : "")}
+            sx={{
+              display: "block",
+              mx: 0.75,
+              my: 0.25,
+              px: 1.5,
+              py: 1,
+              borderRadius: 1.25,
+              fontSize: "0.82rem",
+              color: "#2d2823",
+              textDecoration: "none",
+              transition: "background-color 140ms ease, color 140ms ease",
+              "&:hover, &.active": {
+                bgcolor: "primary.light",
+                color: "primary.dark",
+              },
+            }}
+          >
+            {item.label}
+          </Box>
+        ))}
+      </Box>
+    </Box>
+  </Box>
+);
+
 export function DesktopHeader({ navItems = [] }) {
   const navigate = useNavigate();
   const { i18n } = useTranslation("global");
@@ -72,9 +167,13 @@ export function DesktopHeader({ navItems = [] }) {
 
       <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center", px: 3 }}>
         <Box component="nav" sx={{ display: "flex", alignItems: "center", gap: 2.4 }}>
-          {primaryNavItems.map(({ to, label, end }) => (
-            <NavButton key={to} to={to} label={label} end={end} />
-          ))}
+          {primaryNavItems.map(({ to, label, end, children }) =>
+            children?.length ? (
+              <NavButtonWithChildren key={to} to={to} label={label} end={end} items={children} />
+            ) : (
+              <NavButton key={to} to={to} label={label} end={end} />
+            ),
+          )}
         </Box>
       </Box>
 

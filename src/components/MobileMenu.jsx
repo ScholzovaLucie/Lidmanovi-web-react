@@ -37,34 +37,61 @@ export function MobileMenu({
       >
         {/* Navigation */}
         <Stack spacing={1} sx={{ mb: 3 }}>
-          {navItems.map(({ to, label, end }) => (
-            <Button
-              key={to}
-              component={NavLink}
-              to={to}
-              end={end}
-              onClick={onClose}
-              fullWidth
-              sx={{
-                justifyContent: "center",
-                textTransform: "none",
-                fontWeight: 500,
-                py: 1.5,
-                fontSize: "1rem",
-                color: "text.primary",
-                borderRadius: 1.5,
-                "&.active": {
-                  fontWeight: 700,
-                  bgcolor: "rgba(85,116,143,0.08)",
-                  color: "primary.dark",
-                  "&:hover": {
-                    bgcolor: "rgba(85,116,143,0.12)",
+          {navItems.map(({ to, label, end, children }) => (
+            <React.Fragment key={to}>
+              <Button
+                component={NavLink}
+                to={to}
+                end={end}
+                onClick={onClose}
+                fullWidth
+                sx={{
+                  justifyContent: "center",
+                  textTransform: "none",
+                  fontWeight: 500,
+                  py: 1.5,
+                  fontSize: "1rem",
+                  color: "text.primary",
+                  borderRadius: 1.5,
+                  "&.active": {
+                    fontWeight: 700,
+                    bgcolor: "rgba(85,116,143,0.08)",
+                    color: "primary.dark",
+                    "&:hover": {
+                      bgcolor: "rgba(85,116,143,0.12)",
+                    },
                   },
-                },
-              }}
-            >
-              {label}
-            </Button>
+                }}
+              >
+                {label}
+              </Button>
+              {children?.map((child) => (
+                <Button
+                  key={child.to}
+                  component={NavLink}
+                  to={child.to}
+                  end={child.end}
+                  onClick={onClose}
+                  fullWidth
+                  sx={{
+                    justifyContent: "center",
+                    textTransform: "none",
+                    fontWeight: 400,
+                    py: 1,
+                    fontSize: "0.9rem",
+                    color: "text.secondary",
+                    borderRadius: 1.5,
+                    "&.active": {
+                      fontWeight: 600,
+                      bgcolor: "rgba(85,116,143,0.08)",
+                      color: "primary.dark",
+                    },
+                  }}
+                >
+                  {child.label}
+                </Button>
+              ))}
+            </React.Fragment>
           ))}
         </Stack>
 
