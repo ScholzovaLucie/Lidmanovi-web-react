@@ -42,6 +42,20 @@ export default function Restauration() {
         <SubpageBanner
           eyebrow={t("pageTitle")}
           title={t("pageTitle")}
+          titleNode={
+            <EditableTranslationText
+              ns="restaurace"
+              i18nKey="pageTitle"
+              variant="h1"
+              align="center"
+              sx={{
+                maxWidth: "16ch",
+                mx: "auto",
+                color: "#fdfefe",
+                textShadow: "0 10px 34px rgba(0,0,0,0.24)",
+              }}
+            />
+          }
           slides={introSlides}
         />
         <PhotoEditBadge location="restaurace-uvod" singlePhoto={false} sx={{ top: 16, right: 16, zIndex: 10 }} />

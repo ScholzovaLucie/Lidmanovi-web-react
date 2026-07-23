@@ -60,7 +60,36 @@ export default function Accommodations() {
         <SubpageBanner
           eyebrow={t("pageTitle")}
           title={t("heading")}
+          titleNode={
+            <EditableTranslationText
+              ns="ubytovani"
+              i18nKey="heading"
+              variant="h1"
+              align="center"
+              sx={{
+                maxWidth: "16ch",
+                mx: "auto",
+                color: "#fdfefe",
+                textShadow: "0 10px 34px rgba(0,0,0,0.24)",
+              }}
+            />
+          }
           subtitle={t("intro")}
+          subtitleNode={
+            <EditableTranslationText
+              ns="ubytovani"
+              i18nKey="intro"
+              variant="body1"
+              align="center"
+              sx={{
+                mt: 1.5,
+                maxWidth: "48ch",
+                mx: "auto",
+                color: "rgba(238,243,247,0.72)",
+              }}
+              multilineRows={3}
+            />
+          }
           slides={introSlides}
         />
         <PhotoEditBadge location="ubytovani-uvod" singlePhoto={false} sx={{ top: 16, right: 16, zIndex: 10 }} />

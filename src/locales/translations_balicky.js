@@ -1,7 +1,7 @@
 // translations_balicky.js
 export const translations_balicky = {
   cs: {
-    pageTitle: "Pobytové balíčky",
+    pageTitle: "Pobyty",
     packagesOrder: ["b1", "b2", "b3"],
     cards: {
       b1: {

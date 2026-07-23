@@ -30,6 +30,15 @@ const navLinkSx = {
   "&:hover::after, &.active::after": { transform: "scaleX(1)", opacity: 1 },
 };
 
+const navLabelSx = {
+  fontSize: "0.82rem",
+  fontWeight: 400,
+  letterSpacing: 0,
+  textTransform: "none",
+  lineHeight: 1,
+  ".active &": { fontWeight: 500 },
+};
+
 const NavButton = ({ to, label, end }) => (
   <Box
     component={NavLink}
@@ -38,17 +47,7 @@ const NavButton = ({ to, label, end }) => (
     className={({ isActive }) => (isActive ? "active" : "")}
     sx={navLinkSx}
   >
-    <Typography
-      component="span"
-      sx={{
-        fontSize: "0.82rem",
-        fontWeight: 400,
-        letterSpacing: 0,
-        textTransform: "none",
-        lineHeight: 1,
-        ".active &": { fontWeight: 500 },
-      }}
-    >
+    <Typography component="span" sx={navLabelSx}>
       {label}
     </Typography>
   </Box>
@@ -73,17 +72,7 @@ const NavButtonWithChildren = ({ to, label, end, items }) => (
       className={({ isActive }) => (isActive ? "active" : "")}
       sx={{ ...navLinkSx, gap: 0.3 }}
     >
-      <Typography
-        component="span"
-        sx={{
-          fontSize: "0.82rem",
-          fontWeight: 400,
-          letterSpacing: 0,
-          textTransform: "none",
-          lineHeight: 1,
-          ".active &": { fontWeight: 500 },
-        }}
-      >
+      <Typography component="span" sx={navLabelSx}>
         {label}
       </Typography>
       <KeyboardArrowDown

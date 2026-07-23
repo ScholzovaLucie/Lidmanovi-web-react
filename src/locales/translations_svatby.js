@@ -1,11 +1,11 @@
 // translations_svatby.js
 export const translations_svatby = {
   cs: {
-    pageTitle: "Svatby",
+    pageTitle: "Sál",
     heroAlt: "Svatba v pensionu a restauraci U Lidmanů",
-    heading: "Svatby u Lidmanů",
+    heading: "Sál u Lidmanů",
     heroEyebrow: "Když si u nás řeknete „ano“",
-    heroTitle: "Svatby v horách",
+    heroTitle: "Sál v horách",
     sectionTitle: "Váš den v romantické krajině",
     sectionText:
       "Naše restaurace je ideální k uspořádání svatby — nejen díky romantické okolní krajině, ale i uspořádání našich prostor. Svatební menu a raut připravíme zcela dle vašich představ.",

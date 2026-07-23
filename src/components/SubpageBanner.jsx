@@ -11,8 +11,11 @@ const toAsset = (path) => {
 
 export default function SubpageBanner({
   eyebrow,
+  eyebrowNode,
   title,
+  titleNode,
   subtitle,
+  subtitleNode,
   image,
   slides = [],
   galleryImages = [],
@@ -88,45 +91,55 @@ export default function SubpageBanner({
           textAlign: "center",
         }}
       >
-        {eyebrow && (
+        {eyebrowNode ? (
+          eyebrowNode
+        ) : (
+          eyebrow && (
+            <Typography
+              sx={{
+                mb: 1.2,
+                color: "rgba(255,250,240,0.86)",
+                fontSize: "0.72rem",
+                fontWeight: 600,
+                letterSpacing: "0.35em",
+                textTransform: "uppercase",
+              }}
+            >
+              {eyebrow}
+            </Typography>
+          )
+        )}
+
+        {titleNode || (
           <Typography
+            variant="h1"
             sx={{
-              mb: 1.2,
-              color: "rgba(255,250,240,0.86)",
-              fontSize: "0.72rem",
-              fontWeight: 600,
-              letterSpacing: "0.35em",
-              textTransform: "uppercase",
+              maxWidth: "16ch",
+              mx: "auto",
+              color: "#fdfefe",
+              textShadow: "0 10px 34px rgba(0,0,0,0.24)",
             }}
           >
-            {eyebrow}
+            {title}
           </Typography>
         )}
 
-        <Typography
-          variant="h1"
-          sx={{
-            maxWidth: "16ch",
-            mx: "auto",
-            color: "#fdfefe",
-            textShadow: "0 10px 34px rgba(0,0,0,0.24)",
-          }}
-        >
-          {title}
-        </Typography>
-
-        {subtitle && (
-          <Typography
-            variant="body1"
-            sx={{
-              mt: 1.5,
-              maxWidth: "48ch",
-              mx: "auto",
-              color: "rgba(238,243,247,0.72)",
-            }}
-          >
-            {subtitle}
-          </Typography>
+        {subtitleNode ? (
+          subtitleNode
+        ) : (
+          subtitle && (
+            <Typography
+              variant="body1"
+              sx={{
+                mt: 1.5,
+                maxWidth: "48ch",
+                mx: "auto",
+                color: "rgba(238,243,247,0.72)",
+              }}
+            >
+              {subtitle}
+            </Typography>
+          )
         )}
       </Container>
 
