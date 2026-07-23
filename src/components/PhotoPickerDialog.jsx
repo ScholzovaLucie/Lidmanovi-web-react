@@ -29,6 +29,7 @@ import {
   useUpdatePhotoPlacementOrderMutation,
 } from "../redux/api/galleryApi";
 import { resolveMediaUrl } from "../utils/resolveMediaUrl";
+import { getApiErrorMessage } from "../utils/apiError";
 
 const LIBRARY_PAGE_SIZE = 24;
 
@@ -177,7 +178,7 @@ export default function PhotoPickerDialog({
       handleClose();
     } catch (err) {
       console.error("Chyba při nahrávání fotek:", err);
-      enqueueSnackbar("Chyba při nahrávání fotek", {
+      enqueueSnackbar(getApiErrorMessage(err, "Chyba při nahrávání fotek"), {
         variant: "error",
         autoHideDuration: 5000,
       });
