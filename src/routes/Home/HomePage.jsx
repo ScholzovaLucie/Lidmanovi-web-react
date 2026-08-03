@@ -6,8 +6,6 @@ import { Alert, Box, Container, Typography } from "@mui/material";
 import EditableTranslationText from "../../components/EditableTranslationText.jsx";
 import { Link as RouterLink } from "react-router-dom";
 import { useEditorialEditor } from "../../context/editorialEditorContext.js";
-import { useGoogleRating } from "../../hooks/useGoogleRating.js";
-import { GOOGLE_REVIEW_URL } from "../../utils/googleRating.js";
 import { usePhotoSequence } from "../../hooks/usePhotoSequence.js";
 import PhotoEditBadge from "../../components/PhotoEditBadge.jsx";
 import EditablePhotoSpot from "../../components/EditablePhotoSpot.jsx";
@@ -46,7 +44,6 @@ function getAnnouncementTitle(announcement, language) {
 
 export default function HomePage() {
   const { t, i18n } = useTranslation(["home", "global"]);
-  const googleRating = useGoogleRating();
   const activeLanguage = String(i18n.resolvedLanguage || i18n.language || "cs").split("-")[0];
   const asset = (path) =>
     `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
@@ -130,13 +127,27 @@ export default function HomePage() {
             label: t("global:nav.contact"),
           }}
           stats={[
-            { value: "1884", label: "Založeno" },
             {
-              value: `${googleRating.rating}★`,
-              label: `${googleRating.reviewCount} recenzí`,
-              href: GOOGLE_REVIEW_URL,
+              ns: "home",
+              valueKey: "stats.0.value",
+              value: "5 km",
+              labelKey: "stats.0.label",
+              label: "Broumovské stěny",
             },
-            { value: "22 km", label: "Do Adršpachu" },
+            {
+              ns: "home",
+              valueKey: "stats.1.value",
+              value: "15 km",
+              labelKey: "stats.1.label",
+              label: "Stolové hory",
+            },
+            {
+              ns: "home",
+              valueKey: "stats.2.value",
+              value: "22 km",
+              labelKey: "stats.2.label",
+              label: "Do Adršpachu",
+            },
           ]}
           interval={2000} // změň třeba na 4000 pro rychlejší střídání
           transition={100} // délka fade

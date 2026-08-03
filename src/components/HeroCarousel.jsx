@@ -8,6 +8,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { Link as RouterLink } from "react-router-dom";
 import { useEditorialEditor } from "../context/editorialEditorContext";
+import EditableTranslationText from "./EditableTranslationText";
 
 const asset = (path) => {
   if (/^https?:\/\//.test(path)) return path;
@@ -259,9 +260,9 @@ export default function HeroCarousel({
                 alignItems: "flex-start",
               }}
             >
-              {stats.map((stat) => (
+              {stats.map((stat, i) => (
                 <Box
-                  key={stat.label}
+                  key={stat.labelKey || stat.label || i}
                   component={stat.href ? "a" : "div"}
                   href={stat.href}
                   target={stat.href ? "_blank" : undefined}
@@ -270,35 +271,62 @@ export default function HeroCarousel({
                     textDecoration: "none",
                     color: "inherit",
                     minWidth: { xs: 92, md: 128 },
-                    "&:hover .hero-stat-value": {
-                      color: stat.href ? "primary.dark" : "primary.main",
-                    },
                   }}
                 >
-                  <Typography
-                    className="hero-stat-value"
-                    sx={{
-                      fontFamily: '"Cormorant Garamond", Georgia, serif',
-                      fontSize: { xs: "2.6rem", md: "3.7rem" },
-                      lineHeight: 1,
-                      color: "primary.main",
-                      transition: "color 160ms ease",
-                    }}
-                  >
-                    {stat.value}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      mt: 0.4,
-                      letterSpacing: "0.16em",
-                      textTransform: "uppercase",
-                      color: "text.secondary",
-                      fontWeight: 500,
-                    }}
-                  >
-                    {stat.label}
-                  </Typography>
+                  {stat.ns && stat.valueKey ? (
+                    <EditableTranslationText
+                      ns={stat.ns}
+                      i18nKey={stat.valueKey}
+                      fallback={stat.value}
+                      multilineRows={1}
+                      sx={{
+                        fontFamily: '"Cormorant Garamond", Georgia, serif',
+                        fontSize: { xs: "2.6rem", md: "3.7rem" },
+                        lineHeight: 1,
+                        color: "primary.main",
+                      }}
+                    />
+                  ) : (
+                    <Typography
+                      sx={{
+                        fontFamily: '"Cormorant Garamond", Georgia, serif',
+                        fontSize: { xs: "2.6rem", md: "3.7rem" },
+                        lineHeight: 1,
+                        color: "primary.main",
+                      }}
+                    >
+                      {stat.value}
+                    </Typography>
+                  )}
+                  {stat.ns && stat.labelKey ? (
+                    <EditableTranslationText
+                      ns={stat.ns}
+                      i18nKey={stat.labelKey}
+                      fallback={stat.label}
+                      variant="body2"
+                      multilineRows={1}
+                      sx={{
+                        mt: 0.4,
+                        letterSpacing: "0.16em",
+                        textTransform: "uppercase",
+                        color: "text.secondary",
+                        fontWeight: 500,
+                      }}
+                    />
+                  ) : (
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        mt: 0.4,
+                        letterSpacing: "0.16em",
+                        textTransform: "uppercase",
+                        color: "text.secondary",
+                        fontWeight: 500,
+                      }}
+                    >
+                      {stat.label}
+                    </Typography>
+                  )}
                 </Box>
               ))}
             </Stack>

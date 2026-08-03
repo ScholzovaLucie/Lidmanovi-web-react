@@ -48,9 +48,11 @@ export default function EditableTranslationText({
     entryTypeMap,
   } = useEditorialEditor();
 
-  const translated = t(i18nKey, { returnObjects: true });
+  const translated = t(i18nKey, { returnObjects: true, defaultValue: fallback });
   const raw =
-    fallback !== undefined && isEmptyValue(translated) ? fallback : translated;
+    fallback !== undefined && (isEmptyValue(translated) || translated === i18nKey)
+      ? fallback
+      : translated;
   const isArray = Array.isArray(raw) || !!entryTypeMap[`${ns}.${i18nKey}`];
   const compositeKey = `${ns}.${i18nKey}`;
   const mergedValue = normalizeValue(getInlineValue(compositeKey, raw), raw);
