@@ -7,6 +7,7 @@ import Button from "@mui/material/Button";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { Link as RouterLink } from "react-router-dom";
+import { useEditorialEditor } from "../context/editorialEditorContext";
 
 const asset = (path) => {
   if (/^https?:\/\//.test(path)) return path;
@@ -43,6 +44,9 @@ export default function HeroCarousel({
 }) {
   const [index, setIndex] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
+  const [descExpanded, setDescExpanded] = React.useState(false);
+  const { isAuthenticated: isEditorAuth, isInlineEditing } = useEditorialEditor();
+  const isEditingNow = isEditorAuth && isInlineEditing;
   const count = slides.length;
 
   const goto = React.useCallback(
@@ -164,27 +168,59 @@ export default function HeroCarousel({
           )}
 
           {(descriptionNode || description) && (
-            <Typography
-              component="div"
-              variant="body1"
-              sx={{
-                width: "100%",
-                maxWidth: "none",
-                color: "text.secondary",
-                mb: 3,
-                "& .MuiTypography-root": {
-                  font: "inherit",
-                  color: "inherit",
-                  lineHeight: "inherit",
-                },
-                "& > .MuiBox-root": {
-                  borderColor: "secondary.main",
-                  backgroundColor: "rgba(255,253,248,0.76)",
-                },
-              }}
-            >
-              {descriptionNode || description}
-            </Typography>
+            <>
+              <Typography
+                component="div"
+                variant="body1"
+                sx={{
+                  width: "100%",
+                  maxWidth: "none",
+                  color: "text.secondary",
+                  mb: isEditingNow ? 3 : 1,
+                  ...(!isEditingNow &&
+                    !descExpanded && {
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                    }),
+                  "& .MuiTypography-root": {
+                    font: "inherit",
+                    color: "inherit",
+                    lineHeight: "inherit",
+                  },
+                  "& > .MuiBox-root": {
+                    borderColor: "secondary.main",
+                    backgroundColor: "rgba(255,253,248,0.76)",
+                  },
+                }}
+              >
+                {descriptionNode || description}
+              </Typography>
+              {!isEditingNow && (
+                <Box
+                  component="button"
+                  type="button"
+                  onClick={() => setDescExpanded((value) => !value)}
+                  sx={{
+                    display: "inline-block",
+                    mb: 3,
+                    p: 0,
+                    border: 0,
+                    background: "none",
+                    color: "primary.main",
+                    fontWeight: 600,
+                    fontSize: "0.88rem",
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                    textUnderlineOffset: "3px",
+                    "&:hover": { color: "primary.dark" },
+                  }}
+                >
+                  {descExpanded ? "Zobrazit méně" : "Číst více"}
+                </Box>
+              )}
+            </>
           )}
 
           {(primaryAction || secondaryAction) && (
