@@ -30,6 +30,10 @@ export const translations_kontakt = {
         title: "Facebook",
         label: "Pension & Restaurace U Lidmanů",
       },
+      instagram: {
+        title: "Instagram",
+        label: "@pensionulidmanu",
+      },
       owner: {
         title: "Majitel a provozovatel",
         lines: ["Petr Šturm", "IČ: 71143416"],
@@ -104,6 +108,10 @@ export const translations_kontakt = {
         title: "Facebook",
         label: "Pension & Restaurant U Lidmanů",
       },
+      instagram: {
+        title: "Instagram",
+        label: "@pensionulidmanu",
+      },
       owner: {
         title: "Owner & Operator",
         lines: ["Petr Šturm", "ID: 71143416"],
@@ -170,6 +178,10 @@ export const translations_kontakt = {
       facebook: {
         title: "Facebook",
         label: "Pension & Restaurant U Lidmanů",
+      },
+      instagram: {
+        title: "Instagram",
+        label: "@pensionulidmanu",
       },
       owner: {
         title: "Inhaber & Betreiber",
@@ -242,6 +254,10 @@ export const translations_kontakt = {
       facebook: {
         title: "Facebook",
         label: "Pension & Restaurace U Lidmanů",
+      },
+      instagram: {
+        title: "Instagram",
+        label: "@pensionulidmanu",
       },
       owner: {
         title: "Właściciel i operator",

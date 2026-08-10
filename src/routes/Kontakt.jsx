@@ -9,6 +9,9 @@ import { useTranslation } from "react-i18next";
 import { useGoogleRating } from "../hooks/useGoogleRating.js";
 import { formatGoogleRating, GOOGLE_REVIEW_URL } from "../utils/googleRating.js";
 
+const FACEBOOK_URL = "https://www.facebook.com/profile.php?id=100063554321520";
+const INSTAGRAM_URL = "https://www.instagram.com/pensionulidmanu/";
+
 export default function Kontakt() {
   const { t } = useTranslation(["kontakt", "global"]);
   const googleRating = useGoogleRating();
@@ -26,6 +29,44 @@ export default function Kontakt() {
       labelKey: "info.gpsTitle",
       value: (
         <EditableTranslationText ns="kontakt" i18nKey="info.address.coords" />
+      ),
+    },
+    {
+      labelKey: "info.facebook.title",
+      labelFallback: "Facebook",
+      value: (
+        <Link
+          href={FACEBOOK_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          underline="hover"
+          color="inherit"
+        >
+          <EditableTranslationText
+            ns="kontakt"
+            i18nKey="info.facebook.label"
+            fallback="Pension & Restaurace U Lidmanů"
+          />
+        </Link>
+      ),
+    },
+    {
+      labelKey: "info.instagram.title",
+      labelFallback: "Instagram",
+      value: (
+        <Link
+          href={INSTAGRAM_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          underline="hover"
+          color="inherit"
+        >
+          <EditableTranslationText
+            ns="kontakt"
+            i18nKey="info.instagram.label"
+            fallback="@pensionulidmanu"
+          />
+        </Link>
       ),
     },
     {
@@ -138,6 +179,7 @@ export default function Kontakt() {
                           <EditableTranslationText
                             ns="kontakt"
                             i18nKey={item.labelKey}
+                            fallback={item.labelFallback}
                             multilineRows={1}
                           />
                         </Box>

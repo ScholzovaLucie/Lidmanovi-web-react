@@ -178,8 +178,13 @@ export default function ReservationsSection() {
     }
   };
 
-  const handleEmailAction = (email) => {
-    if (email) window.open(`mailto:${email}`, "_blank");
+  const handleEmailAction = (email, reservationNumber) => {
+    if (!email) return;
+    const subject = reservationNumber
+      ? `Rezervace č. ${reservationNumber}`
+      : "";
+    const query = subject ? `?subject=${encodeURIComponent(subject)}` : "";
+    window.open(`mailto:${email}${query}`, "_blank");
   };
 
   const handleNoteChange = (reservationId, note) => {
@@ -448,7 +453,7 @@ export default function ReservationsSection() {
           <Box>
             <IconButton
               size="small"
-              onClick={() => handleEmailAction(row.primary_guest?.email)}
+              onClick={() => handleEmailAction(row.primary_guest?.email, row.number)}
               disabled={!row.primary_guest?.email}
               title="Poslat email"
               color="primary"
