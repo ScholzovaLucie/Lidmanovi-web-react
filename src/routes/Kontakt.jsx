@@ -172,7 +172,7 @@ export default function Kontakt() {
                   filter: "saturate(0.82) contrast(0.95)",
                 }}
                 allowFullScreen=""
-                loading="eager"
+                loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
               />
             </Box>

@@ -221,6 +221,8 @@ export function EditorialEditorProvider({ children }) {
   const { data: cmsPage } = useGetCmsPageByRouteLangQuery({
     path: currentRoute,
     lang: currentLanguage,
+  }, {
+    skip: !isAuthenticated || !isInlineEditing,
   });
   const { data: globalCmsPage } = useGetCmsPageByRouteLangQuery(
     {
@@ -228,7 +230,7 @@ export function EditorialEditorProvider({ children }) {
       lang: currentLanguage,
     },
     {
-      skip: currentRoute === "/global",
+      skip: currentRoute === "/global" || !isAuthenticated || !isInlineEditing,
     },
   );
 

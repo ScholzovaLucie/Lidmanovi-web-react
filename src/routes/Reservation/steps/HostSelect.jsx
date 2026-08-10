@@ -242,6 +242,8 @@ export function RoomHostCard({ room, index }) {
         <img
           src={`${import.meta.env.BASE_URL}ubytovani/ubytovani1.webp`}
           alt="Room"
+          loading="lazy"
+          decoding="async"
           style={{
             width: "100%",
             aspectRatio: "16 / 9",

@@ -33,8 +33,10 @@ export function RoomCartCompactCard({ room }) {
   return (
     <AppCardCustomizable>
       <img
-        src="https://www.thespruce.com/thmb/Afg3IVBq0tV-7DHBME5woSNCZxQ=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/put-together-a-perfect-guest-room-1976987-hero-223e3e8f697e4b13b62ad4fe898d492d.jpg"
-        alt="Room"
+         src="https://www.thespruce.com/thmb/Afg3IVBq0tV-7DHBME5woSNCZxQ=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/put-together-a-perfect-guest-room-1976987-hero-223e3e8f697e4b13b62ad4fe898d492d.jpg"
+         alt="Room"
+         loading="lazy"
+         decoding="async"
         style={{
           width: "100%",
           borderTopLeftRadius: 8,

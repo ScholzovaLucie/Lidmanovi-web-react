@@ -117,6 +117,7 @@ export const {
   useGetPhotosQuery,
   useLazyGetPhotosQuery,
   useGetPhotoPlacementsQuery,
+  useLazyGetPhotoPlacementsQuery,
   useUploadPhotosMutation,
   useUpdatePhotoAltMutation,
   useDeletePhotoMutation,

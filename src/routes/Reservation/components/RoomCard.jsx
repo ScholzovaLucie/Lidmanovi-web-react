@@ -98,6 +98,8 @@ export default function RoomCard({
         <img
           src={roomPhotoUrls[0]}
           alt={roomPhotoAlts[0] || room.name || "Room"}
+          loading="lazy"
+          decoding="async"
           style={{
             width: "100%",
             aspectRatio: "16 / 9",

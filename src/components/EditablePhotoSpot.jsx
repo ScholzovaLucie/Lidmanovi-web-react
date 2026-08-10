@@ -13,7 +13,14 @@ export default function EditablePhotoSpot({
 
   return (
     <Box sx={{ position: "relative", ...wrapperSx }}>
-      <Box component="img" src={urls[0]} alt={alt ?? alts[0] ?? ""} sx={imgSx} />
+      <Box
+        component="img"
+        src={urls[0]}
+        alt={alt ?? alts[0] ?? ""}
+        loading="lazy"
+        decoding="async"
+        sx={imgSx}
+      />
       <PhotoEditBadge location={location} sx={{ top: 6, right: 6 }} />
     </Box>
   );

@@ -43,6 +43,7 @@ export default function GalleryCategoryCard({ title, titleNode, cover, onClick, 
         src={cover}
         alt={title}
         loading="lazy"
+        decoding="async"
         sx={{
           display: "block",
           width: "100%",

@@ -9,7 +9,11 @@ import PhotoEditBadge from "../components/PhotoEditBadge.jsx";
 import PhotoPickerDialog from "../components/PhotoPickerDialog.jsx";
 import { usePhotoSequence } from "../hooks/usePhotoSequence.js";
 import { useEditorialEditor } from "../context/editorialEditorContext.js";
-import { useGetPhotoPlacementsQuery } from "../redux/api/galleryApi.js";
+import {
+  useGetPhotoPlacementsQuery,
+  useLazyGetPhotoPlacementsQuery,
+} from "../redux/api/galleryApi.js";
+import { resolveMediaUrl } from "../utils/resolveMediaUrl.js";
 
 const asset = (path) =>
   `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
@@ -131,7 +135,11 @@ function GalleryCategoryTile({ gallery, index, t, onOpen }) {
 
   const galleryLocation = `galerie-${gallery.id}`;
   const { urls: coverUrls } = usePhotoSequence(`${galleryLocation}-cover`, [gallery.cover]);
-  const { urls: imageUrls, alts: imageAlts } = usePhotoSequence(galleryLocation, gallery.images);
+  const { urls: imageUrls, alts: imageAlts } = usePhotoSequence(
+    galleryLocation,
+    gallery.images,
+    { skip: !showEditUi },
+  );
 
   const { data } = useGetPhotoPlacementsQuery(
     { location: galleryLocation, page: 1, pageSize: 100 },
@@ -155,7 +163,7 @@ function GalleryCategoryTile({ gallery, index, t, onOpen }) {
             />
           }
           cover={coverUrls[0]}
-          onClick={() => onOpen(imageUrls, imageAlts, 0)}
+          onClick={() => onOpen(gallery)}
         />
         <PhotoEditBadge
           location={`${galleryLocation}-cover`}
@@ -228,11 +236,28 @@ export default function Galerie() {
   const [activeImgs, setActiveImgs] = React.useState([]);
   const [activeAlts, setActiveAlts] = React.useState([]);
   const [startIndex, setStartIndex] = React.useState(0);
+  const [loadPhotoPlacements] = useLazyGetPhotoPlacementsQuery();
 
-  const openGallery = (images, alts = [], idx = 0) => {
-    setActiveImgs(images);
-    setActiveAlts(alts);
-    setStartIndex(idx);
+  const openGallery = async (gallery) => {
+    const response = await loadPhotoPlacements({
+      location: `galerie-${gallery.id}`,
+      page: 1,
+      pageSize: 100,
+    });
+    const placements = response.data?.results || [];
+    const photos = [...placements]
+      .sort((a, b) => a.order - b.order)
+      .filter((placement) => placement.photo?.url);
+
+    setActiveImgs(
+      photos.length
+        ? photos.map((placement) =>
+            resolveMediaUrl(placement.photo.variants?.full || placement.photo.url),
+          )
+        : gallery.images,
+    );
+    setActiveAlts(photos.length ? photos.map((placement) => placement.photo.alt_text || "") : []);
+    setStartIndex(0);
     setOpen(true);
   };
 
