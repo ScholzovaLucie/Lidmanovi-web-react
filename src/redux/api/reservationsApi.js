@@ -106,6 +106,28 @@ export const reservationsApi = createApi({
       }),
       invalidatesTags: ["Reservations"],
     }),
+
+    /**
+     * Bulk import reservations from an .xlsx file.
+     * @param {File} file - The .xlsx file to import
+     * @param {string} [sheet] - Optional sheet name if not the first/active one
+     * @param {boolean} [dryRun] - When true, only validates without saving
+     */
+    bulkImportReservations: builder.mutation({
+      query: ({ file, sheet, dryRun }) => {
+        const formData = new FormData();
+        formData.append("file", file);
+        if (sheet) formData.append("sheet", sheet);
+        if (dryRun) formData.append("dry_run", "true");
+        return {
+          url: "/pension/admin/reservations/bulk-import/",
+          method: "POST",
+          body: formData,
+        };
+      },
+      invalidatesTags: (result, error, { dryRun }) =>
+        dryRun ? [] : ["Reservations"],
+    }),
   }),
 });
 
@@ -116,4 +138,5 @@ export const {
   useReservationStatusesQuery,
   useUpdateReservationStatusMutation,
   useUpdateReservationNoteMutation,
+  useBulkImportReservationsMutation,
 } = reservationsApi;

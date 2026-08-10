@@ -13,9 +13,11 @@ import {
   CircularProgress,
   IconButton,
 } from "@mui/material";
-import { Search, Clear, FilterListOff, Email } from "@mui/icons-material";
+import { Search, Clear, FilterListOff, Email, UploadFile, Add } from "@mui/icons-material";
 import dayjs from "dayjs";
 import CustomTable from "../../components/CustomMuiTable";
+import ImportReservationsDialog from "./components/ImportReservationsDialog";
+import AddReservationDialog from "./components/AddReservationDialog";
 import {
   useReservationsQuery,
   useReservationStatusesQuery,
@@ -45,6 +47,8 @@ export default function ReservationsSection() {
   const [updatingReservationId, setUpdatingReservationId] = useState(null);
   const [reservationNotes, setReservationNotes] = useState({});
   const [updatingNoteId, setUpdatingNoteId] = useState(null);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
   const pagination = usePagination({
@@ -569,14 +573,50 @@ export default function ReservationsSection() {
   return (
     <Stack spacing={5} p={{ md: 3 }}>
       {/* Header */}
-      <Box>
-        <Typography variant="h4" gutterBottom>
-          Správa rezervací
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Spravujte rezervace, stavy a vyhledávejte podle různých kritérií.
-        </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+          gap: 2,
+        }}
+      >
+        <Box>
+          <Typography variant="h4" gutterBottom>
+            Správa rezervací
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Spravujte rezervace, stavy a vyhledávejte podle různých kritérií.
+          </Typography>
+        </Box>
+        <Stack direction="row" spacing={1.5} sx={{ flexShrink: 0 }}>
+          <Button
+            variant="outlined"
+            startIcon={<UploadFile />}
+            onClick={() => setImportDialogOpen(true)}
+            sx={{ whiteSpace: "nowrap" }}
+          >
+            Import z Excelu
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<Add />}
+            onClick={() => setAddDialogOpen(true)}
+            sx={{ whiteSpace: "nowrap" }}
+          >
+            Přidat rezervaci
+          </Button>
+        </Stack>
       </Box>
+
+      <ImportReservationsDialog
+        open={importDialogOpen}
+        onClose={() => setImportDialogOpen(false)}
+      />
+      <AddReservationDialog
+        open={addDialogOpen}
+        onClose={() => setAddDialogOpen(false)}
+      />
 
       <Stack spacing={1}>
         <Typography variant="h5">Rezervace</Typography>
