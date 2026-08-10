@@ -19,7 +19,7 @@ import {
   MenuItem,
   Divider,
 } from "@mui/material";
-import { Check, CloudUpload, Delete } from "@mui/icons-material";
+import { Check, CloudUpload, Delete, Edit } from "@mui/icons-material";
 import { useSnackbar } from "notistack";
 import {
   useGetPhotosQuery,
@@ -30,6 +30,8 @@ import {
 } from "../redux/api/galleryApi";
 import { resolveMediaUrl } from "../utils/resolveMediaUrl";
 import { getApiErrorMessage } from "../utils/apiError";
+import AltTextFields from "./AltTextFields";
+import PhotoAltEditDialog from "./PhotoAltEditDialog";
 
 const LIBRARY_PAGE_SIZE = 24;
 
@@ -44,6 +46,9 @@ export default function PhotoPickerDialog({
   const [tab, setTab] = useState(0);
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState([]);
+  const [pendingFiles, setPendingFiles] = useState(null);
+  const [pendingAltTextI18n, setPendingAltTextI18n] = useState({});
+  const [editingPhoto, setEditingPhoto] = useState(null);
   const fileInputRef = useRef(null);
 
   const existingPhotoIds = existingPlacements
@@ -111,6 +116,8 @@ export default function PhotoPickerDialog({
     if (isBusy) return;
     setSelectedIds([]);
     setTab(0);
+    setPendingFiles(null);
+    setPendingAltTextI18n({});
     onClose();
   };
 
@@ -161,13 +168,26 @@ export default function PhotoPickerDialog({
     }
   };
 
-  const handleFilesSelected = async (event) => {
+  const handleFilesSelected = (event) => {
     const files = Array.from(event.target.files || []);
     event.target.value = "";
     if (!files.length) return;
+    setPendingFiles(files);
+    setPendingAltTextI18n({});
+  };
 
+  const handleCancelUpload = () => {
+    setPendingFiles(null);
+    setPendingAltTextI18n({});
+  };
+
+  const handleConfirmUpload = async () => {
     try {
-      const result = await uploadPhotos({ category: location, files }).unwrap();
+      const result = await uploadPhotos({
+        category: location,
+        files: pendingFiles,
+        altTextI18n: pendingAltTextI18n,
+      }).unwrap();
       const uploaded = Array.isArray(result) ? result : [result];
       await placePhotos(uploaded.map((photo) => photo.id));
 
@@ -186,6 +206,7 @@ export default function PhotoPickerDialog({
   };
 
   return (
+    <>
     <Dialog
       open={open}
       onClose={handleClose}
@@ -221,7 +242,7 @@ export default function PhotoPickerDialog({
                   <Box
                     component="img"
                     src={resolveMediaUrl(placement.photo?.url)}
-                    alt=""
+                    alt={placement.photo?.alt_text || ""}
                     sx={{
                       width: "100%",
                       height: "100%",
@@ -229,6 +250,20 @@ export default function PhotoPickerDialog({
                       display: "block",
                     }}
                   />
+                  <IconButton
+                    onClick={() => setEditingPhoto(placement.photo)}
+                    size="small"
+                    sx={{
+                      position: "absolute",
+                      top: 2,
+                      left: 2,
+                      p: 0.25,
+                      bgcolor: "rgba(255,255,255,0.85)",
+                      "&:hover": { bgcolor: "rgba(255,255,255,1)" },
+                    }}
+                  >
+                    <Edit fontSize="inherit" />
+                  </IconButton>
                   <IconButton
                     onClick={() => handleRemoveExisting(placement.id)}
                     disabled={isRemoving}
@@ -299,7 +334,7 @@ export default function PhotoPickerDialog({
                         <Box
                           component="img"
                           src={resolveMediaUrl(photo.url)}
-                          alt=""
+                          alt={photo.alt_text || ""}
                           sx={{
                             width: "100%",
                             height: "100%",
@@ -307,6 +342,23 @@ export default function PhotoPickerDialog({
                             display: "block",
                           }}
                         />
+                        <IconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingPhoto(photo);
+                          }}
+                          size="small"
+                          sx={{
+                            position: "absolute",
+                            top: 4,
+                            left: 4,
+                            p: 0.25,
+                            bgcolor: "rgba(255,255,255,0.85)",
+                            "&:hover": { bgcolor: "rgba(255,255,255,1)" },
+                          }}
+                        >
+                          <Edit fontSize="inherit" />
+                        </IconButton>
                         {isSelected && (
                           <Box
                             sx={{
@@ -344,7 +396,7 @@ export default function PhotoPickerDialog({
             </>
           )
         ) : (
-          <Stack alignItems="center" justifyContent="center" spacing={2} py={6}>
+          <Stack alignItems="center" justifyContent="center" spacing={2} py={pendingFiles ? 2 : 6}>
             <input
               ref={fileInputRef}
               type="file"
@@ -353,20 +405,45 @@ export default function PhotoPickerDialog({
               hidden
               onChange={handleFilesSelected}
             />
-            {isUploading ? (
-              <CircularProgress size={32} />
+            {pendingFiles ? (
+              <Stack spacing={2} sx={{ width: "100%" }}>
+                <Typography variant="subtitle2">
+                  {pendingFiles.length} {pendingFiles.length === 1 ? "soubor" : "souborů"} k nahrání
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Nepovinný alt text se použije pro všechny nahrávané fotky.
+                  Pokud fotky potřebují různý alt text, uprav ho po nahrání u
+                  jednotlivých fotek pomocí ikony tužky.
+                </Typography>
+                <AltTextFields value={pendingAltTextI18n} onChange={setPendingAltTextI18n} />
+                <Stack direction="row" spacing={1.5} justifyContent="flex-end">
+                  <Button onClick={handleCancelUpload} disabled={isUploading}>
+                    Zrušit
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={handleConfirmUpload}
+                    disabled={isUploading}
+                    startIcon={isUploading ? <CircularProgress size={16} color="inherit" /> : null}
+                  >
+                    Nahrát
+                  </Button>
+                </Stack>
+              </Stack>
             ) : (
-              <Button
-                variant="outlined"
-                startIcon={<CloudUpload />}
-                onClick={() => fileInputRef.current?.click()}
-              >
-                Vybrat soubory k nahrání
-              </Button>
+              <>
+                <Button
+                  variant="outlined"
+                  startIcon={<CloudUpload />}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  Vybrat soubory k nahrání
+                </Button>
+                <Typography variant="body2" color="text.secondary">
+                  Podporované formáty: JPG, PNG, WebP
+                </Typography>
+              </>
             )}
-            <Typography variant="body2" color="text.secondary">
-              Podporované formáty: JPG, PNG, WebP
-            </Typography>
           </Stack>
         )}
       </DialogContent>
@@ -387,5 +464,11 @@ export default function PhotoPickerDialog({
         )}
       </DialogActions>
     </Dialog>
+    <PhotoAltEditDialog
+      open={!!editingPhoto}
+      onClose={() => setEditingPhoto(null)}
+      photo={editingPhoto}
+    />
+    </>
   );
 }

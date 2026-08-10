@@ -30,16 +30,16 @@ export default function Accommodations() {
     "/ubytovani/ubytovani5.webp",
     "/ubytovani/ubytovani7.webp",
   ]);
-  const { urls: tile1Urls } = usePhotoSequence("ubytovani-tile-1", [
+  const { urls: tile1Urls, alts: tile1Alts } = usePhotoSequence("ubytovani-tile-1", [
     asset("/ubytovani/ubytovani1.webp"),
   ]);
-  const { urls: tile2Urls } = usePhotoSequence("ubytovani-tile-2", [
+  const { urls: tile2Urls, alts: tile2Alts } = usePhotoSequence("ubytovani-tile-2", [
     asset("/ubytovani/ubytovani3.webp"),
   ]);
-  const { urls: tile3Urls } = usePhotoSequence("ubytovani-tile-3", [
+  const { urls: tile3Urls, alts: tile3Alts } = usePhotoSequence("ubytovani-tile-3", [
     asset("/ubytovani/ubytovani5.webp"),
   ]);
-  const { urls: tile4Urls } = usePhotoSequence("ubytovani-tile-4", [
+  const { urls: tile4Urls, alts: tile4Alts } = usePhotoSequence("ubytovani-tile-4", [
     asset("/ubytovani/ubytovani7.webp"),
   ]);
   const sharedSectionSx = {
@@ -369,31 +369,31 @@ export default function Accommodations() {
         items={[
           {
             image: tile1Urls[0],
+            imageAlt: tile1Alts[0] || t("tiles.0.alt"),
             photoLocation: "ubytovani-tile-1",
             titleKey: "tiles.0.alt",
             textKey: "tiles.0.text",
-            alt: t("tiles.0.alt"),
           },
           {
             image: tile2Urls[0],
+            imageAlt: tile2Alts[0] || t("tiles.1.alt"),
             photoLocation: "ubytovani-tile-2",
             titleKey: "tiles.1.alt",
             textKey: "tiles.1.text",
-            alt: t("tiles.1.alt"),
           },
           {
             image: tile3Urls[0],
+            imageAlt: tile3Alts[0] || t("tiles.2.alt"),
             photoLocation: "ubytovani-tile-3",
             titleKey: "tiles.2.alt",
             textKey: "tiles.2.text",
-            alt: t("tiles.2.alt"),
           },
           {
             image: tile4Urls[0],
+            imageAlt: tile4Alts[0] || t("tiles.3.alt"),
             photoLocation: "ubytovani-tile-4",
             titleKey: "tiles.3.alt",
             textKey: "tiles.3.text",
-            alt: t("tiles.3.alt"),
           },
         ]}
       />

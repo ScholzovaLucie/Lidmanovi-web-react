@@ -202,7 +202,7 @@ export default function RoomEditDialog({
               <Box
                 component="img"
                 src={currentPhotoUrl}
-                alt=""
+                alt={photoPlacements[0]?.photo?.alt_text || formData.name || ""}
                 sx={{
                   width: 140,
                   height: 100,

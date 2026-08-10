@@ -15,6 +15,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
  * Props:
  * - open, onClose
  * - images: string[]           // cesty z public (začni "/")
+ * - alts?: string[]            // alt texty, paralelní pole k images
  * - startIndex?: number
  * - showThumbnails?: boolean   // default true
  * - thumbSize?: { w: number, h: number } // default {w: 96, h: 64}
@@ -23,6 +24,7 @@ export default function GalleryLightbox({
   open,
   onClose,
   images = [],
+  alts = [],
   startIndex = 0,
   showThumbnails = true,
   thumbSize = { w: 96, h: 64 },
@@ -142,7 +144,7 @@ export default function GalleryLightbox({
             component="img"
             key={images[index]}
             src={images[index]}
-            alt=""
+            alt={alts[index] || ""}
             loading="eager"
             sx={{
               maxWidth: "100%",
@@ -293,7 +295,7 @@ export default function GalleryLightbox({
                 <Box
                   component="img"
                   src={src}
-                  alt=""
+                  alt={alts[i] || ""}
                   loading="lazy"
                   sx={{
                     width: "100%",

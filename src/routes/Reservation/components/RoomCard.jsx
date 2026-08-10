@@ -30,7 +30,7 @@ export default function RoomCard({
   const { t } = useTranslation("rezervace");
   const dispatch = useDispatch();
   const photoLocation = `pokoj-${room.id}`;
-  const { urls: roomPhotoUrls } = usePhotoSequence(photoLocation, [
+  const { urls: roomPhotoUrls, alts: roomPhotoAlts } = usePhotoSequence(photoLocation, [
     `${import.meta.env.BASE_URL}ubytovani/ubytovani1.webp`,
   ]);
 
@@ -97,7 +97,7 @@ export default function RoomCard({
 
         <img
           src={roomPhotoUrls[0]}
-          alt={room.name || "Room"}
+          alt={roomPhotoAlts[0] || room.name || "Room"}
           style={{
             width: "100%",
             aspectRatio: "16 / 9",

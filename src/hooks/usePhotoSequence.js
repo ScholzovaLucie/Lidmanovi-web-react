@@ -12,12 +12,13 @@ export function usePhotoSequence(location, fallbackUrls = []) {
 
   const placements = data?.results || [];
   const sorted = [...placements].sort((a, b) => a.order - b.order);
-  const apiUrls = sorted
-    .map((p) => resolveMediaUrl(p.photo?.url))
-    .filter(Boolean);
+  const withUrls = sorted.filter((p) => resolveMediaUrl(p.photo?.url));
+  const apiUrls = withUrls.map((p) => resolveMediaUrl(p.photo?.url));
+  const apiAlts = withUrls.map((p) => p.photo?.alt_text || "");
 
   return {
     urls: apiUrls.length ? apiUrls : fallbackUrls,
+    alts: apiUrls.length ? apiAlts : fallbackUrls.map(() => ""),
     isLoading,
   };
 }

@@ -131,7 +131,7 @@ function GalleryCategoryTile({ gallery, index, t, onOpen }) {
 
   const galleryLocation = `galerie-${gallery.id}`;
   const { urls: coverUrls } = usePhotoSequence(`${galleryLocation}-cover`, [gallery.cover]);
-  const { urls: imageUrls } = usePhotoSequence(galleryLocation, gallery.images);
+  const { urls: imageUrls, alts: imageAlts } = usePhotoSequence(galleryLocation, gallery.images);
 
   const { data } = useGetPhotoPlacementsQuery(
     { location: galleryLocation, page: 1, pageSize: 100 },
@@ -155,7 +155,7 @@ function GalleryCategoryTile({ gallery, index, t, onOpen }) {
             />
           }
           cover={coverUrls[0]}
-          onClick={() => onOpen(imageUrls, 0)}
+          onClick={() => onOpen(imageUrls, imageAlts, 0)}
         />
         <PhotoEditBadge
           location={`${galleryLocation}-cover`}
@@ -197,7 +197,7 @@ function GalleryCategoryTile({ gallery, index, t, onOpen }) {
                 key={`${src}-${i}`}
                 component="img"
                 src={src}
-                alt=""
+                alt={imageAlts[i] || ""}
                 sx={{
                   width: 40,
                   height: 30,
@@ -226,10 +226,12 @@ export default function Galerie() {
   const { t } = useTranslation(["galerie", "global"]);
   const [open, setOpen] = React.useState(false);
   const [activeImgs, setActiveImgs] = React.useState([]);
+  const [activeAlts, setActiveAlts] = React.useState([]);
   const [startIndex, setStartIndex] = React.useState(0);
 
-  const openGallery = (images, idx = 0) => {
+  const openGallery = (images, alts = [], idx = 0) => {
     setActiveImgs(images);
+    setActiveAlts(alts);
     setStartIndex(idx);
     setOpen(true);
   };
@@ -271,6 +273,7 @@ export default function Galerie() {
           open={open}
           onClose={() => setOpen(false)}
           images={activeImgs}
+          alts={activeAlts}
           startIndex={startIndex}
           showThumbnails
           thumbSize={{ w: 110, h: 72 }}

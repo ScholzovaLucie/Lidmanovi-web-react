@@ -5,15 +5,15 @@ import PhotoEditBadge from "./PhotoEditBadge";
 export default function EditablePhotoSpot({
   location,
   fallback,
-  alt = "",
+  alt,
   imgSx,
   wrapperSx,
 }) {
-  const { urls } = usePhotoSequence(location, fallback);
+  const { urls, alts } = usePhotoSequence(location, fallback);
 
   return (
     <Box sx={{ position: "relative", ...wrapperSx }}>
-      <Box component="img" src={urls[0]} alt={alt} sx={imgSx} />
+      <Box component="img" src={urls[0]} alt={alt ?? alts[0] ?? ""} sx={imgSx} />
       <PhotoEditBadge location={location} sx={{ top: 6, right: 6 }} />
     </Box>
   );

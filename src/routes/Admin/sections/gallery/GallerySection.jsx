@@ -15,7 +15,7 @@ import {
   DialogContentText,
   DialogActions,
 } from "@mui/material";
-import { Add, Delete, DeleteSweep } from "@mui/icons-material";
+import { Add, Delete, DeleteSweep, Edit } from "@mui/icons-material";
 import { useSnackbar } from "notistack";
 import {
   useGetPhotosQuery,
@@ -25,6 +25,8 @@ import {
 } from "../../../../redux/api/galleryApi";
 import { resolveMediaUrl } from "../../../../utils/resolveMediaUrl";
 import { getApiErrorMessage } from "../../../../utils/apiError";
+import AltTextFields from "../../../../components/AltTextFields";
+import PhotoAltEditDialog from "../../../../components/PhotoAltEditDialog";
 
 const PAGE_SIZE = 24;
 const DEFAULT_CATEGORY = "galerie";
@@ -35,6 +37,9 @@ export default function GallerySection() {
   const [page, setPage] = useState(1);
   const [confirmDeleteAllOpen, setConfirmDeleteAllOpen] = useState(false);
   const [isDeletingAll, setIsDeletingAll] = useState(false);
+  const [pendingFiles, setPendingFiles] = useState(null);
+  const [pendingAltTextI18n, setPendingAltTextI18n] = useState({});
+  const [editingPhoto, setEditingPhoto] = useState(null);
 
   const { data, isLoading, error } = useGetPhotosQuery({ page, pageSize: PAGE_SIZE });
 
@@ -50,17 +55,32 @@ export default function GallerySection() {
     if (!isUploading) fileInputRef.current?.click();
   };
 
-  const handleFilesSelected = async (event) => {
+  const handleFilesSelected = (event) => {
     const files = Array.from(event.target.files || []);
     event.target.value = "";
     if (!files.length) return;
+    setPendingFiles(files);
+    setPendingAltTextI18n({});
+  };
 
+  const handleCancelUpload = () => {
+    setPendingFiles(null);
+    setPendingAltTextI18n({});
+  };
+
+  const handleConfirmUpload = async () => {
     try {
-      await uploadPhotos({ category: DEFAULT_CATEGORY, files }).unwrap();
+      await uploadPhotos({
+        category: DEFAULT_CATEGORY,
+        files: pendingFiles,
+        altTextI18n: pendingAltTextI18n,
+      }).unwrap();
       enqueueSnackbar("Fotky byly úspěšně nahrány", {
         variant: "success",
         autoHideDuration: 3000,
       });
+      setPendingFiles(null);
+      setPendingAltTextI18n({});
     } catch (err) {
       console.error("Chyba při nahrávání fotek:", err);
       enqueueSnackbar(getApiErrorMessage(err, "Chyba při nahrávání fotek"), {
@@ -126,6 +146,11 @@ export default function GallerySection() {
             místo webu (úvodní slideshow, galerie, úvodní fotky stránek) se dělá
             přímo na dané stránce pomocí "Inline editace".
           </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Ke každé fotce prosím doplň popis (alt text) přes ikonu tužky na
+            dlaždici fotky – zlepšuje to přístupnost webu pro nevidomé a
+            pomáhá to i vyhledávačům (SEO).
+          </Typography>
         </Stack>
         <Button
           variant="outlined"
@@ -165,6 +190,37 @@ export default function GallerySection() {
         multiple
         hidden
         onChange={handleFilesSelected}
+      />
+
+      <Dialog open={!!pendingFiles} onClose={isUploading ? undefined : handleCancelUpload} maxWidth="sm" fullWidth>
+        <DialogTitle>Nahrát {pendingFiles?.length || 0} fotek</DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ mb: 2 }}>
+            Nepovinný alt text se použije pro všechny nahrávané fotky v této
+            dávce. Pokud fotky potřebují různý alt text, uprav ho po nahrání u
+            jednotlivých fotek pomocí ikony tužky.
+          </DialogContentText>
+          <AltTextFields value={pendingAltTextI18n} onChange={setPendingAltTextI18n} />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelUpload} disabled={isUploading}>
+            Zrušit
+          </Button>
+          <Button
+            onClick={handleConfirmUpload}
+            variant="contained"
+            disabled={isUploading}
+            startIcon={isUploading ? <CircularProgress size={16} color="inherit" /> : null}
+          >
+            Nahrát
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <PhotoAltEditDialog
+        open={!!editingPhoto}
+        onClose={() => setEditingPhoto(null)}
+        photo={editingPhoto}
       />
 
       {isLoading ? (
@@ -225,7 +281,7 @@ export default function GallerySection() {
                   <Box
                     component="img"
                     src={resolveMediaUrl(photo.url)}
-                    alt=""
+                    alt={photo.alt_text || ""}
                     sx={{
                       width: "100%",
                       height: "100%",
@@ -246,6 +302,19 @@ export default function GallerySection() {
                   >
                     {photo.category}
                   </Typography>
+                  <IconButton
+                    onClick={() => setEditingPhoto(photo)}
+                    size="small"
+                    sx={{
+                      position: "absolute",
+                      top: 4,
+                      left: 4,
+                      bgcolor: "rgba(255,255,255,0.85)",
+                      "&:hover": { bgcolor: "rgba(255,255,255,1)" },
+                    }}
+                  >
+                    <Edit fontSize="small" />
+                  </IconButton>
                   <IconButton
                     onClick={() => handleDelete(photo.id)}
                     disabled={isRemoving || isDeletingAll}

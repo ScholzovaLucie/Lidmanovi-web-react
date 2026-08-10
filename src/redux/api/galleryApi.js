@@ -47,10 +47,13 @@ export const galleryApi = createApi({
 
     // POST /editorial_system/photos/ - nahrání jedné nebo více fotek (multipart/form-data)
     uploadPhotos: builder.mutation({
-      query: ({ category, files }) => {
+      query: ({ category, files, altTextI18n }) => {
         const formData = new FormData();
         formData.append("category", category);
         files.forEach((file) => formData.append("images", file));
+        if (altTextI18n && Object.values(altTextI18n).some((v) => v?.trim())) {
+          formData.append("alt_text_i18n", JSON.stringify(altTextI18n));
+        }
         return {
           url: "/editorial_system/photos/",
           method: "POST",
@@ -58,6 +61,16 @@ export const galleryApi = createApi({
         };
       },
       invalidatesTags: ["Photo"],
+    }),
+
+    // PATCH /editorial_system/photos/{id}/ - úprava alt textu existující fotky
+    updatePhotoAlt: builder.mutation({
+      query: ({ id, altTextI18n }) => ({
+        url: `/editorial_system/photos/${id}/`,
+        method: "PATCH",
+        body: { alt_text_i18n: altTextI18n },
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: "Photo", id }],
     }),
 
     // DELETE /editorial_system/photos/{id}/ - úplné smazání fotky (smaže i všechna umístění)
@@ -105,6 +118,7 @@ export const {
   useLazyGetPhotosQuery,
   useGetPhotoPlacementsQuery,
   useUploadPhotosMutation,
+  useUpdatePhotoAltMutation,
   useDeletePhotoMutation,
   useCreatePhotoPlacementMutation,
   useDeletePhotoPlacementMutation,

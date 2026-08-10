@@ -26,13 +26,13 @@ export default function Restauration() {
     "/restaurace/restaurace4.webp",
     "/restaurace/restaurace5.webp",
   ]);
-  const { urls: tile1Urls } = usePhotoSequence("restaurace-tile-1", [
+  const { urls: tile1Urls, alts: tile1Alts } = usePhotoSequence("restaurace-tile-1", [
     asset("galerie/exterier/012_HZ6_3793_Penzion_U_Lidmanu.webp"),
   ]);
-  const { urls: tile2Urls } = usePhotoSequence("restaurace-tile-2", [
+  const { urls: tile2Urls, alts: tile2Alts } = usePhotoSequence("restaurace-tile-2", [
     asset("galerie/interier/088_HZ6_3958_Penzion_U_Lidmanu.webp"),
   ]);
-  const { urls: tile3Urls } = usePhotoSequence("restaurace-tile-3", [
+  const { urls: tile3Urls, alts: tile3Alts } = usePhotoSequence("restaurace-tile-3", [
     asset("galerie/sal/110_HZ6_3997_Penzion_U_Lidmanu.webp"),
   ]);
 
@@ -173,24 +173,24 @@ export default function Restauration() {
         items={[
           {
             image: tile1Urls[0],
+            imageAlt: tile1Alts[0] || t("tiles.1.alt"),
             photoLocation: "restaurace-tile-1",
             titleKey: "tiles.1.alt",
             textKey: "tiles.1.text",
-            alt: t("tiles.1.alt"),
           },
           {
             image: tile2Urls[0],
+            imageAlt: tile2Alts[0] || t("tiles.2.alt"),
             photoLocation: "restaurace-tile-2",
             titleKey: "tiles.2.alt",
             textKey: "tiles.2.text",
-            alt: t("tiles.2.alt"),
           },
           {
             image: tile3Urls[0],
+            imageAlt: tile3Alts[0] || t("tiles.3.alt"),
             photoLocation: "restaurace-tile-3",
             titleKey: "tiles.3.alt",
             textKey: "tiles.3.text",
-            alt: t("tiles.3.alt"),
           },
         ]}
       />

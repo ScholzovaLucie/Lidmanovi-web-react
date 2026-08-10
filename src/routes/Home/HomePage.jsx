@@ -56,20 +56,20 @@ export default function HomePage() {
     ) ?? [];
   const { isAuthenticated, isInlineEditing } = useEditorialEditor();
   const disableCardLinks = isAuthenticated && isInlineEditing;
-  const { urls: heroUrls } = usePhotoSequence("hero", [
+  const { urls: heroUrls, alts: heroAlts } = usePhotoSequence("hero", [
     asset("/uvod/uvod1.webp"),
     asset("/uvod/uvod2.webp"),
     asset("/uvod/uvod3.webp"),
     asset("/uvod/uvod4.webp"),
     asset("/uvod/nove5.webp"),
   ]);
-  const { urls: tile1Urls } = usePhotoSequence("home-tile-1", [
+  const { urls: tile1Urls, alts: tile1Alts } = usePhotoSequence("home-tile-1", [
     asset("galerie/exterier/132_HZ6_4056_Penzion_U_Lidmanu.webp"),
   ]);
-  const { urls: tile2Urls } = usePhotoSequence("home-tile-2", [
+  const { urls: tile2Urls, alts: tile2Alts } = usePhotoSequence("home-tile-2", [
     asset("/galerie/exterier/022_HZ6_3836_Penzion_U_Lidmanu.webp"),
   ]);
-  const { urls: tile3Urls } = usePhotoSequence("home-tile-3", [
+  const { urls: tile3Urls, alts: tile3Alts } = usePhotoSequence("home-tile-3", [
     asset("/galerie/interier/opona.webp"),
   ]);
 
@@ -98,7 +98,7 @@ export default function HomePage() {
         )}
         <HeroCarousel
           variant="editorial"
-          slides={heroUrls.map((src) => ({ src }))}
+          slides={heroUrls.map((src, i) => ({ src, alt: heroAlts[i] }))}
           eyebrow={t("global:footer.brand")}
           title={t("global:footer.tagline")}
           titleNode={
@@ -259,6 +259,7 @@ export default function HomePage() {
         items={[
           {
             image: tile1Urls[0],
+            imageAlt: tile1Alts[0],
             photoLocation: "home-tile-1",
             titleKey: "footer.brand",
             ns: "global",
@@ -266,12 +267,14 @@ export default function HomePage() {
           },
           {
             image: tile2Urls[0],
+            imageAlt: tile2Alts[0],
             photoLocation: "home-tile-2",
             titleKey: "jablon.nadpis",
             textKey: "jablon.text",
           },
           {
             image: tile3Urls[0],
+            imageAlt: tile3Alts[0],
             photoLocation: "home-tile-3",
             titleKey: "pribeh.nadpis",
             paragraphsKey: "pribeh.text",
