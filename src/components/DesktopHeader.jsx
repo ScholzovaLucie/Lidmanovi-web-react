@@ -173,6 +173,7 @@ export function DesktopHeader({ navItems = [] }) {
               key={code}
               component="button"
               type="button"
+              title={label}
               onClick={() => i18n.changeLanguage(code)}
               sx={{
                 border: 0, p: 0, m: 0, background: "none", cursor: "pointer",
@@ -182,7 +183,7 @@ export function DesktopHeader({ navItems = [] }) {
                 "&:hover": { color: "text.primary" },
               }}
             >
-              {label.slice(0, 2)}
+              {code}
             </Box>
           ))}
         </Box>
