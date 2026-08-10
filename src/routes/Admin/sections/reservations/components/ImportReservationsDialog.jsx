@@ -14,11 +14,30 @@ import {
   List,
   ListItem,
   ListItemText,
+  Collapse,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Chip,
 } from "@mui/material";
-import { UploadFile, CheckCircle, Cancel, Error as ErrorIcon } from "@mui/icons-material";
+import {
+  UploadFile,
+  CheckCircle,
+  Cancel,
+  Error as ErrorIcon,
+  Download,
+  ExpandMore,
+  ExpandLess,
+} from "@mui/icons-material";
 import { useSnackbar } from "notistack";
 import { useBulkImportReservationsMutation } from "../../../../../redux/api/reservationsApi";
 import { getApiErrorMessage } from "../../../../../utils/apiError";
+import {
+  RESERVATION_IMPORT_COLUMNS,
+  RESERVATION_IMPORT_TEMPLATE_URL,
+} from "../utils/reservationImportTemplate";
 
 export default function ImportReservationsDialog({ open, onClose }) {
   const { enqueueSnackbar } = useSnackbar();
@@ -26,6 +45,7 @@ export default function ImportReservationsDialog({ open, onClose }) {
   const [sheet, setSheet] = useState("");
   const [preview, setPreview] = useState(null);
   const [isDragActive, setIsDragActive] = useState(false);
+  const [formatOpen, setFormatOpen] = useState(true);
   const fileInputRef = useRef(null);
 
   const [bulkImportReservations, { isLoading }] =
@@ -107,6 +127,74 @@ export default function ImportReservationsDialog({ open, onClose }) {
       <DialogTitle>Import rezervací z Excelu</DialogTitle>
       <DialogContent>
         <Stack spacing={2}>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            spacing={1}
+          >
+            <Button
+              size="small"
+              onClick={() => setFormatOpen((prev) => !prev)}
+              endIcon={formatOpen ? <ExpandLess /> : <ExpandMore />}
+              sx={{ textTransform: "none" }}
+            >
+              Formát souboru
+            </Button>
+            <Button
+              size="small"
+              variant="outlined"
+              startIcon={<Download />}
+              component="a"
+              href={RESERVATION_IMPORT_TEMPLATE_URL}
+              download
+            >
+              Stáhnout šablonu
+            </Button>
+          </Stack>
+
+          <Collapse in={formatOpen}>
+            <Box sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, overflow: "hidden" }}>
+              <Typography variant="body2" color="text.secondary" sx={{ p: 1.5, pb: 0 }}>
+                Jeden řádek = jeden pokoj. Řádky se stejným <code>booking_reference</code> tvoří
+                dohromady jednu rezervaci (víc pokojů v jedné rezervaci).
+              </Typography>
+              <Box sx={{ maxHeight: 260, overflowY: "auto" }}>
+                <Table size="small" stickyHeader>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Sloupec</TableCell>
+                      <TableCell>Povinné</TableCell>
+                      <TableCell>Formát</TableCell>
+                      <TableCell>Poznámka</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {RESERVATION_IMPORT_COLUMNS.map((col) => (
+                      <TableRow key={col.key}>
+                        <TableCell sx={{ fontFamily: "monospace", fontSize: "0.75rem" }}>
+                          {col.key}
+                        </TableCell>
+                        <TableCell>
+                          <Chip
+                            size="small"
+                            label={col.required ? "Ano" : "Ne"}
+                            color={col.required ? "primary" : "default"}
+                            variant={col.required ? "filled" : "outlined"}
+                          />
+                        </TableCell>
+                        <TableCell sx={{ fontSize: "0.75rem" }}>{col.format}</TableCell>
+                        <TableCell sx={{ fontSize: "0.75rem" }}>{col.note}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Box>
+            </Box>
+          </Collapse>
+
+          <Divider />
+
           <TextField
             label="Název listu (nepovinné)"
             placeholder="Pokud rezervace nejsou v prvním/aktivním listu"
