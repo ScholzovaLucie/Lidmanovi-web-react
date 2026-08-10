@@ -8,7 +8,7 @@ export const translations_galerie = {
       "kam-prijedete": "Kam přijedete",
       "kde-se-vyspite": "Kde se vyspíte",
       "kde-se-najite": "Kde se najíte",
-      ano: 'Když si u nás řeknete "ANO"',
+      ano: "Kde si řeknete ANO",
     },
   },
 
@@ -20,7 +20,7 @@ export const translations_galerie = {
       "kam-prijedete": "Where you will arrive",
       "kde-se-vyspite": "Where you will stay",
       "kde-se-najite": "Where you will dine",
-      ano: 'When you say "YES" with us',
+      ano: 'Where you say "YES"',
     },
   },
 
@@ -32,7 +32,7 @@ export const translations_galerie = {
       "kam-prijedete": "Wo Sie ankommen",
       "kde-se-vyspite": "Wo Sie übernachten",
       "kde-se-najite": "Wo Sie essen",
-      ano: 'Wenn Sie bei uns "JA" sagen',
+      ano: 'Wo Sie "JA" sagen',
     },
   },
 
@@ -44,7 +44,7 @@ export const translations_galerie = {
       "kam-prijedete": "Dokąd przyjedziesz",
       "kde-se-vyspite": "Gdzie będziesz spać",
       "kde-se-najite": "Gdzie zjesz",
-      ano: 'Kiedy powiecie u nas "TAK"',
+      ano: 'Gdzie mówicie "TAK"',
     },
   },
 };
