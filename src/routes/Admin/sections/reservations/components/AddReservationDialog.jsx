@@ -23,7 +23,7 @@ import { useSnackbar } from "notistack";
 import { useCreateReservationMutation } from "../../../../../redux/api/reservationsApi";
 import { useAvailableRoomsQuery } from "../../../../../redux/api/roomsApi";
 import { validateForm } from "../../../../../redux/slices/reservation/reservationValidation";
-import { getApiErrorMessage } from "../../../../../utils/apiError";
+import { getApiErrorMessages } from "../../../../../utils/apiError";
 
 const REQUIRED_FIELDS = [
   "check_in_date",
@@ -53,7 +53,6 @@ function emptyValues() {
       country: "Česká republika",
       note: "",
     },
-    rooms: [],
   };
 }
 
@@ -64,9 +63,26 @@ function getRoomsList(data) {
   return [];
 }
 
+// Backend vyžaduje num_adults >= 1 u každého pokoje - rozpočítá celkový počet
+// hostů rovnoměrně mezi vybrané pokoje (volající musí zajistit roomIds.length <= totalAdults).
+function allocateGuestsToRooms(roomIds, totalAdults, totalChildren) {
+  const n = roomIds.length;
+  if (n === 0) return [];
+  const baseAdults = Math.floor(totalAdults / n);
+  const extraAdults = totalAdults % n;
+  const baseChildren = Math.floor(totalChildren / n);
+  const extraChildren = totalChildren % n;
+  return roomIds.map((id, index) => ({
+    id,
+    num_adults: baseAdults + (index < extraAdults ? 1 : 0),
+    num_children: baseChildren + (index < extraChildren ? 1 : 0),
+  }));
+}
+
 export default function AddReservationDialog({ open, onClose }) {
   const { enqueueSnackbar } = useSnackbar();
   const [values, setValues] = useState(emptyValues);
+  const [selectedRoomIds, setSelectedRoomIds] = useState([]);
   const [errors, setErrors] = useState({});
 
   const [createReservation, { isLoading }] = useCreateReservationMutation();
@@ -96,25 +112,33 @@ export default function AddReservationDialog({ open, onClose }) {
   };
 
   const toggleRoom = (roomId) => {
-    setValues((prev) => ({
-      ...prev,
-      rooms: prev.rooms.some((r) => r.id === roomId)
-        ? prev.rooms.filter((r) => r.id !== roomId)
-        : [...prev.rooms, { id: roomId, num_adults: 0, num_children: 0 }],
-    }));
+    setSelectedRoomIds((prev) => {
+      if (prev.includes(roomId)) return prev.filter((id) => id !== roomId);
+      if (prev.length >= values.num_adults) {
+        enqueueSnackbar(
+          `Nelze vybrat víc pokojů, než je dospělých hostů (${values.num_adults}).`,
+          { variant: "warning", autoHideDuration: 4000 },
+        );
+        return prev;
+      }
+      return [...prev, roomId];
+    });
   };
 
   const handleClose = () => {
     if (isLoading) return;
     setValues(emptyValues());
+    setSelectedRoomIds([]);
     setErrors({});
     onClose();
   };
 
   const handleSubmit = async () => {
     const fieldErrors = validateForm(values, REQUIRED_FIELDS);
-    if (values.rooms.length === 0) {
+    if (selectedRoomIds.length === 0) {
       fieldErrors.rooms = "Vyber alespoň jeden pokoj.";
+    } else if (selectedRoomIds.length > values.num_adults) {
+      fieldErrors.rooms = `Nelze vybrat víc pokojů (${selectedRoomIds.length}), než je dospělých hostů (${values.num_adults}).`;
     }
     setErrors(fieldErrors);
     if (Object.keys(fieldErrors).length > 0) {
@@ -125,8 +149,17 @@ export default function AddReservationDialog({ open, onClose }) {
       return;
     }
 
+    const payload = {
+      ...values,
+      rooms: allocateGuestsToRooms(
+        selectedRoomIds,
+        values.num_adults,
+        values.num_children,
+      ),
+    };
+
     try {
-      await createReservation(values).unwrap();
+      await createReservation(payload).unwrap();
       enqueueSnackbar("Rezervace byla vytvořena.", {
         variant: "success",
         autoHideDuration: 3000,
@@ -134,9 +167,10 @@ export default function AddReservationDialog({ open, onClose }) {
       handleClose();
     } catch (err) {
       console.error("Chyba při vytváření rezervace:", err);
-      enqueueSnackbar(getApiErrorMessage(err, "Chyba při vytváření rezervace"), {
+      const messages = getApiErrorMessages(err, "Chyba při vytváření rezervace");
+      enqueueSnackbar(messages.join(" · "), {
         variant: "error",
-        autoHideDuration: 6000,
+        autoHideDuration: 8000,
       });
     }
   };
@@ -229,7 +263,7 @@ export default function AddReservationDialog({ open, onClose }) {
                     key={room.id}
                     control={
                       <Checkbox
-                        checked={values.rooms.some((r) => r.id === room.id)}
+                        checked={selectedRoomIds.includes(room.id)}
                         onChange={() => toggleRoom(room.id)}
                       />
                     }
