@@ -55,7 +55,7 @@ export default function PhotoLocationEditor({ location, label, compact = false }
             >
               <Box
                 component="img"
-                src={resolveMediaUrl(placement.photo?.url)}
+                src={resolveMediaUrl(placement.photo?.variants?.card || placement.photo?.url)}
                 alt={placement.photo?.alt_text || ""}
                 sx={{
                   width: "100%",

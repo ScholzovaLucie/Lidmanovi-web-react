@@ -198,6 +198,8 @@ export default function FullBleedTiles({
                   component="img"
                   src={toPublic(item.image)}
                   alt={item.imageAlt || item.title || ""}
+                  loading="lazy"
+                  decoding="async"
                   sx={{
                     display: "block",
                     width: "100%",

@@ -365,6 +365,9 @@ export default function HeroCarousel({
                   component="img"
                   src={slide.src}
                   alt={slide.alt || ""}
+                  loading={i === 0 ? undefined : "lazy"}
+                  decoding="async"
+                  fetchpriority={i === 0 ? "high" : "low"}
                   sx={{
                     width: "100%",
                     height: "100%",

@@ -58,8 +58,9 @@ export default function RoomEditDialog({
   );
   const photoPlacements = photoData?.results || [];
   const currentPhotoUrl =
-    resolveMediaUrl(photoPlacements[0]?.photo?.url) ||
-    `${import.meta.env.BASE_URL}ubytovani/ubytovani1.webp`;
+    resolveMediaUrl(
+      photoPlacements[0]?.photo?.variants?.card || photoPlacements[0]?.photo?.url,
+    ) || `${import.meta.env.BASE_URL}ubytovani/ubytovani1.webp`;
 
   // Jazykové varianty
   const languages = [

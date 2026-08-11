@@ -280,7 +280,7 @@ export default function GallerySection() {
                 >
                   <Box
                     component="img"
-                    src={resolveMediaUrl(photo.url)}
+                    src={resolveMediaUrl(photo.variants?.card || photo.url)}
                     alt={photo.alt_text || ""}
                     sx={{
                       width: "100%",

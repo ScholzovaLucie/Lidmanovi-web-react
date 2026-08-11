@@ -241,7 +241,7 @@ export default function PhotoPickerDialog({
                 >
                   <Box
                     component="img"
-                    src={resolveMediaUrl(placement.photo?.url)}
+                    src={resolveMediaUrl(placement.photo?.variants?.card || placement.photo?.url)}
                     alt={placement.photo?.alt_text || ""}
                     sx={{
                       width: "100%",
@@ -333,7 +333,7 @@ export default function PhotoPickerDialog({
                       >
                         <Box
                           component="img"
-                          src={resolveMediaUrl(photo.url)}
+                          src={resolveMediaUrl(photo.variants?.card || photo.url)}
                           alt={photo.alt_text || ""}
                           sx={{
                             width: "100%",

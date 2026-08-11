@@ -1,0 +1,9 @@
+.logo-wrapper {
+  display: inline-block;
+}
+
+.animated-logo {
+  display: block;
+  width: 100%;
+  height: auto;
+}

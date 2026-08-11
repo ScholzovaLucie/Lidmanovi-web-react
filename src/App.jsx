@@ -1,6 +1,8 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Suspense, lazy } from "react";
+import { Box } from "@mui/material";
 import Layout from "./components/Layout.jsx";
+import AnimatedLogo from "./components/AnimatedLogo.jsx";
 import { useAuth } from "./hooks/useAuth.js";
 
 function ProtectedRoute({ children }) {
@@ -33,17 +35,18 @@ const Gdpr = lazy(() => import("./routes/Gdpr.jsx"));
 
 // Loading component
 const LoadingFallback = () => (
-  <div
-    style={{
+  <Box
+    sx={{
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
       height: "50vh",
-      fontSize: "18px",
     }}
   >
-    Načítání...
-  </div>
+    <Box sx={{ width: { xs: 120, sm: 160 } }}>
+      <AnimatedLogo />
+    </Box>
+  </Box>
 );
 
 export default function App() {

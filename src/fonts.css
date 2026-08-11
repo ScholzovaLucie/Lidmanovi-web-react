@@ -1,1 +1,2 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Jost:wght@300;400;500;600&display=swap');
+/* Google Fonts jsou načtené přímo v index.html (preconnect + <link>), aby nešly do
+   render-blocking @import řetězce uvnitř sbaleného CSS. */
