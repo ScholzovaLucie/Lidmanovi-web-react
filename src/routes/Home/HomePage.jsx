@@ -3,6 +3,7 @@ import HeroCarousel from "../../components/HeroCarousel.jsx";
 import { useTranslation } from "react-i18next";
 import { useGetInfoBoxesPublicQuery } from "../../redux/api/announcementApi.js";
 import { Alert, Box, Container, Typography } from "@mui/material";
+import { NotificationsActive } from "@mui/icons-material";
 import EditableTranslationText from "../../components/EditableTranslationText.jsx";
 import { Link as RouterLink } from "react-router-dom";
 import { useEditorialEditor } from "../../context/editorialEditorContext.js";
@@ -79,6 +80,7 @@ export default function HomePage() {
         {activeAnnouncements.length > 0 && (
           <Alert
             severity="warning"
+            icon={<NotificationsActive fontSize="inherit" />}
             sx={{
               position: "absolute",
               top: 24,
@@ -87,6 +89,9 @@ export default function HomePage() {
               zIndex: 10,
               boxShadow: 3,
               width: { xs: "90%", sm: "80%", md: "60%" },
+              bgcolor: "grey.100",
+              color: "text.primary",
+              "& .MuiAlert-icon": { color: "text.secondary" },
             }}
           >
             {activeAnnouncements.map((infoBox) => (
