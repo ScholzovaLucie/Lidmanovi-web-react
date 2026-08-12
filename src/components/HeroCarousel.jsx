@@ -253,7 +253,7 @@ export default function HeroCarousel({
           {!!stats.length && (
             <Stack
               direction="row"
-              spacing={{ xs: 3, md: 5 }}
+              spacing={{ xs: 2, md: 5 }}
               sx={{
                 pt: 1,
                 flexWrap: "wrap",
@@ -270,7 +270,7 @@ export default function HeroCarousel({
                   sx={{
                     textDecoration: "none",
                     color: "inherit",
-                    minWidth: { xs: 92, md: 128 },
+                    minWidth: { xs: 76, md: 128 },
                   }}
                 >
                   {stat.ns && stat.valueKey ? (
@@ -281,7 +281,7 @@ export default function HeroCarousel({
                       multilineRows={1}
                       sx={{
                         fontFamily: '"Cormorant Garamond", Georgia, serif',
-                        fontSize: { xs: "2.6rem", md: "3.7rem" },
+                        fontSize: { xs: "1.8rem", md: "3.7rem" },
                         lineHeight: 1,
                         color: "primary.main",
                       }}
@@ -290,7 +290,7 @@ export default function HeroCarousel({
                     <Typography
                       sx={{
                         fontFamily: '"Cormorant Garamond", Georgia, serif',
-                        fontSize: { xs: "2.6rem", md: "3.7rem" },
+                        fontSize: { xs: "1.8rem", md: "3.7rem" },
                         lineHeight: 1,
                         color: "primary.main",
                       }}
@@ -307,7 +307,8 @@ export default function HeroCarousel({
                       multilineRows={1}
                       sx={{
                         mt: 0.4,
-                        letterSpacing: "0.16em",
+                        fontSize: { xs: "0.65rem", md: "0.875rem" },
+                        letterSpacing: { xs: "0.08em", md: "0.16em" },
                         textTransform: "uppercase",
                         color: "text.secondary",
                         fontWeight: 500,
@@ -318,7 +319,8 @@ export default function HeroCarousel({
                       variant="body2"
                       sx={{
                         mt: 0.4,
-                        letterSpacing: "0.16em",
+                        fontSize: { xs: "0.65rem", md: "0.875rem" },
+                        letterSpacing: { xs: "0.08em", md: "0.16em" },
                         textTransform: "uppercase",
                         color: "text.secondary",
                         fontWeight: 500,
