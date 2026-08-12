@@ -26,6 +26,7 @@ import {
 } from "../../../../redux/api/announcementApi";
 import { usePagination } from "../../../../hooks/usePagination";
 import { formFieldStyles } from "../reservations/constants";
+import { getApiErrorMessage } from "../../../../utils/apiError";
 import { useSnackbar } from "notistack";
 import dayjs from "dayjs";
 
@@ -92,13 +93,24 @@ export default function AnnouncementSection() {
       return;
     }
 
+    // Formulář má jen date pickery bez volby času - konec dne se doplňuje
+    // automaticky. Bez toho by "stejný den na start i konec" (00:00 == 00:00)
+    // padlo na backend validaci ends_at > starts_at.
+    if (endDate.isBefore(startDate, "day")) {
+      enqueueSnackbar("Konec zobrazení musí být později než začátek.", {
+        variant: "error",
+        autoHideDuration: 5000,
+      });
+      return;
+    }
+
     try {
       await createInfoBox({
         title: titleI18n.cs,
         title_i18n: titleI18n,
         content_json: {},
-        starts_at: startDate.format("YYYY-MM-DD"),
-        ends_at: endDate.format("YYYY-MM-DD"),
+        starts_at: startDate.startOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+        ends_at: endDate.endOf("day").format("YYYY-MM-DDTHH:mm:ss"),
       }).unwrap();
 
       // Reset formuláře
@@ -112,7 +124,12 @@ export default function AnnouncementSection() {
       });
     } catch (error) {
       console.error("Chyba při vytváření oznámení:", error);
-      enqueueSnackbar("Chyba při vytváření oznámení", {
+      const nonFieldErrors = error?.data?.non_field_errors;
+      const message =
+        Array.isArray(nonFieldErrors) && nonFieldErrors.length > 0
+          ? "Konec zobrazení musí být později než začátek."
+          : getApiErrorMessage(error, "Chyba při vytváření oznámení");
+      enqueueSnackbar(message, {
         variant: "error",
         autoHideDuration: 5000,
       });
