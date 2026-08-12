@@ -13,6 +13,12 @@ RUN npm ci
 # Copy source code
 COPY . .
 
+# Vite zapéká VITE_* proměnné do buildu - u Docker deployů (např. Render) se
+# proměnné z dashboardu do "docker build" kroku propíšou jen přes build-arg,
+# proto je tu potřeba explicitní ARG/ENV pár.
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 # Build the application
 RUN npm run build
 
