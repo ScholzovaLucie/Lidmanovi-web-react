@@ -18,18 +18,21 @@ import {
   Select,
   MenuItem,
   Divider,
+  LinearProgress,
+  List,
+  ListItem,
+  ListItemText,
 } from "@mui/material";
-import { Check, CloudUpload, Delete, Edit } from "@mui/icons-material";
+import { Check, CloudUpload, Delete, Edit, Error as ErrorIcon } from "@mui/icons-material";
 import { useSnackbar } from "notistack";
 import {
   useGetPhotosQuery,
-  useUploadPhotosMutation,
   useCreatePhotoPlacementMutation,
   useDeletePhotoPlacementMutation,
   useUpdatePhotoPlacementOrderMutation,
 } from "../redux/api/galleryApi";
+import { useBatchPhotoUpload } from "../hooks/useBatchPhotoUpload";
 import { resolveMediaUrl } from "../utils/resolveMediaUrl";
-import { getApiErrorMessage } from "../utils/apiError";
 import AltTextFields from "./AltTextFields";
 import PhotoAltEditDialog from "./PhotoAltEditDialog";
 
@@ -49,6 +52,7 @@ export default function PhotoPickerDialog({
   const [pendingFiles, setPendingFiles] = useState(null);
   const [pendingAltTextI18n, setPendingAltTextI18n] = useState({});
   const [editingPhoto, setEditingPhoto] = useState(null);
+  const [uploadSummary, setUploadSummary] = useState(null);
   const fileInputRef = useRef(null);
 
   const existingPhotoIds = existingPlacements
@@ -64,7 +68,7 @@ export default function PhotoPickerDialog({
   const photos = data?.results || [];
   const totalPages = Math.max(1, Math.ceil((data?.count || 0) / LIBRARY_PAGE_SIZE));
 
-  const [uploadPhotos, { isLoading: isUploading }] = useUploadPhotosMutation();
+  const { uploadInBatches, isUploading, progress } = useBatchPhotoUpload();
   const [createPhotoPlacement, { isLoading: isPlacing }] =
     useCreatePhotoPlacementMutation();
   const [deletePhotoPlacement, { isLoading: isRemoving }] =
@@ -118,6 +122,7 @@ export default function PhotoPickerDialog({
     setTab(0);
     setPendingFiles(null);
     setPendingAltTextI18n({});
+    setUploadSummary(null);
     onClose();
   };
 
@@ -179,29 +184,41 @@ export default function PhotoPickerDialog({
   const handleCancelUpload = () => {
     setPendingFiles(null);
     setPendingAltTextI18n({});
+    setUploadSummary(null);
   };
 
   const handleConfirmUpload = async () => {
-    try {
-      const result = await uploadPhotos({
-        category: location,
-        files: pendingFiles,
-        altTextI18n: pendingAltTextI18n,
-      }).unwrap();
-      const uploaded = Array.isArray(result) ? result : [result];
-      await placePhotos(uploaded.map((photo) => photo.id));
+    const { uploaded, errors } = await uploadInBatches({
+      category: location,
+      files: pendingFiles,
+      altTextI18n: pendingAltTextI18n,
+    });
 
+    if (uploaded.length > 0) {
+      try {
+        await placePhotos(uploaded.map((photo) => photo.id));
+      } catch (err) {
+        console.error("Chyba při přidávání nahraných fotek:", err);
+        enqueueSnackbar("Fotky se nahrály, ale nepodařilo se je přiřadit", {
+          variant: "error",
+          autoHideDuration: 5000,
+        });
+        return;
+      }
+    }
+
+    if (errors.length === 0) {
       enqueueSnackbar("Fotky byly nahrány a přidány", {
         variant: "success",
         autoHideDuration: 3000,
       });
       handleClose();
-    } catch (err) {
-      console.error("Chyba při nahrávání fotek:", err);
-      enqueueSnackbar(getApiErrorMessage(err, "Chyba při nahrávání fotek"), {
-        variant: "error",
-        autoHideDuration: 5000,
-      });
+    } else {
+      enqueueSnackbar(
+        `Nahráno a přidáno ${uploaded.length} z ${pendingFiles.length} fotek, ${errors.length} dávek selhalo`,
+        { variant: "warning", autoHideDuration: 6000 },
+      );
+      setUploadSummary({ uploaded, errors });
     }
   };
 
@@ -407,28 +424,66 @@ export default function PhotoPickerDialog({
             />
             {pendingFiles ? (
               <Stack spacing={2} sx={{ width: "100%" }}>
-                <Typography variant="subtitle2">
-                  {pendingFiles.length} {pendingFiles.length === 1 ? "soubor" : "souborů"} k nahrání
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Nepovinný alt text se použije pro všechny nahrávané fotky.
-                  Pokud fotky potřebují různý alt text, uprav ho po nahrání u
-                  jednotlivých fotek pomocí ikony tužky.
-                </Typography>
-                <AltTextFields value={pendingAltTextI18n} onChange={setPendingAltTextI18n} />
-                <Stack direction="row" spacing={1.5} justifyContent="flex-end">
-                  <Button onClick={handleCancelUpload} disabled={isUploading}>
-                    Zrušit
-                  </Button>
-                  <Button
-                    variant="contained"
-                    onClick={handleConfirmUpload}
-                    disabled={isUploading}
-                    startIcon={isUploading ? <CircularProgress size={16} color="inherit" /> : null}
-                  >
-                    Nahrát
-                  </Button>
-                </Stack>
+                {uploadSummary ? (
+                  <>
+                    <Typography variant="body2">
+                      Úspěšně nahráno a přidáno {uploadSummary.uploaded.length} z{" "}
+                      {pendingFiles.length} fotek.
+                    </Typography>
+                    <List dense>
+                      {uploadSummary.errors.map((err) => (
+                        <ListItem key={err.batchIndex} disableGutters alignItems="flex-start">
+                          <ErrorIcon fontSize="small" color="error" sx={{ mr: 1, mt: 0.5 }} />
+                          <ListItemText
+                            primary={`Dávka ${err.batchIndex + 1} (${err.fileCount} fotek) selhala`}
+                            secondary={err.message}
+                          />
+                        </ListItem>
+                      ))}
+                    </List>
+                    <Stack direction="row" justifyContent="flex-end">
+                      <Button variant="contained" onClick={handleClose}>
+                        Zavřít
+                      </Button>
+                    </Stack>
+                  </>
+                ) : isUploading ? (
+                  <Stack spacing={2} alignItems="center" py={2}>
+                    <Typography variant="body2">
+                      {progress
+                        ? `Nahrávám dávku ${progress.batch}/${progress.totalBatches} (celkem ${progress.uploadedSoFar}/${progress.totalFiles} fotek)…`
+                        : "Připravuji nahrávání…"}
+                    </Typography>
+                    <Box sx={{ width: "100%" }}>
+                      <LinearProgress
+                        variant={progress ? "determinate" : "indeterminate"}
+                        value={
+                          progress
+                            ? ((progress.batch - 1) / progress.totalBatches) * 100
+                            : undefined
+                        }
+                      />
+                    </Box>
+                  </Stack>
+                ) : (
+                  <>
+                    <Typography variant="subtitle2">
+                      {pendingFiles.length} {pendingFiles.length === 1 ? "soubor" : "souborů"} k nahrání
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Nepovinný alt text se použije pro všechny nahrávané fotky.
+                      Pokud fotky potřebují různý alt text, uprav ho po nahrání u
+                      jednotlivých fotek pomocí ikony tužky.
+                    </Typography>
+                    <AltTextFields value={pendingAltTextI18n} onChange={setPendingAltTextI18n} />
+                    <Stack direction="row" spacing={1.5} justifyContent="flex-end">
+                      <Button onClick={handleCancelUpload}>Zrušit</Button>
+                      <Button variant="contained" onClick={handleConfirmUpload}>
+                        Nahrát
+                      </Button>
+                    </Stack>
+                  </>
+                )}
               </Stack>
             ) : (
               <>

@@ -14,17 +14,20 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  LinearProgress,
+  List,
+  ListItem,
+  ListItemText,
 } from "@mui/material";
-import { Add, Delete, DeleteSweep, Edit } from "@mui/icons-material";
+import { Add, Delete, DeleteSweep, Edit, Error as ErrorIcon } from "@mui/icons-material";
 import { useSnackbar } from "notistack";
 import {
   useGetPhotosQuery,
   useLazyGetPhotosQuery,
-  useUploadPhotosMutation,
   useDeletePhotoMutation,
 } from "../../../../redux/api/galleryApi";
+import { useBatchPhotoUpload } from "../../../../hooks/useBatchPhotoUpload";
 import { resolveMediaUrl } from "../../../../utils/resolveMediaUrl";
-import { getApiErrorMessage } from "../../../../utils/apiError";
 import AltTextFields from "../../../../components/AltTextFields";
 import PhotoAltEditDialog from "../../../../components/PhotoAltEditDialog";
 
@@ -40,6 +43,7 @@ export default function GallerySection() {
   const [pendingFiles, setPendingFiles] = useState(null);
   const [pendingAltTextI18n, setPendingAltTextI18n] = useState({});
   const [editingPhoto, setEditingPhoto] = useState(null);
+  const [uploadSummary, setUploadSummary] = useState(null);
 
   const { data, isLoading, error } = useGetPhotosQuery({ page, pageSize: PAGE_SIZE });
 
@@ -47,7 +51,7 @@ export default function GallerySection() {
   const totalCount = data?.count || 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
-  const [uploadPhotos, { isLoading: isUploading }] = useUploadPhotosMutation();
+  const { uploadInBatches, isUploading, progress } = useBatchPhotoUpload();
   const [deletePhoto, { isLoading: isRemoving }] = useDeletePhotoMutation();
   const [fetchAllPhotos] = useLazyGetPhotosQuery();
 
@@ -66,27 +70,29 @@ export default function GallerySection() {
   const handleCancelUpload = () => {
     setPendingFiles(null);
     setPendingAltTextI18n({});
+    setUploadSummary(null);
   };
 
   const handleConfirmUpload = async () => {
-    try {
-      await uploadPhotos({
-        category: DEFAULT_CATEGORY,
-        files: pendingFiles,
-        altTextI18n: pendingAltTextI18n,
-      }).unwrap();
-      enqueueSnackbar("Fotky byly úspěšně nahrány", {
+    const { uploaded, errors } = await uploadInBatches({
+      category: DEFAULT_CATEGORY,
+      files: pendingFiles,
+      altTextI18n: pendingAltTextI18n,
+    });
+
+    if (errors.length === 0) {
+      enqueueSnackbar(`Nahráno ${uploaded.length} fotek`, {
         variant: "success",
         autoHideDuration: 3000,
       });
       setPendingFiles(null);
       setPendingAltTextI18n({});
-    } catch (err) {
-      console.error("Chyba při nahrávání fotek:", err);
-      enqueueSnackbar(getApiErrorMessage(err, "Chyba při nahrávání fotek"), {
-        variant: "error",
-        autoHideDuration: 5000,
-      });
+    } else {
+      enqueueSnackbar(
+        `Nahráno ${uploaded.length} z ${pendingFiles.length} fotek, ${errors.length} dávek selhalo`,
+        { variant: "warning", autoHideDuration: 6000 },
+      );
+      setUploadSummary({ uploaded, errors });
     }
   };
 
@@ -195,25 +201,73 @@ export default function GallerySection() {
       <Dialog open={!!pendingFiles} onClose={isUploading ? undefined : handleCancelUpload} maxWidth="sm" fullWidth>
         <DialogTitle>Nahrát {pendingFiles?.length || 0} fotek</DialogTitle>
         <DialogContent>
-          <DialogContentText sx={{ mb: 2 }}>
-            Nepovinný alt text se použije pro všechny nahrávané fotky v této
-            dávce. Pokud fotky potřebují různý alt text, uprav ho po nahrání u
-            jednotlivých fotek pomocí ikony tužky.
-          </DialogContentText>
-          <AltTextFields value={pendingAltTextI18n} onChange={setPendingAltTextI18n} />
+          {uploadSummary ? (
+            <Stack spacing={2}>
+              <Typography variant="body2">
+                Úspěšně nahráno {uploadSummary.uploaded.length} z{" "}
+                {pendingFiles?.length || 0} fotek.
+              </Typography>
+              <List dense>
+                {uploadSummary.errors.map((err) => (
+                  <ListItem key={err.batchIndex} disableGutters alignItems="flex-start">
+                    <ErrorIcon fontSize="small" color="error" sx={{ mr: 1, mt: 0.5 }} />
+                    <ListItemText
+                      primary={`Dávka ${err.batchIndex + 1} (${err.fileCount} fotek) selhala`}
+                      secondary={err.message}
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            </Stack>
+          ) : isUploading ? (
+            <Stack spacing={2} alignItems="center" py={3}>
+              <Typography variant="body2">
+                {progress
+                  ? `Nahrávám dávku ${progress.batch}/${progress.totalBatches} (celkem ${progress.uploadedSoFar}/${progress.totalFiles} fotek)…`
+                  : "Připravuji nahrávání…"}
+              </Typography>
+              <Box sx={{ width: "100%" }}>
+                <LinearProgress
+                  variant={progress ? "determinate" : "indeterminate"}
+                  value={
+                    progress
+                      ? ((progress.batch - 1) / progress.totalBatches) * 100
+                      : undefined
+                  }
+                />
+              </Box>
+            </Stack>
+          ) : (
+            <>
+              <DialogContentText sx={{ mb: 2 }}>
+                Nepovinný alt text se použije pro všechny nahrávané fotky v této
+                dávce. Pokud fotky potřebují různý alt text, uprav ho po nahrání u
+                jednotlivých fotek pomocí ikony tužky.
+              </DialogContentText>
+              <AltTextFields value={pendingAltTextI18n} onChange={setPendingAltTextI18n} />
+            </>
+          )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCancelUpload} disabled={isUploading}>
-            Zrušit
-          </Button>
-          <Button
-            onClick={handleConfirmUpload}
-            variant="contained"
-            disabled={isUploading}
-            startIcon={isUploading ? <CircularProgress size={16} color="inherit" /> : null}
-          >
-            Nahrát
-          </Button>
+          {uploadSummary ? (
+            <Button onClick={handleCancelUpload} variant="contained">
+              Zavřít
+            </Button>
+          ) : (
+            <>
+              <Button onClick={handleCancelUpload} disabled={isUploading}>
+                Zrušit
+              </Button>
+              <Button
+                onClick={handleConfirmUpload}
+                variant="contained"
+                disabled={isUploading}
+                startIcon={isUploading ? <CircularProgress size={16} color="inherit" /> : null}
+              >
+                Nahrát
+              </Button>
+            </>
+          )}
         </DialogActions>
       </Dialog>
 
