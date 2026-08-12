@@ -36,8 +36,8 @@ export default function Header({ onLogin }) {
         borderBottom: "1px solid #dfd4c4",
       }}
     >
-      <Box sx={{ px: { xs: 0.5, md: 2 }, py: 0, maxHeight: "64px" }}>
-        <Toolbar sx={{ minHeight: "64px" }}>
+      <Box sx={{ px: { xs: 0.5, md: 2 }, py: 0 }}>
+        <Toolbar sx={{ minHeight: "64px", maxHeight: "64px" }}>
           {/* Desktop */}
           <DesktopHeader onLogin={onLogin} navItems={allNavItems} />
 
