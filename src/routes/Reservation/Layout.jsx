@@ -1,157 +1,129 @@
-import { AppBar, Box, Divider, Drawer, Stack, Typography } from "@mui/material";
-import { useReservationContext } from "./context/ReservationContext";
-import { useState } from "react";
+import { AppBar, Box, Button, Divider, Popover, Stack, Typography } from "@mui/material";
+import WysiwygIcon from "@mui/icons-material/Wysiwyg";
 import { useSelector } from "react-redux";
-import { RoomCartCompactCard } from "./components/RoomCardCompact";
 import dayjs from "dayjs";
 import ReservationStepper from "./components/ReservationStepper";
-import BedroomParentIcon from "@mui/icons-material/BedroomParent";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import PeopleIcon from "@mui/icons-material/People";
 import { useTranslation } from "react-i18next";
-import Cart from "./components/Cart";
+import { useState } from "react";
 
 export default function Layout({ children }) {
   const { t } = useTranslation("rezervace");
-  const { step, increaseStep, decreaseStep, setStep } = useReservationContext();
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [infoAnchor, setInfoAnchor] = useState(null);
   const values = useSelector((state) => state.reservation.values);
+  const reservationInfoLabel = t("layout.reservationInfo", {
+    defaultValue: "Přehled aktuální rezervace",
+  });
 
   return (
     <>
-      <Drawer
-        anchor="right"
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-      >
-        <Cart />
-      </Drawer>
-
-      <Stack sx={{ minHeight: "100vh"}} flex={1}>
+      <Stack flex={1} minHeight={0}>
         <AppBar
           position="sticky"
           sx={{
             top: { xs: 64, md: 64 },
             zIndex: 1100,
-            background:
-              "#fffaf0",
+            background: "#fffaf0",
             boxShadow: "none",
             borderBottom: "1px solid #dfd4c4",
           }}
         >
           <Box
             sx={{
-              px: { xs: 2, md: 3 },
-              py: 1.5,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
+              display: "grid",
               background: "#446783",
-              borderBottom: "1px solid rgba(255,255,255,0.06)",
+              gridTemplateColumns: "1fr auto 1fr",
+              alignItems: "center",
+              width: "100%",
+              px: 5,
+              py: 1,
             }}
           >
-            {/* Left: date + guests */}
-            <Stack
-              direction="row"
-              spacing={{ xs: 1.5, md: 2.5 }}
-              alignItems="center"
-            >
-              <Stack direction="row" spacing={0.5} alignItems="center">
-                <CalendarTodayIcon
-                  sx={{ fontSize: 16, color: "rgba(255,255,255,0.6)" }}
-                />
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: "rgba(255,255,255,0.9)",
-                    fontWeight: 500,
-                    letterSpacing: 0.2,
-                  }}
-                >
-                  {dayjs(values.check_in_date).format("D.M")} –{" "}
-                  {dayjs(values.check_out_date).format("D.M.YYYY")}
-                </Typography>
-              </Stack>
-
-              <Divider
-                orientation="vertical"
-                flexItem
-                sx={{ borderColor: "rgba(255,255,255,0.15)", my: 0.5 }}
-              />
-
-              <Stack direction="row" spacing={0.5} alignItems="center">
-                <PeopleIcon
-                  sx={{ fontSize: 16, color: "rgba(255,255,255,0.6)" }}
-                />
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: "rgba(255,255,255,0.9)",
-                    fontWeight: 500,
-                    letterSpacing: 0.2,
-                  }}
-                >
-                  {t("layout.guestsSummary", {
-                    adults: values.num_adults,
-                    children: values.num_children,
-                  })}
-                </Typography>
-              </Stack>
-            </Stack>
-
-            {/* Right: cart */}
-            <Stack
-              direction="row"
-              alignItems="center"
-              spacing={0.6}
-              onClick={() => setDrawerOpen(true)}
-              sx={{
-                cursor: "pointer",
-                bgcolor:
-                  values.rooms.length > 0
-                    ? "warning.main"
-                    : "rgba(255,255,255,0.12)",
-                borderRadius: 999,
-                px: 1.25,
-                py: 0.45,
-                transition: "background-color 0.2s, transform 0.15s",
-                "&:hover": {
-                  bgcolor:
-                    values.rooms.length > 0
-                      ? "warning.dark"
-                      : "rgba(255,255,255,0.2)",
-                  transform: "scale(1.04)",
-                },
-              }}
-            >
-              <BedroomParentIcon sx={{ fontSize: 18, color: "common.white" }} />
-              <Typography
+            {/* Pravý element */}
+            <Box sx={{ gridColumn: 3, justifySelf: "end" }}>
+              <Button
+                variant="contained"
+                startIcon={<WysiwygIcon />}
+                onClick={(event) => setInfoAnchor(event.currentTarget)}
+                aria-haspopup="dialog"
+                aria-expanded={Boolean(infoAnchor)}
                 sx={{
-                  fontSize: 14,
-                  fontWeight: 700,
-                  color: "common.white",
-                  lineHeight: 1,
+                  bgcolor: "common.white",
+                  color: "primary.dark",
+                  "&:hover": {
+                    bgcolor: "rgba(255,255,255,0.88)",
+                  },
                 }}
               >
-                {values.rooms.length}
-              </Typography>
-            </Stack>
-          </Box>
+                {reservationInfoLabel}
+              </Button>
+              <Popover
+                open={Boolean(infoAnchor)}
+                anchorEl={infoAnchor}
+                onClose={() => setInfoAnchor(null)}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
+                slotProps={{ paper: { sx: { mt: 1, width: { xs: 280, sm: 340 } } } }}
+              >
+                <Stack spacing={2} p={2.5}>
+                  <Typography variant="h6" fontWeight={700}>
+                    {reservationInfoLabel}
+                  </Typography>
+                  <Divider />
+                  <Stack spacing={0.25}>
+                    <Typography variant="caption" color="text.secondary">
+                      {t("stepper.term")}
+                    </Typography>
+                    <Typography>
+                      {dayjs(values.check_in_date).format("D.M.YYYY")} -{" "}
+                      {dayjs(values.check_out_date).format("D.M.YYYY")}
+                    </Typography>
+                  </Stack>
+                  <Stack spacing={0.25}>
+                    <Typography variant="caption" color="text.secondary">
+                      {t("stepper.guests")}
+                    </Typography>
+                    <Typography>
+                      {t("layout.guestsSummary", {
+                        adults: values.num_adults,
+                        children: values.num_children,
+                      })}
+                    </Typography>
+                  </Stack>
+                  <Stack spacing={0.5}>
+                    <Typography variant="caption" color="text.secondary">
+                      {t("layout.selectedRooms")}
+                    </Typography>
+                    {values.rooms.length > 0 ? (
+                      values.rooms.map((room) => (
+                        <Typography key={room.id}>{room.name}</Typography>
+                      ))
+                    ) : (
+                      <Typography color="text.secondary">
+                        {t("layout.noRoomSelected")}
+                      </Typography>
+                    )}
+                  </Stack>
+                </Stack>
+              </Popover>
+            </Box>
 
-          {/* Stepper */}
-          <Box
-            sx={{
-              py: 2,
-              display: "flex",
-              justifyContent: "center",
-            }}
-          >
-            <ReservationStepper
-              sx={{ maxWidth: { xs: "100%", md: 520 }, width: "100%" }}
-            />
+            {/* Prostřední element */}
+            <Box sx={{ gridColumn: 2, gridRow: 1 }}>
+              <ReservationStepper />
+            </Box>
           </Box>
         </AppBar>
-        <Box sx={{ flex: 1, bgcolor: "background.default" }}>{children}</Box>
+        <Box
+          sx={{
+            display: "flex",
+            flex: 1,
+            flexDirection: "column",
+            minHeight: 0,
+            bgcolor: "background.default",
+          }}
+        >
+          {children}
+        </Box>
       </Stack>
     </>
   );

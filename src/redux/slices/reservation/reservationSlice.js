@@ -102,7 +102,9 @@ export const remainingCapacityToSelectSelector = createSelector(
   (state) => state.reservation,
   (reservation) => {
     const totalCapacity = reservation.values.rooms.reduce((sum, room) => {
-      const capacity = Math.max(room.max_adults, room.max_children);
+      const capacity =
+        Number(room.capacity) ||
+        Math.max(Number(room.max_adults) || 0, Number(room.max_children) || 0);
       return sum + capacity;
     }, 0);
     const totalGuests =

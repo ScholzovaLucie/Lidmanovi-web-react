@@ -2,7 +2,7 @@ import { Step, StepLabel, Stepper } from "@mui/material";
 import { useReservationContext } from "../context/ReservationContext";
 import { useTranslation } from "react-i18next";
 
-export default function ReservationStepper({ sx }) {
+export default function ReservationStepper() {
   const { t } = useTranslation("rezervace");
   const steps = [
     t("stepper.term"),
@@ -11,30 +11,38 @@ export default function ReservationStepper({ sx }) {
     t("stepper.personal"),
     t("summary.title"),
   ];
-  const { step, setStep } = useReservationContext();
+  const { step } = useReservationContext();
   return (
     <Stepper
       activeStep={step}
       sx={{
-        maxWidth: { xs: "100%", md: 520 },
-        width: "100%",
-        "& .MuiStepConnector-line": {
-          borderColor: "#d8cbb8",
-          borderTopWidth: 2,
-        },
+        width: { xs: "100%", md: 520 },
         "& .MuiStepIcon-root": {
-          color: "#ded3c1",
+          color: "#b8b8b8 !important",
           borderRadius: "50%",
         },
+        "& .MuiStepIcon-text": {
+          fill: "#446783 !important",
+          fontWeight: 600,
+        },
         "& .MuiStepIcon-root.Mui-active, & .MuiStepIcon-root.Mui-completed": {
-          color: "#446783",
+          color: "#ffffff !important",
+        },
+        "& .MuiStepIcon-root.Mui-active .MuiStepIcon-text": {
+          fill: "#446783 !important",
+        },
+        "& .MuiStepIcon-root.Mui-completed .MuiStepIcon-text": {
+          fill: "#000000 !important",
+        },
+        "& .MuiStepConnector-line": {
+          borderColor: "rgba(255, 255, 255, 0.75)",
+          borderTopWidth: 1,
         },
         "& .MuiStepLabel-label": {
-          fontFamily: '"Cormorant Garamond", Georgia, serif',
           fontSize: "1.2rem",
-          color: "#2d2823",
+          color: "white !important",
+          fontWeight: 500,
         },
-        ...sx,
       }}
     >
       {steps.map((label, index) => (

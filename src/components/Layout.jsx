@@ -23,6 +23,7 @@ export default function Layout() {
             component="main"
             sx={{
               flex: 1,
+              minHeight: 0,
               display: "flex",
               flexDirection: "column",
             }}

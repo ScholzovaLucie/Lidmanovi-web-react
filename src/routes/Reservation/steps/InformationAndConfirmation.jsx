@@ -47,9 +47,21 @@ export default function InformationAndConfirmation() {
   };
 
   return (
-    <Stack flex={1}>
-      <Stack alignItems={"center"} justifyContent={"center"} p={3} flex={1}>
-        <Stack spacing={4} width={{ xs: "100%", md: 700 }} >
+    <Stack flex={1} minHeight={0}>
+      <Stack
+        alignItems="center"
+        py={3}
+        flex={1}
+        minHeight={0}
+        overflow="auto"
+      >
+        <Stack
+          component="section"
+          flex={1}
+          minHeight={0}
+          spacing={4}
+          width={{ xs: "100%", md: 700 }}
+        >
           <Typography variant="h4">{t("info.title")}</Typography>
 
           <PersonalInformation />
@@ -60,18 +72,11 @@ export default function InformationAndConfirmation() {
         </Stack>
       </Stack>
 
-      {/* Sticky bottom navigation */}
       <Box
-        sx={{
-          position: "sticky",
-          bottom: 0,
-          zIndex: 10,
-          bgcolor: "background.default",
-          borderTop: "1px solid",
-          borderColor: "divider",
-          px: { xs: 2, md: 3 },
-          py: { xs: 1.5, md: 2 },
-        }}
+        width="100%"
+        flexShrink={0}
+        bgcolor="action.hover"
+        py={{ xs: 3, md: 4 }}
       >
         <Stack
           direction="row"
@@ -81,6 +86,7 @@ export default function InformationAndConfirmation() {
           width="100%"
           mx="auto"
           gap={2}
+          px={{ xs: 2, md: 3 }}
         >
           <Button
             variant="outlined"

@@ -25,6 +25,7 @@ export const translations_rezervace = {
       summary: "Souhrn",
     },
     layout: {
+      reservationInfo: "Přehled aktuální rezervace",
       selectedRooms: "Vybrané pokoje",
       noRoomSelected: "Zatím jste nevybrali žádný pokoj.",
       guestsSummary: "{{adults}} dospělí, {{children}} děti",
@@ -42,6 +43,8 @@ export const translations_rezervace = {
     rooms: {
       title: "Dostupné pokoje",
       subtitle: "Vyberte pokoje pro všechny hosty",
+      noSelectedRoomsHint: "Vyberte pokoj v sekci dostupných pokojů výše.",
+      remainingCapacity: "Zbývá přiřadit lůžka pro {{count}} osob.",
       allSelected:
         "Skvělé, máte vybrané pokoje pro všechny hosty. Můžete pokračovat na konfiguraci pokojů.",
       noRoomTitle: "Bohužel nemáme volný pokoj",
@@ -213,6 +216,7 @@ export const translations_rezervace = {
       summary: "Summary",
     },
     layout: {
+      reservationInfo: "Current reservation overview",
       selectedRooms: "Selected rooms",
       noRoomSelected: "No room selected yet.",
       guestsSummary: "{{adults}} adults, {{children}} children",
@@ -230,6 +234,8 @@ export const translations_rezervace = {
     rooms: {
       title: "Available rooms",
       subtitle: "Select rooms for all guests",
+      noSelectedRoomsHint: "Select a room from the available rooms section above.",
+      remainingCapacity: "Beds still need to be assigned for {{count}} guests.",
       allSelected:
         "Great, you have selected rooms for all guests. You can continue to room configuration.",
       noRoomTitle: "No room available",
@@ -400,6 +406,7 @@ export const translations_rezervace = {
       summary: "Übersicht",
     },
     layout: {
+      reservationInfo: "Übersicht der aktuellen Reservierung",
       selectedRooms: "Ausgewählte Zimmer",
       noRoomSelected: "Sie haben noch kein Zimmer ausgewählt.",
       guestsSummary: "{{adults}} Erwachsene, {{children}} Kinder",
@@ -417,6 +424,8 @@ export const translations_rezervace = {
     rooms: {
       title: "Verfügbare Zimmer",
       subtitle: "Wählen Sie Zimmer für alle Gäste",
+      noSelectedRoomsHint: "Wählen Sie ein Zimmer im Bereich der verfügbaren Zimmer oben aus.",
+      remainingCapacity: "Für {{count}} Gäste müssen noch Betten zugewiesen werden.",
       allSelected:
         "Super, Sie haben Zimmer für alle Gäste ausgewählt. Sie können mit der Zimmerkonfiguration fortfahren.",
       noRoomTitle: "Leider kein freies Zimmer",
@@ -580,6 +589,7 @@ export const translations_rezervace = {
       summary: "Podsumowanie",
     },
     layout: {
+      reservationInfo: "Przegląd aktualnej rezerwacji",
       selectedRooms: "Wybrane pokoje",
       noRoomSelected: "Nie wybrano jeszcze żadnego pokoju.",
       guestsSummary: "{{adults}} dorośli, {{children}} dzieci",
@@ -597,6 +607,8 @@ export const translations_rezervace = {
     rooms: {
       title: "Dostępne pokoje",
       subtitle: "Wybierz pokoje dla wszystkich gości",
+      noSelectedRoomsHint: "Wybierz pokój z sekcji dostępnych pokoi powyżej.",
+      remainingCapacity: "Należy jeszcze przypisać łóżka dla {{count}} gości.",
       allSelected:
         "Świetnie, wybrano pokoje dla wszystkich gości. Możesz przejść do konfiguracji pokoi.",
       noRoomTitle: "Niestety brak wolnego pokoju",

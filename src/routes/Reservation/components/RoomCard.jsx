@@ -26,6 +26,7 @@ export default function RoomCard({
   onDelete,
   isAdminMode = false,
   isReadOnly = false,
+  fillHeight = false,
 }) {
   const { t } = useTranslation("rezervace");
   const dispatch = useDispatch();
@@ -35,8 +36,14 @@ export default function RoomCard({
   ]);
 
   return (
-    <AppCardCustomizable>
-      <Box maxWidth={370} sx={{ position: "relative" }}>
+    <AppCardCustomizable props={fillHeight ? { height: "100%" } : undefined}>
+      <Box
+        maxWidth={370}
+        sx={{
+          position: "relative",
+          ...(fillHeight && { height: "100%", display: "flex", flexDirection: "column" }),
+        }}
+      >
         {/* Inactive overlay */}
         {!room.is_active && (
           <Box
@@ -107,7 +114,13 @@ export default function RoomCard({
             display: "block",
           }}
         />
-        <Stack alignItems={"start"} spacing={3} flex={1} padding={3}>
+        <Stack
+          alignItems={"start"}
+          justifyContent="space-between"
+          spacing={3}
+          flex={1}
+          padding={3}
+        >
           {/* top */}
           <Stack alignItems={"start"} spacing={1.5} width={"100%"}>
             <Typography

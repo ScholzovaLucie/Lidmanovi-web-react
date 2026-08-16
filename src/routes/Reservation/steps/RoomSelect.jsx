@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Drawer,
+  Fab,
   Grid,
   Stack,
   Typography,
@@ -16,14 +17,13 @@ import {
   BathtubOutlined,
   Close,
   CheckCircleOutline,
-  Person,
-  PersonOutline,
   SpaOutlined,
   Wifi,
   ArrowBackIos,
   ArrowForwardIos,
+  HotelOutlined,
 } from "@mui/icons-material";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addRoom,
@@ -43,7 +43,8 @@ import Cart from "../components/Cart";
 
 export default function RoomSelect() {
   const { t, i18n } = useTranslation("rezervace");
-  const { step, increaseStep, decreaseStep, setStepWithScroll } = useReservationContext();
+  const { step, increaseStep, decreaseStep, setStepWithScroll } =
+    useReservationContext();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const activeLang = String(
@@ -57,7 +58,9 @@ export default function RoomSelect() {
     dayjs(state.reservation.values.check_out_date).format("YYYY-MM-DD"),
   );
   const adults = useSelector((state) => state.reservation.values.num_adults);
-  const children = useSelector((state) => state.reservation.values.num_children);
+  const children = useSelector(
+    (state) => state.reservation.values.num_children,
+  );
 
   const {
     data: rooms,
@@ -74,22 +77,21 @@ export default function RoomSelect() {
   );
   const reservationState = useSelector((state) => state.reservation);
   const values = reservationState.values;
-  const allHostsCount = values.num_adults + values.num_children;
+  const selectedRoomsRef = useRef(null);
   const roomsList = getRoomsList(rooms);
   const hasNoAvailableRooms =
     !isLoading && !error && rooms && roomsList.length === 0;
   const hasEnoughCapacity =
     values.rooms.length > 0 && remainingCapacityToSelect <= 0;
 
-  const actuallySelectedCapacity = values.rooms.reduce((sum, room) => {
-    const capacity = Math.max(room.max_adults, room.max_children);
-    return sum + capacity;
-  }, 0);
-
   function sortRooms(rooms = []) {
     const sorted = [...rooms].sort((a, b) => {
-      const aCapacity = Math.max(a.max_adults, a.max_children);
-      const bCapacity = Math.max(b.max_adults, b.max_children);
+      const aCapacity =
+        Number(a.capacity) ||
+        Math.max(Number(a.max_adults) || 0, Number(a.max_children) || 0);
+      const bCapacity =
+        Number(b.capacity) ||
+        Math.max(Number(b.max_adults) || 0, Number(b.max_children) || 0);
 
       const aDiff = aCapacity - remainingCapacityToSelect;
       const bDiff = bCapacity - remainingCapacityToSelect;
@@ -150,12 +152,28 @@ export default function RoomSelect() {
   if (error) return <div>{t("common.error")}</div>;
 
   return (
-    <Stack direction={"row"} flex={1}>
-      <Stack flex={1}>
-        {/* Scrollable content */}
-        <Stack alignItems={"center"} p={3} spacing={3} flex={1}>
+    <Stack flex={1} minHeight={0}>
+      {/* Scrollable content */}
+      <Stack
+        alignItems="center"
+        px={0}
+        py={3}
+        spacing={4}
+        flex={1}
+        minHeight={0}
+      >
+        <Stack width="100%" spacing={{ xs: 5, md: 7 }}>
+          <Stack
+            component="section"
+            width="100%"
+            spacing={3}
+            alignItems="center"
+            aria-labelledby="available-rooms-title"
+          >
           <Stack alignItems="center" spacing={0.5}>
-            <Typography variant="h4">{t("rooms.title")}</Typography>
+            <Typography id="available-rooms-title" variant="h4">
+              {t("rooms.title")}
+            </Typography>
             <Typography variant="h6" color="text.secondary">
               {t("rooms.subtitle")}
             </Typography>
@@ -172,11 +190,7 @@ export default function RoomSelect() {
               }}
             >
               <Stack spacing={2.5} p={3} alignItems="center">
-                <Typography
-                  variant="h6"
-                  textAlign="center"
-                  color="warning.dark"
-                >
+                <Typography variant="h6" textAlign="center" color="warning.dark">
                   {t("rooms.noRoomTitle")}
                 </Typography>
                 <Typography
@@ -196,98 +210,123 @@ export default function RoomSelect() {
               </Stack>
             </AppCardCustomizable>
           ) : (
-            <Grid container spacing={2} justifyContent={"center"}>
+            <Grid container spacing={2} justifyContent="center">
               {availableRooms.map((room) => (
-                <Grid key={room.id}>
-                  <RoomCard room={room} />
+                <Grid key={room.id} sx={{ display: "flex" }}>
+                  <RoomCard room={room} fillHeight />
                 </Grid>
               ))}
             </Grid>
           )}
+          </Stack>
+
+          <Stack
+            component="section"
+            width="100%"
+            spacing={2}
+            alignItems="center"
+            aria-labelledby="selected-rooms-title"
+            sx={{
+              bgcolor: "action.hover",
+              px: { xs: 2, md: 3 },
+              py: { xs: 3, md: 4 },
+            }}
+          >
+          <Typography id="selected-rooms-title" variant="h4">
+            {t("layout.selectedRooms")}
+          </Typography>
+          {values.rooms.length > 0 ? (
+            <Grid
+              ref={selectedRoomsRef}
+              container
+              spacing={2}
+              justifyContent="center"
+              sx={{ scrollMarginTop: 120 }}
+            >
+              {values.rooms.map((room) => (
+                <Grid key={room.id} sx={{ display: "flex" }}>
+                  <RoomCard room={room} selected fillHeight />
+                </Grid>
+              ))}
+            </Grid>
+          ) : (
+            <Stack spacing={0.5} alignItems="center">
+              <Typography color="text.secondary" textAlign="center">
+                {t("layout.noRoomSelected")}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" textAlign="center">
+                {t("rooms.noSelectedRoomsHint")}
+              </Typography>
+            </Stack>
+          )}
+          </Stack>
         </Stack>
 
-        {/* Sticky bottom navigation */}
         <Box
+          component="nav"
+          aria-label={t("stepper.rooms")}
           sx={{
-            position: "sticky",
-            bottom: 0,
-            zIndex: 10,
-            bgcolor: "background.default",
-            borderTop: "1px solid",
-            borderColor: "divider",
-            px: { xs: 2, md: 3 },
-            py: { xs: 1.5, md: 2 },
+            width: "100%",
+            maxWidth: 900,
+            pt: { xs: 2, md: 3 },
           }}
         >
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            maxWidth={900}
-            width="100%"
-            mx="auto"
-            gap={2}
-          >
-            <Stack flex={1}>
-              <Grid
-                container
-                spacing={1}
-                alignItems="center"
-                justifyContent="center"
-              >
-                {Array.from({ length: allHostsCount }).map((_, index) => (
-                  <Grid key={index}>
-                    {index >= actuallySelectedCapacity ? (
-                      <PersonOutline fontSize="medium" color="disabled" />
-                    ) : (
-                      <Person fontSize="medium" />
-                    )}
-                  </Grid>
-                ))}
-              </Grid>
+          <Stack spacing={2.5}>
+            <Stack alignItems="center">
+              <Typography variant="body1" color="text.secondary" textAlign="center">
+                {t("rooms.remainingCapacity", {
+                  count: Math.max(remainingCapacityToSelect, 0),
+                })}
+              </Typography>
+            </Stack>
 
-              <Stack
-                direction="row"
-                spacing={2}
-                justifyContent="space-between"
-                flex={1}
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
+              <Button
+                variant="outlined"
+                startIcon={<ArrowBackIos />}
+                onClick={decreaseStep}
+                sx={{ minWidth: { sm: 140 } }}
               >
+                {t("common.back")}
+              </Button>
+
+              {!hasNoAvailableRooms && (
                 <Button
-                  variant="outlined"
-                  startIcon={<ArrowBackIos />}
-                  onClick={decreaseStep}
-                  sx={{ minWidth: { xs: 0, sm: 120 }, flexShrink: 0 }}
+                  variant="contained"
+                  endIcon={<ArrowForwardIos />}
+                  onClick={handleNextStep}
+                  disabled={!hasEnoughCapacity}
+                  sx={{ flex: 1 }}
                 >
-                  {t("common.back")}
+                  {t("common.continue")}
                 </Button>
-
-                {!hasNoAvailableRooms && (
-                  <Button
-                    variant="contained"
-                    endIcon={<ArrowForwardIos />}
-                    onClick={handleNextStep}
-                    disabled={!hasEnoughCapacity}
-                    sx={{ flex: 1, maxWidth: { xs: "100%" } }}
-                  >
-                    {t("common.continue")}
-                  </Button>
-                )}
-              </Stack>
+              )}
             </Stack>
           </Stack>
         </Box>
       </Stack>
-
-      <Stack
-        sx={{
-          bgcolor: "background.default",
-          borderLeft: "1px solid",
-          borderColor: "divider",
-        }}
-        display={{ xs: "none", lg: "block" }}
-      >
-        <Cart />
-      </Stack>
+      {values.rooms.length > 0 && (
+        <Fab
+          variant="extended"
+          color="primary"
+          aria-label={t("layout.selectedRooms")}
+          onClick={() =>
+            selectedRoomsRef.current?.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            })
+          }
+          sx={{
+            position: "fixed",
+            right: { xs: 16, md: 32 },
+            bottom: { xs: 16, md: 32 },
+            zIndex: 10,
+          }}
+        >
+          <HotelOutlined sx={{ mr: 1 }} />
+          {t("layout.selectedRooms")}
+        </Fab>
+      )}
     </Stack>
   );
 }

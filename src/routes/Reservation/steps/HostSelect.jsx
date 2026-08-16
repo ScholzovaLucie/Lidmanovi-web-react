@@ -82,86 +82,90 @@ export default function HostSelect() {
   );
 
   return (
-    <Stack flex={1}>
+    <Stack flex={1} minHeight={0}>
       <Stack
         alignItems={"center"}
-        justifyContent={"center"}
-        p={3}
+        py={3}
         spacing={4}
         flex={1}
-      >
-        <Typography variant="h4">{t("guests.title")}</Typography>
-
-        <Grid container spacing={2} justifyContent={"center"}>
-          {reservationState.rooms.map((room, index) => (
-            <Grid key={index}>
-              <RoomHostCard room={room} index={index} />
-            </Grid>
-          ))}
-        </Grid>
-      </Stack>
-
-      {/* Sticky bottom navigation */}
-      <Box
-        sx={{
-          position: "sticky",
-          bottom: 0,
-          zIndex: 10,
-          bgcolor: "background.default",
-          borderTop: "1px solid",
-          borderColor: "divider",
-          px: { xs: 2, md: 3 },
-          py: { xs: 1.5, md: 2 },
-        }}
+        minHeight={0}
+        overflow="auto"
       >
         <Stack
-          direction="column"
-          justifyContent="center"
-          alignItems="center"
-          maxWidth={900}
+          component="section"
           width="100%"
-          mx="auto"
-          gap={2}
+          flex={1}
+          minHeight={0}
+          spacing={4}
+          alignItems="center"
         >
-          {shouldShowEmptyRoomsError && (
-            <Typography
-              variant="body2"
-              color="error"
-              textAlign="center"
-              sx={{ fontSize: "0.875rem", fontWeight: 500 }}
-            >
-              {t("guests.emptyRoomsError")}
-            </Typography>
-          )}
+          <Typography variant="h4">{t("guests.title")}</Typography>
 
-          {hasRemainingGuests && remainingBedsToAssignTypography}
-
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            width="100%"
-            gap={2}
-          >
-            <Button
-              variant="outlined"
-              startIcon={<ArrowBackIos />}
-              onClick={decreaseStep}
-              sx={{ minWidth: { xs: 0, sm: 120 }, flexShrink: 0 }}
-            >
-              {t("common.back")}
-            </Button>
-            <Button
-              variant="contained"
-              endIcon={<ArrowForwardIos />}
-              disabled={!canProceed}
-              onClick={increaseStep}
-              sx={{ flex: 1, maxWidth: { xs: "100%" } }}
-            >
-              {t("common.continue")}
-            </Button>
-          </Stack>
+          <Grid container spacing={2} justifyContent={"center"}>
+            {reservationState.rooms.map((room, index) => (
+              <Grid key={index}>
+                <RoomHostCard room={room} index={index} />
+              </Grid>
+            ))}
+          </Grid>
         </Stack>
+      </Stack>
+
+      <Box
+        width="100%"
+        flexShrink={0}
+        bgcolor="action.hover"
+        py={{ xs: 3, md: 4 }}
+      >
+          <Stack
+            direction="column"
+            justifyContent="center"
+            alignItems="center"
+            maxWidth={900}
+            width="100%"
+            mx="auto"
+            gap={2}
+            px={{ xs: 2, md: 3 }}
+          >
+            {shouldShowEmptyRoomsError && (
+              <Typography
+                variant="body2"
+                color="error"
+                textAlign="center"
+                sx={{ fontSize: "0.875rem", fontWeight: 500 }}
+              >
+                {t("guests.emptyRoomsError")}
+              </Typography>
+            )}
+
+            {hasRemainingGuests && remainingBedsToAssignTypography}
+
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              width="100%"
+              gap={2}
+            >
+              <Button
+                variant="outlined"
+                startIcon={<ArrowBackIos />}
+                onClick={decreaseStep}
+                sx={{ minWidth: { xs: 0, sm: 120 }, flexShrink: 0 }}
+              >
+                {t("common.back")}
+              </Button>
+              <Button
+                variant="contained"
+                endIcon={<ArrowForwardIos />}
+                disabled={!canProceed}
+                onClick={increaseStep}
+                sx={{ flex: 1, maxWidth: { xs: "100%" } }}
+              >
+                {t("common.continue")}
+              </Button>
+            </Stack>
+          </Stack>
       </Box>
     </Stack>
   );

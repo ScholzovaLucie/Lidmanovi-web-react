@@ -103,9 +103,22 @@ export function OrderSummary() {
   }
 
   return (
-    <Stack flex={1}>
-      <Stack alignItems={"center"} justifyContent={"center"} p={3} flex={1}>
-        <Stack width={{ width: "100%", maxWidth: 500 }} spacing={4}>
+    <Stack flex={1} minHeight={0}>
+      <Stack
+        alignItems="center"
+        py={3}
+        flex={1}
+        minHeight={0}
+        overflow="auto"
+      >
+        <Stack
+          component="section"
+          flex={1}
+          minHeight={0}
+          width="100%"
+          maxWidth={500}
+          spacing={4}
+        >
           <Typography variant="h4" textAlign={{ xs: "start", sm: "center" }}>
             {t("summary.title")}
           </Typography>
@@ -386,21 +399,14 @@ export function OrderSummary() {
               </Typography>
             </>
           )}
-        </Stack>{" "}
+        </Stack>
       </Stack>
-      {/* Sticky bottom navigation */}
       {!reservationNumber && (
         <Box
-          sx={{
-            position: "sticky",
-            bottom: 0,
-            zIndex: 10,
-            bgcolor: "background.default",
-            borderTop: "1px solid",
-            borderColor: "divider",
-            px: { xs: 2, md: 3 },
-            py: { xs: 1.5, md: 2 },
-          }}
+          width="100%"
+          flexShrink={0}
+          bgcolor="action.hover"
+          py={{ xs: 3, md: 4 }}
         >
           <Stack
             direction="row"
@@ -409,6 +415,7 @@ export function OrderSummary() {
             maxWidth={900}
             width="100%"
             mx="auto"
+            px={{ xs: 2, md: 3 }}
           >
             <Button
               variant="outlined"
@@ -416,7 +423,7 @@ export function OrderSummary() {
               onClick={decreaseStep}
               sx={{ minWidth: { xs: 0, sm: 120 }, flexShrink: 0 }}
             >
-              {t("common.back")}s
+              {t("common.back")}
             </Button>
           </Stack>
         </Box>
