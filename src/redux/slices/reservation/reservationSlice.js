@@ -1,29 +1,37 @@
 import { createSlice, createSelector } from "@reduxjs/toolkit";
 import dayjs from "dayjs";
 
+const getInitialState = () => ({
+  values: {
+    check_in_date: dayjs().format("YYYY-MM-DD"),
+    check_out_date: dayjs().add(1, "day").format("YYYY-MM-DD"),
+    num_adults: 1,
+    num_children: 0,
+    currency: "CZK",
+    note: "",
+    primary_guest: {
+      first_name: "",
+      last_name: "",
+      email: "",
+      phone: "",
+      country: "Česká republika",
+      note: "",
+    },
+    rooms: [],
+  },
+  errors: {},
+  resetVersion: 0,
+});
+
 const reservationSlice = createSlice({
   name: "reservation",
-  initialState: {
-    values: {
-      check_in_date: dayjs(Date.now()).format("YYYY-MM-DD"),
-      check_out_date: dayjs(Date.now()).add(1, "day").format("YYYY-MM-DD"),
-      num_adults: 1,
-      num_children: 0,
-      currency: "CZK",
-      note: "test",
-      primary_guest: {
-        first_name: "test",
-        last_name: "test",
-        email: "test@test.com",
-        phone: "123",
-        country: "Česká republika",
-        note: "test",
-      },
-      rooms: [],
-    },
-    errors: {},
-  },
+  initialState: getInitialState(),
   reducers: {
+    resetReservation: (state) => ({
+      ...getInitialState(),
+      resetVersion: state.resetVersion + 1,
+    }),
+
     setErrors: (state, action) => {
       state.errors = action.payload || {};
     },
@@ -88,6 +96,7 @@ const reservationSlice = createSlice({
 });
 
 export const {
+  resetReservation,
   updateReservation,
   setTermAndGuests,
   addRoom,

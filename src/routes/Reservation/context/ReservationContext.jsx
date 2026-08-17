@@ -1,9 +1,15 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 const ReservationContext = createContext();
 
 export const ReservationContextProvider = ({ children }) => {
   const [step, setStep] = useState(0);
+  const resetVersion = useSelector((state) => state.reservation.resetVersion);
+
+  useEffect(() => {
+    setStep(0);
+  }, [resetVersion]);
 
   const scrollToTop = () => {
     // Scroll to top of the page smoothly

@@ -17,6 +17,12 @@ export const translations_rezervace = {
       back: "Zpět",
       continue: "Pokračovat",
     },
+    navigationGuard: {
+      title: "Opustit rozpracovanou rezervaci?",
+      message: "Dosud vyplněné údaje rezervace budou smazány.",
+      stay: "Zůstat na stránce",
+      leave: "Opustit a smazat údaje",
+    },
     stepper: {
       term: "Termín",
       rooms: "Pokoje",
@@ -208,6 +214,12 @@ export const translations_rezervace = {
       pricePerNight: "CZK {{amount}} / night",
       back: "Back",
     },
+    navigationGuard: {
+      title: "Leave the unfinished reservation?",
+      message: "All reservation details entered so far will be deleted.",
+      stay: "Stay on this page",
+      leave: "Leave and delete details",
+    },
     stepper: {
       term: "Dates",
       rooms: "Rooms",
@@ -398,6 +410,12 @@ export const translations_rezervace = {
       pricePerNight: "{{amount}} CZK / Nacht",
       back: "Zurück",
     },
+    navigationGuard: {
+      title: "Unvollständige Reservierung verlassen?",
+      message: "Alle bisher eingegebenen Reservierungsdaten werden gelöscht.",
+      stay: "Auf dieser Seite bleiben",
+      leave: "Verlassen und Daten löschen",
+    },
     stepper: {
       term: "Termin",
       rooms: "Zimmer",
@@ -580,6 +598,12 @@ export const translations_rezervace = {
       priceCzk: "{{amount}} CZK",
       pricePerNight: "{{amount}} CZK / noc",
       back: "Wróć",
+    },
+    navigationGuard: {
+      title: "Opuścić niedokończoną rezerwację?",
+      message: "Wszystkie dotychczas wprowadzone dane rezerwacji zostaną usunięte.",
+      stay: "Pozostań na stronie",
+      leave: "Opuść i usuń dane",
     },
     stepper: {
       term: "Termin",
