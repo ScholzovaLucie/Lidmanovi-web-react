@@ -12,7 +12,14 @@ import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { useBlocker, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 import { resetReservation } from "../../redux/slices/reservation/reservationSlice";
 
 export default function ReservationPage2() {
@@ -92,12 +99,14 @@ function ReservationNavigationGuard({ step, setStep }) {
   };
 
   return (
-    <Dialog open={blocker.state === "blocked"} onClose={() => blocker.reset()}>
+    <Dialog
+      open={blocker.state === "blocked"}
+      onClose={() => blocker.reset()}
+      slotProps={{ paper: { sx: { p: { xs: 1, sm: 1 } } } }}
+    >
       <DialogTitle>{t("navigationGuard.title")}</DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          {t("navigationGuard.message")}
-        </DialogContentText>
+        <DialogContentText>{t("navigationGuard.message")}</DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={() => blocker.reset()} color="inherit">
