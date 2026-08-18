@@ -219,7 +219,6 @@ export default function ReservationsSection() {
       {
         key: "status",
         label: "Stav",
-        sticky: true,
         render: (row) => {
           const selectedStatus = draftStatuses[row.id] ?? row.status;
           const isUpdating =
@@ -582,7 +581,8 @@ export default function ReservationsSection() {
       <Box
         sx={{
           display: "flex",
-          alignItems: "flex-start",
+          flexDirection: { xs: "column", sm: "row" },
+          alignItems: { xs: "stretch", sm: "flex-start" },
           justifyContent: "space-between",
           gap: 2,
         }}
@@ -595,7 +595,11 @@ export default function ReservationsSection() {
             Spravujte rezervace, stavy a vyhledávejte podle různých kritérií.
           </Typography>
         </Box>
-        <Stack direction="row" spacing={1.5} sx={{ flexShrink: 0 }}>
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          spacing={1.5}
+          sx={{ flexShrink: 0 }}
+        >
           <Button
             variant="outlined"
             startIcon={<UploadFile />}

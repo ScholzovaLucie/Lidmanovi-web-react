@@ -80,12 +80,6 @@ export default function CustomTable({
                   textTransform: "uppercase",
                   color: "text.secondary",
                   whiteSpace: "nowrap",
-                  ...(col.sticky && {
-                    position: "sticky",
-                    left: 0,
-                    zIndex: 3,
-                    boxShadow: "2px 0 4px -2px rgba(0,0,0,0.15)",
-                  }),
                   ...col.headerSx,
                 }}
               >
@@ -127,17 +121,7 @@ export default function CustomTable({
                       <TableCell
                         key={col.key}
                         align={col.align || "left"}
-                        sx={{
-                          verticalAlign: "top",
-                          ...(col.sticky && {
-                            position: "sticky",
-                            left: 0,
-                            zIndex: 1,
-                            bgcolor: rowBg,
-                            boxShadow: "2px 0 4px -2px rgba(0,0,0,0.15)",
-                          }),
-                          ...col.cellSx,
-                        }}
+                        sx={{ verticalAlign: "top", ...col.cellSx }}
                       >
                         {col.render ? col.render(row, value, rowIndex) : value}
                       </TableCell>
