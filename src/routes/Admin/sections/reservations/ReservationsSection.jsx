@@ -219,6 +219,7 @@ export default function ReservationsSection() {
       {
         key: "status",
         label: "Stav",
+        sticky: true,
         render: (row) => {
           const selectedStatus = draftStatuses[row.id] ?? row.status;
           const isUpdating =

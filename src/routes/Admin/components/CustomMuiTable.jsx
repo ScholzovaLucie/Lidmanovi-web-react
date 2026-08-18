@@ -80,6 +80,12 @@ export default function CustomTable({
                   textTransform: "uppercase",
                   color: "text.secondary",
                   whiteSpace: "nowrap",
+                  ...(col.sticky && {
+                    position: "sticky",
+                    left: 0,
+                    zIndex: 3,
+                    boxShadow: "2px 0 4px -2px rgba(0,0,0,0.15)",
+                  }),
                   ...col.headerSx,
                 }}
               >
@@ -99,30 +105,47 @@ export default function CustomTable({
               </TableCell>
             </TableRow>
           ) : (
-            data.map((row, rowIndex) => (
-              <TableRow
-                key={resolveRowId(row, rowIndex)}
-                hover
-                sx={{
-                  "&:last-child td, &:last-child th": { border: 0 },
-                  "&:nth-of-type(odd)": { bgcolor: "action.hover" },
-                }}
-              >
-                {columns.map((col) => {
-                  const value = getNestedValue(row, col.key);
+            data.map((row, rowIndex) => {
+              // Sudé/liché řádky mají jinou barvu (zebra) - "přilepený" sloupec
+              // musí mít vlastní neprůhledné pozadí ve stejném rytmu, jinak by
+              // jím při scrollu prosvítal obsah ostatních sloupců pod ním.
+              const rowBg = rowIndex % 2 === 1 ? "action.hover" : "background.paper";
 
-                  return (
-                    <TableCell
-                      key={col.key}
-                      align={col.align || "left"}
-                      sx={{ verticalAlign: "top", ...col.cellSx }}
-                    >
-                      {col.render ? col.render(row, value, rowIndex) : value}
-                    </TableCell>
-                  );
-                })}
-              </TableRow>
-            ))
+              return (
+                <TableRow
+                  key={resolveRowId(row, rowIndex)}
+                  hover
+                  sx={{
+                    "&:last-child td, &:last-child th": { border: 0 },
+                    bgcolor: rowBg,
+                  }}
+                >
+                  {columns.map((col) => {
+                    const value = getNestedValue(row, col.key);
+
+                    return (
+                      <TableCell
+                        key={col.key}
+                        align={col.align || "left"}
+                        sx={{
+                          verticalAlign: "top",
+                          ...(col.sticky && {
+                            position: "sticky",
+                            left: 0,
+                            zIndex: 1,
+                            bgcolor: rowBg,
+                            boxShadow: "2px 0 4px -2px rgba(0,0,0,0.15)",
+                          }),
+                          ...col.cellSx,
+                        }}
+                      >
+                        {col.render ? col.render(row, value, rowIndex) : value}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              );
+            })
           )}
         </TableBody>
 
