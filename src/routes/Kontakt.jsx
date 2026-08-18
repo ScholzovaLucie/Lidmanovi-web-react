@@ -234,12 +234,12 @@ export default function Kontakt() {
                   ns="kontakt"
                   i18nKey="form.eyebrow"
                   sx={{
-                    fontFamily: '"Cormorant Garamond", Georgia, serif',
-                    fontStyle: "italic",
-                    fontSize: { xs: "1.35rem", md: "1.6rem" },
+                    fontSize: "0.82rem",
                     fontWeight: 700,
+                    letterSpacing: "0.34em",
+                    textTransform: "uppercase",
                     color: "rgba(255,255,255,0.86)",
-                    mb: 1,
+                    mb: 1.4,
                   }}
                 />
                 <EditableTranslationText

@@ -239,7 +239,7 @@ export default function HomePage() {
                   component="div"
                   variant="body2"
                   sx={{
-                    color: "text.secondary",
+                    color: "primary.main",
                     display: "-webkit-box",
                     WebkitLineClamp: 3,
                     WebkitBoxOrient: "vertical",
