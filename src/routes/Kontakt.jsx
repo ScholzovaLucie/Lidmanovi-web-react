@@ -8,9 +8,45 @@ import EditableTranslationText from "../components/EditableTranslationText.jsx";
 import { useTranslation } from "react-i18next";
 import { useGoogleRating } from "../hooks/useGoogleRating.js";
 import { formatGoogleRating, GOOGLE_REVIEW_URL } from "../utils/googleRating.js";
+import { useEditorialEditor } from "../context/editorialEditorContext.js";
 
 const FACEBOOK_URL = "https://www.facebook.com/profile.php?id=100063554321520";
 const INSTAGRAM_URL = "https://www.instagram.com/pensionulidmanu/";
+
+// Odkaz (tel/mailto/https) je editovatelný přes CMS klíč `urlKey`, ne napevno v kódu.
+function ContactLinkValue({ ns, urlKey, urlFallback, children }) {
+  const { t } = useTranslation(ns);
+  const { isAuthenticated, isInlineEditing } = useEditorialEditor();
+  const url = t(urlKey, { defaultValue: urlFallback });
+  const isHttp = /^https?:\/\//.test(url);
+
+  return (
+    <>
+      {url ? (
+        <Link
+          href={url}
+          target={isHttp ? "_blank" : undefined}
+          rel={isHttp ? "noopener noreferrer" : undefined}
+          underline="hover"
+          color="inherit"
+        >
+          {children}
+        </Link>
+      ) : (
+        children
+      )}
+      {isAuthenticated && isInlineEditing && (
+        <EditableTranslationText
+          ns={ns}
+          i18nKey={urlKey}
+          fallback={urlFallback}
+          multilineRows={1}
+          sx={{ mt: 0.5 }}
+        />
+      )}
+    </>
+  );
+}
 
 export default function Kontakt() {
   const { t } = useTranslation(["kontakt", "global"]);
@@ -18,59 +54,91 @@ export default function Kontakt() {
   const asset = (path) =>
     `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
 
-  const locationItems = [
+  const contactEntries = [
     {
-      labelKey: "info.address.title",
+      id: "address",
+      label: <EditableTranslationText ns="kontakt" i18nKey="info.address.title" multilineRows={1} />,
+      value: <EditableTranslationText ns="kontakt" i18nKey="info.address.lines" />,
+    },
+    {
+      id: "phone",
+      label: <EditableTranslationText ns="kontakt" i18nKey="info.phone.title" multilineRows={1} />,
       value: (
-        <EditableTranslationText ns="kontakt" i18nKey="info.address.lines" />
+        <ContactLinkValue ns="kontakt" urlKey="info.phone.url" urlFallback="tel:+420604341863">
+          <EditableTranslationText ns="kontakt" i18nKey="info.phone.value" />
+        </ContactLinkValue>
       ),
     },
     {
-      labelKey: "info.gpsTitle",
-      value: (
-        <EditableTranslationText ns="kontakt" i18nKey="info.address.coords" />
+      id: "instagram",
+      label: (
+        <EditableTranslationText
+          ns="kontakt"
+          i18nKey="info.instagram.title"
+          fallback="Instagram"
+          multilineRows={1}
+        />
       ),
-    },
-    {
-      labelKey: "info.facebook.title",
-      labelFallback: "Facebook",
       value: (
-        <Link
-          href={FACEBOOK_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          underline="hover"
-          color="inherit"
-        >
-          <EditableTranslationText
-            ns="kontakt"
-            i18nKey="info.facebook.label"
-            fallback="Pension & Restaurace U Lidmanů"
-          />
-        </Link>
-      ),
-    },
-    {
-      labelKey: "info.instagram.title",
-      labelFallback: "Instagram",
-      value: (
-        <Link
-          href={INSTAGRAM_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          underline="hover"
-          color="inherit"
-        >
+        <ContactLinkValue ns="kontakt" urlKey="info.instagram.url" urlFallback={INSTAGRAM_URL}>
           <EditableTranslationText
             ns="kontakt"
             i18nKey="info.instagram.label"
             fallback="@pensionulidmanu"
           />
-        </Link>
+        </ContactLinkValue>
       ),
     },
     {
-      labelKey: "info.ratingTitle",
+      id: "email",
+      label: <EditableTranslationText ns="kontakt" i18nKey="info.email.title" multilineRows={1} />,
+      value: (
+        <ContactLinkValue ns="kontakt" urlKey="info.email.url" urlFallback="mailto:info@ulidmanu.cz">
+          <EditableTranslationText ns="kontakt" i18nKey="info.email.value" />
+        </ContactLinkValue>
+      ),
+    },
+    {
+      id: "facebook",
+      label: (
+        <EditableTranslationText
+          ns="kontakt"
+          i18nKey="info.facebook.title"
+          fallback="Facebook"
+          multilineRows={1}
+        />
+      ),
+      value: (
+        <ContactLinkValue ns="kontakt" urlKey="info.facebook.url" urlFallback={FACEBOOK_URL}>
+          <EditableTranslationText
+            ns="kontakt"
+            i18nKey="info.facebook.label"
+            fallback="Pension & Restaurace U Lidmanů"
+          />
+        </ContactLinkValue>
+      ),
+    },
+    {
+      id: "coords",
+      label: (
+        <EditableTranslationText
+          ns="kontakt"
+          i18nKey="info.coords.title"
+          fallback="Souřadnice"
+          multilineRows={1}
+        />
+      ),
+      value: (
+        <EditableTranslationText
+          ns="kontakt"
+          i18nKey="info.coords.value"
+          fallback="50.4975831N, 16.2934947E"
+        />
+      ),
+    },
+    {
+      id: "rating",
+      label: <EditableTranslationText ns="kontakt" i18nKey="info.ratingTitle" multilineRows={1} />,
       value: (
         <Link
           href={GOOGLE_REVIEW_URL}
@@ -82,29 +150,6 @@ export default function Kontakt() {
           {formatGoogleRating(googleRating)}
         </Link>
       ),
-    },
-  ];
-
-  const contactItems = [
-    {
-      labelKey: "info.phone.title",
-      value: (
-        <Link href="tel:+420604341863" underline="hover" color="inherit">
-          <EditableTranslationText ns="kontakt" i18nKey="info.phone.value" />
-        </Link>
-      ),
-    },
-    {
-      labelKey: "info.email.title",
-      value: (
-        <Link href="mailto:info@ulidmanu.cz" underline="hover" color="inherit">
-          <EditableTranslationText ns="kontakt" i18nKey="info.email.value" />
-        </Link>
-      ),
-    },
-    {
-      labelKey: "info.owner.title",
-      value: <EditableTranslationText ns="kontakt" i18nKey="info.owner.lines" />,
     },
   ];
 
@@ -153,50 +198,34 @@ export default function Kontakt() {
                   rowGap: { xs: 3, md: 4.2 },
                 }}
               >
-                {[locationItems, contactItems].map((column, columnIndex) => (
-                  <Box
-                    key={columnIndex}
-                    sx={{
-                      display: "grid",
-                      alignContent: "start",
-                      gap: { xs: 3, md: 4.2 },
-                    }}
-                  >
-                    {column.map((item, index) => (
-                      <Box key={index}>
-                        <Box
-                          sx={{
-                            mb: 0.9,
-                            "& .MuiTypography-root": {
-                              color: "text.secondary",
-                              fontSize: "0.72rem",
-                              fontWeight: 800,
-                              letterSpacing: "0.22em",
-                              textTransform: "uppercase",
-                            },
-                          }}
-                        >
-                          <EditableTranslationText
-                            ns="kontakt"
-                            i18nKey={item.labelKey}
-                            fallback={item.labelFallback}
-                            multilineRows={1}
-                          />
-                        </Box>
-                        <Typography
-                          component="div"
-                          sx={{
-                            color: "text.primary",
-                            fontSize: { xs: "1rem", md: "1.08rem" },
-                            fontWeight: 500,
-                            lineHeight: 1.55,
-                            "& a": { fontWeight: 500 },
-                          }}
-                        >
-                          {item.value}
-                        </Typography>
-                      </Box>
-                    ))}
+                {contactEntries.map((item) => (
+                  <Box key={item.id}>
+                    <Box
+                      sx={{
+                        mb: 0.9,
+                        "& .MuiTypography-root": {
+                          color: "text.secondary",
+                          fontSize: "0.72rem",
+                          fontWeight: 800,
+                          letterSpacing: "0.22em",
+                          textTransform: "uppercase",
+                        },
+                      }}
+                    >
+                      {item.label}
+                    </Box>
+                    <Typography
+                      component="div"
+                      sx={{
+                        color: "text.primary",
+                        fontSize: { xs: "1rem", md: "1.08rem" },
+                        fontWeight: 500,
+                        lineHeight: 1.55,
+                        "& a": { fontWeight: 500 },
+                      }}
+                    >
+                      {item.value}
+                    </Typography>
                   </Box>
                 ))}
               </Box>
