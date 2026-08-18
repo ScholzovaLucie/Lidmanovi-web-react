@@ -178,7 +178,8 @@ export default function HomePage() {
                 titleNs: "global",
                 titleKey: "nav.accommodation",
                 textNs: "home",
-                textKey: "uvod",
+                textKey: "karty.ubytovani",
+                textFallback: t("home:uvod"),
               },
               {
                 location: "home-card-restaurace",
@@ -187,7 +188,8 @@ export default function HomePage() {
                 titleNs: "global",
                 titleKey: "nav.restaurant",
                 textNs: "home",
-                textKey: "lokace",
+                textKey: "karty.restaurace",
+                textFallback: t("home:lokace"),
               },
               {
                 location: "home-card-svatby",
@@ -196,7 +198,8 @@ export default function HomePage() {
                 titleNs: "global",
                 titleKey: "nav.weddings",
                 textNs: "home",
-                textKey: "pribeh.nadpis",
+                textKey: "karty.svatby",
+                textFallback: t("home:pribeh.nadpis"),
               },
             ].map((card) => (
               <Box
@@ -248,6 +251,7 @@ export default function HomePage() {
                     i18nKey={card.textKey}
                     variant="body2"
                     multilineRows={3}
+                    fallback={card.textFallback}
                   />
                 </Typography>
               </Box>
