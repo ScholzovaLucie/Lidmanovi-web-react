@@ -221,7 +221,7 @@ export default function HomePage() {
                   fallback={card.fallback}
                   imgSx={{
                     display: "block",
-                    width: { xs: 84, sm: 112, md: 136 },
+                    width: { xs: 84, sm: 150, md: 210 },
                     aspectRatio: "1 / 1",
                     objectFit: "cover",
                     borderRadius: 1,
@@ -247,7 +247,7 @@ export default function HomePage() {
                   component="div"
                   variant="caption"
                   sx={{
-                    display: { xs: "none", sm: "-webkit-box" },
+                    display: "-webkit-box",
                     color: "text.secondary",
                     textAlign: "center",
                     WebkitLineClamp: 1,
