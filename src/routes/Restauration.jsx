@@ -32,9 +32,6 @@ export default function Restauration() {
   const { urls: tile2Urls, alts: tile2Alts } = usePhotoSequence("restaurace-tile-2", [
     asset("galerie/interier/088_HZ6_3958_Penzion_U_Lidmanu.webp"),
   ]);
-  const { urls: tile3Urls, alts: tile3Alts } = usePhotoSequence("restaurace-tile-3", [
-    asset("galerie/sal/110_HZ6_3997_Penzion_U_Lidmanu.webp"),
-  ]);
 
   return (
     <>
@@ -184,13 +181,6 @@ export default function Restauration() {
             photoLocation: "restaurace-tile-2",
             titleKey: "tiles.2.alt",
             textKey: "tiles.2.text",
-          },
-          {
-            image: tile3Urls[0],
-            imageAlt: tile3Alts[0] || t("tiles.3.alt"),
-            photoLocation: "restaurace-tile-3",
-            titleKey: "tiles.3.alt",
-            textKey: "tiles.3.text",
           },
         ]}
       />
