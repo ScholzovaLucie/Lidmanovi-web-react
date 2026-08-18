@@ -3,14 +3,20 @@ import { Box, TextField, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useEditorialEditor } from "../context/editorialEditorContext";
 
-// Vloží tabulátor na pozici kurzoru místo přeskočení na další pole -
-// umožňuje ruční zarovnání textu (např. den / čas v otevírací době).
-function handleTabInsert(event, onInsert) {
-  if (event.key !== "Tab" || event.shiftKey) return;
+// Tab vloží tabulátor místo přeskočení na další pole (ruční zarovnání, např.
+// den / čas v otevírací době). Ctrl/Cmd+Shift+Mezerník vloží nezlomitelnou
+// mezeru (běžná zkratka z Wordu/Google Docs), aby dvojice jako "10 km" nebo
+// "Kč 500" nešly rozdělit na konec/začátek řádku.
+function handleEditorKeyDown(event, onInsert) {
+  const isTab = event.key === "Tab" && !event.shiftKey;
+  const isNbsp = event.code === "Space" && event.shiftKey && (event.ctrlKey || event.metaKey);
+  if (!isTab && !isNbsp) return;
+
   event.preventDefault();
   const el = event.target;
   const { selectionStart, selectionEnd, value } = el;
-  const nextValue = `${value.slice(0, selectionStart)}\t${value.slice(selectionEnd)}`;
+  const insertChar = isTab ? "\t" : " ";
+  const nextValue = `${value.slice(0, selectionStart)}${insertChar}${value.slice(selectionEnd)}`;
   onInsert(nextValue);
   requestAnimationFrame(() => {
     el.selectionStart = el.selectionEnd = selectionStart + 1;
@@ -130,10 +136,10 @@ export default function EditableTranslationText({
         minRows={Math.max(multilineRows, isArray ? 3 : 2)}
         size="small"
         label={compositeKey}
-        helperText="Tab vloží tabulátor, mezery a prázdné řádky se zachovají."
+        helperText="Tab = tabulátor, Ctrl/Cmd+Shift+mezerník = nezlomitelná mezera. Mezery a prázdné řádky se zachovají."
         value={fieldValue}
         onChange={(event) => updateValue(event.target.value)}
-        onKeyDown={(event) => handleTabInsert(event, updateValue)}
+        onKeyDown={(event) => handleEditorKeyDown(event, updateValue)}
       />
     </Box>
   );
