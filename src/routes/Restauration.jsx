@@ -9,6 +9,17 @@ import PhotoEditBadge from "../components/PhotoEditBadge.jsx";
 import { usePhotoSequence } from "../hooks/usePhotoSequence.js";
 import { selectIsAuthenticated } from "../redux/slices/app/appSlice";
 
+// Rozdělí dosavadní text "Pátek: 14.00 – 20.00 (...)" na den a čas, aby šlo
+// stará data bez ztráty přenést do dvou samostatných zarovnaných sloupců.
+function splitDayTime(fullText) {
+  if (!fullText) return { day: "", time: "" };
+  const idx = fullText.indexOf(":");
+  if (idx === -1) return { day: fullText, time: "" };
+  return { day: fullText.slice(0, idx).trim(), time: fullText.slice(idx + 1).trim() };
+}
+
+const OPENING_HOURS_DAYS = ["fri", "sat", "sun"];
+
 export default function Restauration() {
   const { t } = useTranslation("restaurace");
   const isAuthenticated = useSelector(selectIsAuthenticated);
@@ -32,6 +43,38 @@ export default function Restauration() {
   const { urls: tile2Urls, alts: tile2Alts } = usePhotoSequence("restaurace-tile-2", [
     asset("galerie/interier/088_HZ6_3958_Penzion_U_Lidmanu.webp"),
   ]);
+
+  const renderOpeningHoursDays = (season) => (
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: "auto 1fr",
+        columnGap: 1.5,
+        rowGap: 0.4,
+      }}
+    >
+      {OPENING_HOURS_DAYS.map((day) => {
+        const split = splitDayTime(t(`openingHours.${season}.${day}`));
+        return (
+          <React.Fragment key={day}>
+            <EditableTranslationText
+              ns="restaurace"
+              i18nKey={`openingHours.${season}.${day}.day`}
+              fallback={split.day}
+              multilineRows={1}
+              sx={{ fontWeight: 600 }}
+            />
+            <EditableTranslationText
+              ns="restaurace"
+              i18nKey={`openingHours.${season}.${day}.time`}
+              fallback={split.time}
+              multilineRows={1}
+            />
+          </React.Fragment>
+        );
+      })}
+    </Box>
+  );
 
   return (
     <>
@@ -145,18 +188,14 @@ export default function Restauration() {
 
             <Box sx={{ mb: 3 }}>
               <EditableTranslationText ns="restaurace" i18nKey="openingHours.summer.season" variant="h5" sx={{ fontWeight: 400, mb: 1 }} />
-              <EditableTranslationText ns="restaurace" i18nKey="openingHours.summer.fri" />
-              <EditableTranslationText ns="restaurace" i18nKey="openingHours.summer.sat" />
-              <EditableTranslationText ns="restaurace" i18nKey="openingHours.summer.sun" />
+              {renderOpeningHoursDays("summer")}
             </Box>
 
             <Divider sx={{ my: 2 }} />
 
             <Box>
               <EditableTranslationText ns="restaurace" i18nKey="openingHours.winter.season" variant="h5" sx={{ fontWeight: 400, mb: 1 }} />
-              <EditableTranslationText ns="restaurace" i18nKey="openingHours.winter.fri" />
-              <EditableTranslationText ns="restaurace" i18nKey="openingHours.winter.sat" />
-              <EditableTranslationText ns="restaurace" i18nKey="openingHours.winter.sun" />
+              {renderOpeningHoursDays("winter")}
             </Box>
           </Paper>
         </Box>
