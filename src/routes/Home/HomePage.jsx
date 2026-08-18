@@ -233,13 +233,14 @@ export default function HomePage() {
                     i18nKey={card.titleKey}
                     variant="h3"
                     multilineRows={1}
+                    sx={{ color: "primary.main" }}
                   />
                 </Box>
                 <Typography
                   component="div"
                   variant="body2"
                   sx={{
-                    color: "primary.main",
+                    color: "text.secondary",
                     display: "-webkit-box",
                     WebkitLineClamp: 3,
                     WebkitBoxOrient: "vertical",
