@@ -221,12 +221,12 @@ export default function HomePage() {
                   fallback={card.fallback}
                   imgSx={{
                     display: "block",
-                    width: "100%",
+                    width: { xs: 84, sm: 112, md: 136 },
                     aspectRatio: "1 / 1",
                     objectFit: "cover",
                     borderRadius: 1,
                   }}
-                  wrapperSx={{ mb: 1 }}
+                  wrapperSx={{ mb: 1, display: "flex", justifyContent: "center" }}
                 />
                 <Box sx={{ textAlign: "center" }}>
                   <EditableTranslationText
