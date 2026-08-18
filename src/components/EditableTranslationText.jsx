@@ -3,6 +3,20 @@ import { Box, TextField, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useEditorialEditor } from "../context/editorialEditorContext";
 
+// Vloží tabulátor na pozici kurzoru místo přeskočení na další pole -
+// umožňuje ruční zarovnání textu (např. den / čas v otevírací době).
+function handleTabInsert(event, onInsert) {
+  if (event.key !== "Tab" || event.shiftKey) return;
+  event.preventDefault();
+  const el = event.target;
+  const { selectionStart, selectionEnd, value } = el;
+  const nextValue = `${value.slice(0, selectionStart)}\t${value.slice(selectionEnd)}`;
+  onInsert(nextValue);
+  requestAnimationFrame(() => {
+    el.selectionStart = el.selectionEnd = selectionStart + 1;
+  });
+}
+
 function normalizeValue(value, fallback) {
   if (value !== undefined && value !== null) return value;
   return fallback;
@@ -17,7 +31,7 @@ function flattenObjectValue(value) {
     return Object.values(value).flatMap((item) => flattenObjectValue(item));
   }
 
-  if (value === undefined || value === null || value === "") return [];
+  if (value === undefined || value === null) return [];
   return [String(value)];
 }
 
@@ -69,7 +83,7 @@ export default function EditableTranslationText({
             <Typography
               key={`${compositeKey}-${idx}`}
               variant={variant}
-              sx={sx}
+              sx={[{ whiteSpace: "pre-wrap", tabSize: 4 }, ...(Array.isArray(sx) ? sx : [sx])]}
               paragraph={paragraphs || paragraph}
               align={align}
             >
@@ -81,7 +95,12 @@ export default function EditableTranslationText({
     }
 
     return (
-      <Typography variant={variant} sx={sx} paragraph={paragraph} align={align}>
+      <Typography
+        variant={variant}
+        sx={[{ whiteSpace: "pre-wrap", tabSize: 4 }, ...(Array.isArray(sx) ? sx : [sx])]}
+        paragraph={paragraph}
+        align={align}
+      >
         {mergedValue}
       </Typography>
     );
@@ -90,6 +109,14 @@ export default function EditableTranslationText({
   const fieldValue = normalizedLines
     ? normalizedLines.join("\n")
     : String(mergedValue ?? "");
+
+  const updateValue = (nextRaw) => {
+    if (isArray) {
+      setInlineValue(compositeKey, nextRaw.split("\n"));
+      return;
+    }
+    setInlineValue(compositeKey, nextRaw);
+  };
 
   return (
     <Box
@@ -103,21 +130,10 @@ export default function EditableTranslationText({
         minRows={Math.max(multilineRows, isArray ? 3 : 2)}
         size="small"
         label={compositeKey}
+        helperText="Tab vloží tabulátor, mezery a prázdné řádky se zachovají."
         value={fieldValue}
-        onChange={(event) => {
-          const nextRaw = event.target.value;
-          if (isArray) {
-            setInlineValue(
-              compositeKey,
-              nextRaw
-                .split("\n")
-                .map((line) => line.trim())
-                .filter(Boolean),
-            );
-            return;
-          }
-          setInlineValue(compositeKey, nextRaw);
-        }}
+        onChange={(event) => updateValue(event.target.value)}
+        onKeyDown={(event) => handleTabInsert(event, updateValue)}
       />
     </Box>
   );
