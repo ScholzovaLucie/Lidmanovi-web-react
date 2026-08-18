@@ -161,13 +161,13 @@ export default function HomePage() {
         <PhotoEditBadge location="hero" singlePhoto={false} sx={{ top: 16, right: 16, zIndex: 10 }} />
       </Box>
 
-      <Box component="section" sx={{ py: { xs: 5, md: 7 }, bgcolor: "background.paper" }}>
+      <Box component="section" sx={{ py: { xs: 3, md: 4 }, bgcolor: "background.paper" }}>
         <Container maxWidth="lg">
           <Box
             sx={{
               display: "grid",
-              gridTemplateColumns: { xs: "1fr", md: "repeat(3, minmax(0, 1fr))" },
-              gap: { xs: 2, md: 3 },
+              gridTemplateColumns: { xs: "repeat(3, minmax(0, 1fr))" },
+              gap: { xs: 1.5, sm: 2, md: 3 },
             }}
           >
             {[
@@ -222,27 +222,35 @@ export default function HomePage() {
                   imgSx={{
                     display: "block",
                     width: "100%",
-                    aspectRatio: "16 / 10",
+                    aspectRatio: "1 / 1",
                     objectFit: "cover",
+                    borderRadius: 1,
                   }}
-                  wrapperSx={{ mb: 2 }}
+                  wrapperSx={{ mb: 1 }}
                 />
-                <Box sx={{ mb: 0.5 }}>
+                <Box sx={{ textAlign: "center" }}>
                   <EditableTranslationText
                     ns={card.titleNs}
                     i18nKey={card.titleKey}
-                    variant="h3"
+                    variant="subtitle2"
                     multilineRows={1}
-                    sx={{ color: "primary.main" }}
+                    align="center"
+                    sx={{
+                      color: "primary.main",
+                      fontWeight: 700,
+                      fontSize: { xs: "0.78rem", sm: "0.9rem" },
+                      letterSpacing: "0.02em",
+                    }}
                   />
                 </Box>
                 <Typography
                   component="div"
-                  variant="body2"
+                  variant="caption"
                   sx={{
+                    display: { xs: "none", sm: "-webkit-box" },
                     color: "text.secondary",
-                    display: "-webkit-box",
-                    WebkitLineClamp: 3,
+                    textAlign: "center",
+                    WebkitLineClamp: 1,
                     WebkitBoxOrient: "vertical",
                     overflow: "hidden",
                   }}
@@ -250,8 +258,9 @@ export default function HomePage() {
                   <EditableTranslationText
                     ns={card.textNs}
                     i18nKey={card.textKey}
-                    variant="body2"
-                    multilineRows={3}
+                    variant="caption"
+                    multilineRows={1}
+                    align="center"
                     fallback={card.textFallback}
                   />
                 </Typography>

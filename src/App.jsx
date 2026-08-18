@@ -31,6 +31,12 @@ function LanguageRouteGuard() {
     }
   }, [location.pathname, i18n]);
 
+  // Bez tohohle zůstane stránka po přepnutí zascrollovaná tam, kde byla
+  // rozjetá ta předchozí - router sám od sebe scroll neresetuje.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   return (
     <EditorialEditorProvider>
       <Outlet />

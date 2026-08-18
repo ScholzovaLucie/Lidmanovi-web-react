@@ -29,19 +29,44 @@ export default function Layout({ children }) {
         >
           <Box
             sx={{
-              display: "grid",
+              display: "flex",
+              flexDirection: { xs: "column", md: "row" },
               background: "#446783",
-              gridTemplateColumns: "1fr auto 1fr",
               alignItems: "center",
+              justifyContent: { md: "space-between" },
               width: "100%",
-              px: 5,
-              py: 1,
+              px: { xs: 2, sm: 3, md: 5 },
+              py: { xs: 1, md: 1 },
+              gap: { xs: 1, md: 0 },
             }}
           >
+            {/* Levý element - jen vyvažuje tlačítko vpravo, aby byl stepper na desktopu na střed */}
+            <Box
+              sx={{
+                order: 1,
+                display: { xs: "none", md: "block" },
+                flex: "1 1 0",
+              }}
+            />
+
+            {/* Prostřední element */}
+            <Box sx={{ order: { xs: 1, md: 2 }, width: { xs: "100%", md: "auto" }, overflowX: "auto" }}>
+              <ReservationStepper />
+            </Box>
+
             {/* Pravý element */}
-            <Box sx={{ gridColumn: 3, justifySelf: "end" }}>
+            <Box
+              sx={{
+                order: { xs: 2, md: 3 },
+                width: { xs: "100%", md: "auto" },
+                flex: { xs: "0 0 auto", md: "1 1 0" },
+                display: "flex",
+                justifyContent: { xs: "center", md: "flex-end" },
+              }}
+            >
               <Button
                 variant="contained"
+                size="small"
                 startIcon={<WysiwygIcon />}
                 onClick={(event) => setInfoAnchor(event.currentTarget)}
                 aria-haspopup="dialog"
@@ -49,6 +74,7 @@ export default function Layout({ children }) {
                 sx={{
                   bgcolor: "common.white",
                   color: "primary.dark",
+                  whiteSpace: "nowrap",
                   "&:hover": {
                     bgcolor: "rgba(255,255,255,0.88)",
                   },
@@ -105,11 +131,6 @@ export default function Layout({ children }) {
                   </Stack>
                 </Stack>
               </Popover>
-            </Box>
-
-            {/* Prostřední element */}
-            <Box sx={{ gridColumn: 2, gridRow: 1 }}>
-              <ReservationStepper />
             </Box>
           </Box>
         </AppBar>

@@ -18,7 +18,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { ArrowBack, CalendarMonth, People } from "@mui/icons-material";
 import CampaignIcon from "@mui/icons-material/Campaign";
 import BedIcon from "@mui/icons-material/Bed";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import {
   CalendarSection,
@@ -52,6 +52,13 @@ export default function AdminPage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const navigate = useNavigate();
+  const contentRef = useRef(null);
+
+  // Sekce v adminu se přepínají bez remountu scroll kontejneru, takže by
+  // jinak nová sekce naskočila zascrollovaná tam, kde skončila ta předchozí.
+  useEffect(() => {
+    contentRef.current?.scrollTo(0, 0);
+  }, [activeComponent]);
 
   const handleMenuClick = (componentId) => {
     setActiveComponent(componentId);
@@ -211,8 +218,10 @@ export default function AdminPage() {
 
       {/* Main Content */}
       <Box
+        ref={contentRef}
         sx={{
           flexGrow: 1,
+          minWidth: 0,
           p: { xs: 2, md: 4 },
           mt: isMobile ? "64px" : 0,
           overflow: "auto",

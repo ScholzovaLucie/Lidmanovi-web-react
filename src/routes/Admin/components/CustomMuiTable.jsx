@@ -54,7 +54,17 @@ export default function CustomTable({
   }
 
   return (
-    <TableContainer>
+    <TableContainer
+      sx={{
+        // Bez explicitního minWidth:0 zdědí tabulka svou intrinzickou šířku
+        // od nadřazeného flex/Stack kontejneru a do strany se pak posouvá
+        // celá stránka místo téhle komponenty - proto to tady "utínáme".
+        minWidth: 0,
+        border: "1px solid",
+        borderColor: "divider",
+        borderRadius: 1,
+      }}
+    >
       <Table sx={{ minWidth: 650, ...sx }}>
         <TableHead>
           <TableRow>
@@ -62,7 +72,16 @@ export default function CustomTable({
               <TableCell
                 key={col.key}
                 align={col.align || "left"}
-                sx={col.headerSx}
+                sx={{
+                  bgcolor: "grey.50",
+                  fontWeight: 700,
+                  fontSize: "0.72rem",
+                  letterSpacing: "0.06em",
+                  textTransform: "uppercase",
+                  color: "text.secondary",
+                  whiteSpace: "nowrap",
+                  ...col.headerSx,
+                }}
               >
                 {col.label}
               </TableCell>
@@ -83,8 +102,10 @@ export default function CustomTable({
             data.map((row, rowIndex) => (
               <TableRow
                 key={resolveRowId(row, rowIndex)}
+                hover
                 sx={{
                   "&:last-child td, &:last-child th": { border: 0 },
+                  "&:nth-of-type(odd)": { bgcolor: "action.hover" },
                 }}
               >
                 {columns.map((col) => {

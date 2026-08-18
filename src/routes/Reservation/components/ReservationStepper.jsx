@@ -20,6 +20,7 @@ export default function ReservationStepper() {
         "& .MuiStepIcon-root": {
           color: "#b8b8b8 !important",
           borderRadius: "50%",
+          fontSize: { xs: "1.4rem", md: "1.5rem" },
         },
         "& .MuiStepIcon-text": {
           fill: "#446783 !important",
@@ -39,9 +40,13 @@ export default function ReservationStepper() {
           borderTopWidth: 1,
         },
         "& .MuiStepLabel-label": {
-          fontSize: "1.2rem",
+          fontSize: { xs: "0.8rem", md: "1.2rem" },
           color: "white !important",
           fontWeight: 500,
+          whiteSpace: "nowrap",
+        },
+        "& .MuiStepConnector-root": {
+          top: { xs: 10, md: 12 },
         },
       }}
     >
