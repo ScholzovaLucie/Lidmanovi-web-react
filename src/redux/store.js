@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { apiApi } from "./api/apiApi";
 import { authApi } from "./api/authApi";
-import { roomsApi, adminRoomsApi } from "./api/roomsApi";
+import { roomsApi, adminRoomsApi, amenityIconsApi } from "./api/roomsApi";
 import { reservationsApi } from "./api/reservationsApi";
 import appReducer from "./slices/app/appSlice";
 import reservationReducer from "./slices/reservation/reservationSlice";
@@ -32,6 +32,7 @@ export const store = configureStore({
     [authApi.reducerPath]: authApi.reducer,
     [roomsApi.reducerPath]: roomsApi.reducer,
     [adminRoomsApi.reducerPath]: adminRoomsApi.reducer,
+    [amenityIconsApi.reducerPath]: amenityIconsApi.reducer,
     [reservationsApi.reducerPath]: reservationsApi.reducer,
     [guestApi.reducerPath]: guestApi.reducer,
     [cmsApi.reducerPath]: cmsApi.reducer,
@@ -46,6 +47,7 @@ export const store = configureStore({
         authApi.middleware,
         roomsApi.middleware,
         adminRoomsApi.middleware,
+        amenityIconsApi.middleware,
         reservationsApi.middleware,
         guestApi.middleware,
         cmsApi.middleware,

@@ -64,6 +64,48 @@ export const adminRoomsApi = createApi({
   }),
 });
 
+export const amenityIconsApi = createApi({
+  reducerPath: "amenityIconsApi",
+  baseQuery: baseQueryWithAuth,
+  tagTypes: ["AmenityIcon"],
+  endpoints: (builder) => ({
+    amenityIcons: builder.query({
+      query: () => "/pension/admin/amenity-icons/",
+      providesTags: ["AmenityIcon"],
+    }),
+    createAmenityIcon: builder.mutation({
+      query: (data) => ({
+        url: "/pension/admin/amenity-icons/",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["AmenityIcon"],
+    }),
+    updateAmenityIcon: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `/pension/admin/amenity-icons/${id}/`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["AmenityIcon"],
+    }),
+    deleteAmenityIcon: builder.mutation({
+      query: (id) => ({
+        url: `/pension/admin/amenity-icons/${id}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["AmenityIcon"],
+    }),
+  }),
+});
+
 export const { useRoomsQuery, useAvailableRoomsQuery, usePlaceRatingQuery } = roomsApi;
 
 export const { useAdminRoomsQuery, useUpdateRoomMutation, useCreateRoomMutation, useDeleteRoomMutation } = adminRoomsApi;
+
+export const {
+  useAmenityIconsQuery,
+  useCreateAmenityIconMutation,
+  useUpdateAmenityIconMutation,
+  useDeleteAmenityIconMutation,
+} = amenityIconsApi;

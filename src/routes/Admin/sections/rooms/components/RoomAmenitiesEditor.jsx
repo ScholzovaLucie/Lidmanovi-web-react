@@ -1,9 +1,25 @@
+import { useState } from "react";
 import { Button, IconButton, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
-import { Add, Delete } from "@mui/icons-material";
-import { ROOM_AMENITY_ICON_OPTIONS } from "../../../../../utils/roomAmenityIcons";
+import { Add, Delete, Settings } from "@mui/icons-material";
+import { useAmenityIconsQuery } from "../../../../../redux/api/roomsApi";
+import {
+  DEFAULT_AMENITY_ICON_OPTIONS,
+  resolveRoomAmenityIcon,
+} from "../../../../../utils/roomAmenityIcons";
+import RoomAmenityIconsManagerDialog from "./RoomAmenityIconsManagerDialog";
 
 export default function RoomAmenitiesEditor({ amenities, onChange }) {
   const list = amenities || [];
+  const [managerOpen, setManagerOpen] = useState(false);
+
+  // Nabídku ikon řídí backendový číselník (AmenityIcon). Dokud endpoint
+  // neexistuje / selže / je prázdný, použije se pevná výchozí sada.
+  const { data: iconOptionsData, isError } = useAmenityIconsQuery();
+  const activeOptions = (
+    !isError && iconOptionsData && iconOptionsData.length > 0
+      ? iconOptionsData
+      : DEFAULT_AMENITY_ICON_OPTIONS
+  ).filter((option) => option.is_active);
 
   const updateItem = (index, patch) => {
     onChange(list.map((item, i) => (i === index ? { ...item, ...patch } : item)));
@@ -14,7 +30,7 @@ export default function RoomAmenitiesEditor({ amenities, onChange }) {
   };
 
   const addItem = () => {
-    onChange([...list, { icon: "bed", text: "" }]);
+    onChange([...list, { icon: activeOptions[0]?.key || "bed", text: "" }]);
   };
 
   return (
@@ -30,18 +46,32 @@ export default function RoomAmenitiesEditor({ amenities, onChange }) {
         <Stack key={index} direction="row" spacing={1.5} alignItems="center">
           <Select
             size="small"
-            value={item.icon in ROOM_AMENITY_ICON_OPTIONS ? item.icon : "bed"}
+            value={item.icon}
             onChange={(e) => updateItem(index, { icon: e.target.value })}
             sx={{ minWidth: 190 }}
-          >
-            {Object.entries(ROOM_AMENITY_ICON_OPTIONS).map(([key, option]) => (
-              <MenuItem key={key} value={key}>
+            renderValue={(value) => {
+              const Icon = resolveRoomAmenityIcon(value);
+              const label =
+                activeOptions.find((o) => o.key === value)?.label || value;
+              return (
                 <Stack direction="row" spacing={1} alignItems="center">
-                  <option.Icon fontSize="small" />
-                  <span>{option.label}</span>
+                  <Icon fontSize="small" />
+                  <span>{label}</span>
                 </Stack>
-              </MenuItem>
-            ))}
+              );
+            }}
+          >
+            {activeOptions.map((option) => {
+              const Icon = resolveRoomAmenityIcon(option.key);
+              return (
+                <MenuItem key={option.key} value={option.key}>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Icon fontSize="small" />
+                    <span>{option.label}</span>
+                  </Stack>
+                </MenuItem>
+              );
+            })}
           </Select>
           <TextField
             size="small"
@@ -60,9 +90,24 @@ export default function RoomAmenitiesEditor({ amenities, onChange }) {
         </Stack>
       ))}
 
-      <Button startIcon={<Add />} onClick={addItem} sx={{ alignSelf: "flex-start" }}>
-        Přidat ikonu
-      </Button>
+      <Stack direction="row" spacing={1} alignItems="center">
+        <Button startIcon={<Add />} onClick={addItem}>
+          Přidat ikonu
+        </Button>
+        <Button
+          startIcon={<Settings />}
+          color="inherit"
+          size="small"
+          onClick={() => setManagerOpen(true)}
+        >
+          Spravovat dostupné ikony
+        </Button>
+      </Stack>
+
+      <RoomAmenityIconsManagerDialog
+        open={managerOpen}
+        onClose={() => setManagerOpen(false)}
+      />
     </Stack>
   );
 }
