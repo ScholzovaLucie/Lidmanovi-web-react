@@ -12,6 +12,7 @@ import {
 import RoomEditDialog from "./components/RoomEditDialog";
 import RoomDeleteDialog from "./components/RoomDeleteDialog";
 import AddRoomCard from "./components/AddRoomCard";
+import { DEFAULT_ROOM_AMENITIES } from "../../../../utils/roomAmenityIcons";
 
 export default function RoomsSection() {
   // Check auth token
@@ -32,6 +33,7 @@ export default function RoomsSection() {
     price_for_adult: 0,
     price_for_children: 0,
     is_active: true,
+    amenities: DEFAULT_ROOM_AMENITIES,
   });
 
   // Načítání pokojů z API
@@ -65,6 +67,10 @@ export default function RoomsSection() {
       price_for_adult: room.price_for_adult?.toString() || "",
       price_for_children: room.price_for_children?.toString() || "",
       is_active: room.is_active !== undefined ? room.is_active : true,
+      amenities:
+        room.amenities && room.amenities.length > 0
+          ? room.amenities
+          : DEFAULT_ROOM_AMENITIES,
     });
     setEditDialogOpen(true);
   };
@@ -82,6 +88,7 @@ export default function RoomsSection() {
       price_for_adult: 0,
       price_for_children: 0,
       is_active: true,
+      amenities: DEFAULT_ROOM_AMENITIES,
     });
     setEditDialogOpen(true);
   };
@@ -100,6 +107,7 @@ export default function RoomsSection() {
       price_for_adult: 0,
       price_for_children: 0,
       is_active: true,
+      amenities: DEFAULT_ROOM_AMENITIES,
     });
   };
 
@@ -120,6 +128,7 @@ export default function RoomsSection() {
         price_for_adult: parseInt(formData.price_for_adult) || 0,
         price_for_children: parseInt(formData.price_for_children) || 0,
         is_active: formData.is_active,
+        amenities: formData.amenities || [],
       };
 
       if (editingRoom) {

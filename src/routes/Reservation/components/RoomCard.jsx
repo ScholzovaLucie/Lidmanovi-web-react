@@ -1,12 +1,6 @@
 import { Box, Button, Stack, Typography, IconButton } from "@mui/material";
 import { AppCardCustomizable } from "../../../components/containers/AppCard";
-import {
-  BathtubOutlined,
-  SpaOutlined,
-  Wifi,
-  Edit,
-  Delete,
-} from "@mui/icons-material";
+import { Edit, Delete } from "@mui/icons-material";
 import { useDispatch } from "react-redux";
 import {
   addRoom,
@@ -16,8 +10,11 @@ import IconWithText from "../../../components/IconWithText";
 import CollapsableText from "./CollapsableText";
 import Price from "./Price";
 import { useTranslation } from "react-i18next";
-import HotelOutlinedIcon from "@mui/icons-material/HotelOutlined";
 import { usePhotoSequence } from "../../../hooks/usePhotoSequence";
+import {
+  DEFAULT_ROOM_AMENITIES,
+  resolveRoomAmenityIcon,
+} from "../../../utils/roomAmenityIcons";
 
 export default function RoomCard({
   room,
@@ -133,24 +130,29 @@ export default function RoomCard({
             >
               {room.name}
             </Typography>
-            <Stack direction={"row"} spacing={2} alignItems={"center"}>
-              <IconWithText
-                Icon={HotelOutlinedIcon}
-                iconProps={{ fontSize: "16" }}
-                text={`${room.capacity} ${t("roomCard.beds")}`}
-              />
-
-              <IconWithText
-                Icon={BathtubOutlined}
-                iconProps={{ fontSize: "16" }}
-                text={t("roomCard.bathroom")}
-              />
-
-              <IconWithText
-                Icon={Wifi}
-                iconProps={{ fontSize: "16" }}
-                text="Wi-Fi"
-              />
+            <Stack
+              direction={"row"}
+              spacing={2}
+              rowGap={1}
+              alignItems={"center"}
+              flexWrap="wrap"
+            >
+              {(room.amenities && room.amenities.length > 0
+                ? room.amenities
+                : DEFAULT_ROOM_AMENITIES
+              ).map((amenity, index) => (
+                <IconWithText
+                  key={index}
+                  Icon={resolveRoomAmenityIcon(amenity.icon)}
+                  iconProps={{ fontSize: "16" }}
+                  text={
+                    amenity.text ||
+                    (amenity.icon === "bed"
+                      ? `${room.capacity} ${t("roomCard.beds")}`
+                      : "")
+                  }
+                />
+              ))}
             </Stack>
 
             <CollapsableText text={room.description} />

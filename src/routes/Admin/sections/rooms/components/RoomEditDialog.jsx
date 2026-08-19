@@ -18,6 +18,7 @@ import {
 import { Save, Cancel, Edit } from "@mui/icons-material";
 import { useState } from "react";
 import SpinnerField from "./SpinnerField";
+import RoomAmenitiesEditor from "./RoomAmenitiesEditor";
 import { useGetPhotoPlacementsQuery } from "../../../../../redux/api/galleryApi.js";
 import { resolveMediaUrl } from "../../../../../utils/resolveMediaUrl.js";
 import PhotoPickerDialog from "../../../../../components/PhotoPickerDialog.jsx";
@@ -320,6 +321,15 @@ export default function RoomEditDialog({
               />
             </Grid>
           </Grid>
+
+          {/* Vybavení - ikony s krátkým textem u pokoje */}
+          <Typography variant="h6" sx={{ mb: -1, mt: 2 }}>
+            Vybavení (ikony u pokoje)
+          </Typography>
+          <RoomAmenitiesEditor
+            amenities={formData.amenities}
+            onChange={(amenities) => setFormData({ ...formData, amenities })}
+          />
 
           {/* Status */}
           <FormControlLabel
