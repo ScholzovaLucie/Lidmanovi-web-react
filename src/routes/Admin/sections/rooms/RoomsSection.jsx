@@ -25,9 +25,7 @@ export default function RoomsSection() {
   const [formData, setFormData] = useState({
     name: "",
     name_i18n: {},
-    max_adults: 0,
-    max_children: 0,
-    capacity: 0,
+    capacity: 1,
     description: "",
     description_i18n: {},
     price_for_adult: 0,
@@ -59,9 +57,7 @@ export default function RoomsSection() {
     setFormData({
       name: room.name || "",
       name_i18n: room.name_i18n || {},
-      max_adults: room.max_adults || 0,
-      max_children: room.max_children || 0,
-      capacity: room.capacity || 0,
+      capacity: room.capacity || 1,
       description: room.description || "",
       description_i18n: room.description_i18n || {},
       price_for_adult: room.price_for_adult?.toString() || "",
@@ -80,9 +76,7 @@ export default function RoomsSection() {
     setFormData({
       name: "",
       name_i18n: {},
-      max_adults: 0,
-      max_children: 0,
-      capacity: 0,
+      capacity: 1,
       description: "",
       description_i18n: {},
       price_for_adult: 0,
@@ -99,9 +93,7 @@ export default function RoomsSection() {
     setFormData({
       name: "",
       name_i18n: {},
-      max_adults: 0,
-      max_children: 0,
-      capacity: 0,
+      capacity: 1,
       description: "",
       description_i18n: {},
       price_for_adult: 0,
@@ -113,15 +105,18 @@ export default function RoomsSection() {
 
   const handleSaveRoom = async () => {
     try {
-      const maxAdults = parseInt(formData.max_adults) || 0;
-      const maxChildren = parseInt(formData.max_children) || 0;
-      const capacity = Math.max(maxAdults, maxChildren);
+      const capacity = parseInt(formData.capacity) || 1;
 
       const roomData = {
         name: formData.name,
         name_i18n: formData.name_i18n,
-        max_adults: maxAdults,
-        max_children: maxChildren,
+        // Pokoj už nerozlišuje zvlášť kapacitu pro dospělé/děti - kolik z
+        // lůžek obsadí dospělí a kolik děti se řeší až při rezervaci
+        // (cena za dospělého / za dítě níž). Backend pole max_adults a
+        // max_children zatím posíláme rovné celkové kapacitě, aby zůstala
+        // zachovaná zpětná kompatibilita s existující logikou dostupnosti.
+        max_adults: capacity,
+        max_children: capacity,
         capacity: capacity,
         description: formData.description,
         description_i18n: formData.description_i18n,

@@ -23,6 +23,14 @@ import { useGetPhotoPlacementsQuery } from "../../../../../redux/api/galleryApi.
 import { resolveMediaUrl } from "../../../../../utils/resolveMediaUrl.js";
 import PhotoPickerDialog from "../../../../../components/PhotoPickerDialog.jsx";
 
+// Kontroluje, jestli je pole vyplněné platným číslem - na rozdíl od `!value`
+// nepovažuje legitimní hodnotu 0 (např. cenu zdarma) za "nevyplněné".
+function isFilledNumber(value, { min = 0 } = {}) {
+  if (value === "" || value === null || value === undefined) return false;
+  const num = Number(value);
+  return !Number.isNaN(num) && num >= min;
+}
+
 // Tab Panel component pro jazykové taby
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -236,39 +244,12 @@ export default function RoomEditDialog({
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, sm: 4 }}>
               <SpinnerField
-                label="Max dospělých"
-                value={formData.max_adults}
-                onChange={(val) =>
-                  setFormData({ ...formData, max_adults: val })
-                }
+                label="Celkový počet lůžek"
+                value={formData.capacity}
+                onChange={(val) => setFormData({ ...formData, capacity: val })}
                 min={1}
                 required
                 fullWidth
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 4 }}>
-              <SpinnerField
-                label="Max dětí"
-                value={formData.max_children}
-                onChange={(val) =>
-                  setFormData({ ...formData, max_children: val })
-                }
-                min={0}
-                required
-                fullWidth
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 4 }}>
-              <TextField
-                label="Celková kapacita"
-                value={Math.max(
-                  parseInt(formData.max_adults) || 0,
-                  parseInt(formData.max_children) || 0,
-                )}
-                fullWidth
-                type="number"
-                disabled
-                inputProps={{ min: 1 }}
               />
             </Grid>
           </Grid>
@@ -356,11 +337,11 @@ export default function RoomEditDialog({
           startIcon={<Save />}
           disabled={
             isUpdating ||
-            !getLanguageValue('cs', 'name') ||
-            !getLanguageValue('cs', 'description') ||
-            !formData.max_adults ||
-            !formData.price_for_adult ||
-            !formData.price_for_children
+            getLanguageValue('cs', 'name').trim() === '' ||
+            getLanguageValue('cs', 'description').trim() === '' ||
+            !isFilledNumber(formData.capacity, { min: 1 }) ||
+            !isFilledNumber(formData.price_for_adult) ||
+            !isFilledNumber(formData.price_for_children)
           }
         >
           {isUpdating
