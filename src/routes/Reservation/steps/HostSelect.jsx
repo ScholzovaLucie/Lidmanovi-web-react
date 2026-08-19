@@ -194,8 +194,7 @@ export function RoomHostCard({ room, index }) {
     (sum, room) => sum + room.num_children,
     0,
   );
-  const roomCapacity =
-    room.capacity || Math.max(room.max_adults || 0, room.max_children || 0);
+  const roomCapacity = room.capacity || 0;
 
   const updateGuestCount = (field, increment) => {
     const currentValue = roomState[field];

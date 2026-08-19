@@ -86,12 +86,8 @@ export default function RoomSelect() {
 
   function sortRooms(rooms = []) {
     const sorted = [...rooms].sort((a, b) => {
-      const aCapacity =
-        Number(a.capacity) ||
-        Math.max(Number(a.max_adults) || 0, Number(a.max_children) || 0);
-      const bCapacity =
-        Number(b.capacity) ||
-        Math.max(Number(b.max_adults) || 0, Number(b.max_children) || 0);
+      const aCapacity = Number(a.capacity) || 0;
+      const bCapacity = Number(b.capacity) || 0;
 
       const aDiff = aCapacity - remainingCapacityToSelect;
       const bDiff = bCapacity - remainingCapacityToSelect;
