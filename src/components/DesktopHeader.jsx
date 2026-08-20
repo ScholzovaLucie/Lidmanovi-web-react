@@ -137,7 +137,7 @@ const NavButtonWithChildren = ({ to, label, end, items }) => (
   </Box>
 );
 
-export function DesktopHeader({ navItems = [] }) {
+export function DesktopHeader({ navItems = [], showLanguageSwitcher = false }) {
   const navigate = useNavigate();
   const { i18n } = useTranslation("global");
   const primaryNavItems = navItems.filter(({ to }) => to !== "/rezervace");
@@ -167,26 +167,28 @@ export function DesktopHeader({ navItems = [] }) {
       </Box>
 
       <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, minWidth: 260, justifyContent: "flex-end" }}>
-        <Box sx={{ display: "flex", gap: 1 }}>
-          {langOptions.map(({ code, label }) => (
-            <Box
-              key={code}
-              component="button"
-              type="button"
-              title={label}
-              onClick={() => i18n.changeLanguage(code)}
-              sx={{
-                border: 0, p: 0, m: 0, background: "none", cursor: "pointer",
-                fontFamily: "inherit", fontSize: "0.76rem", letterSpacing: 0,
-                textTransform: "uppercase",
-                color: activeLang === code ? "text.primary" : "text.secondary",
-                "&:hover": { color: "text.primary" },
-              }}
-            >
-              {code}
-            </Box>
-          ))}
-        </Box>
+        {showLanguageSwitcher && (
+          <Box sx={{ display: "flex", gap: 1 }}>
+            {langOptions.map(({ code, label }) => (
+              <Box
+                key={code}
+                component="button"
+                type="button"
+                title={label}
+                onClick={() => i18n.changeLanguage(code)}
+                sx={{
+                  border: 0, p: 0, m: 0, background: "none", cursor: "pointer",
+                  fontFamily: "inherit", fontSize: "0.76rem", letterSpacing: 0,
+                  textTransform: "uppercase",
+                  color: activeLang === code ? "text.primary" : "text.secondary",
+                  "&:hover": { color: "text.primary" },
+                }}
+              >
+                {code}
+              </Box>
+            ))}
+          </Box>
+        )}
 
         {reservationItem && (
           <Button

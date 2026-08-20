@@ -6,11 +6,16 @@ import { DesktopHeader } from "./DesktopHeader";
 import { MobileMenu } from "./MobileMenu";
 import { useTranslation } from "react-i18next";
 import { langOptions, navConfig } from "./headerConfig";
+import { useGetAppSettingsQuery } from "../redux/api/appSettingsApi";
 
 export default function Header({ onLogin }) {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation("global");
+  const { data: appSettings, isSuccess: areAppSettingsLoaded } =
+    useGetAppSettingsQuery();
+  const showLanguageSwitcher =
+    areAppSettingsLoaded && appSettings?.["languageSwitcher.enabled"] === true;
 
   const allNavItems = navConfig.map(({ key, fallback, children, ...rest }) => ({
     ...rest,
@@ -39,7 +44,11 @@ export default function Header({ onLogin }) {
       <Box sx={{ px: { xs: 0.5, md: 2 }, py: 0 }}>
         <Toolbar sx={{ minHeight: "64px", maxHeight: "64px" }}>
           {/* Desktop */}
-          <DesktopHeader onLogin={onLogin} navItems={allNavItems} />
+          <DesktopHeader
+            onLogin={onLogin}
+            navItems={allNavItems}
+            showLanguageSwitcher={showLanguageSwitcher}
+          />
 
           {/* Mobile */}
           <Stack
@@ -88,6 +97,7 @@ export default function Header({ onLogin }) {
             onClose={() => setMobileMenuOpen(false)}
             navItems={allNavItems}
             langOptions={langOptions}
+            showLanguageSwitcher={showLanguageSwitcher}
             onLogin={onLogin}
           />
         </Box>

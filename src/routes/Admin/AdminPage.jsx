@@ -32,6 +32,8 @@ import GallerySection from "./sections/gallery/GallerySection";
 import CollectionsIcon from "@mui/icons-material/Collections";
 import MenuSection from "./sections/menu/MenuSection";
 import ViewHeadlineIcon from "@mui/icons-material/ViewHeadline";
+import SettingsIcon from "@mui/icons-material/Settings";
+import SettingsSection from "./sections/settings/SettingsSection";
 
 // Menu items s reálnými admin komponentami
 const menuItems = [
@@ -42,6 +44,7 @@ const menuItems = [
   { id: "announcement", text: "Oznámení", icon: CampaignIcon },
   { id: "gallery", text: "Fotky", icon: CollectionsIcon },
   { id: "menu", text: "Menu", icon: ViewHeadlineIcon },
+  { id: "settings", text: "Nastavení", icon: SettingsIcon },
 ];
 
 const DRAWER_WIDTH = 200;
@@ -74,6 +77,7 @@ export default function AdminPage() {
       announcement: <AnnouncementSection />,
       gallery: <GallerySection />,
       menu: <MenuSection />,
+      settings: <SettingsSection />,
     };
     return components[activeComponent] || components.calendar;
   };

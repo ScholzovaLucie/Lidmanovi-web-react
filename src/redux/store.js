@@ -9,6 +9,7 @@ import { guestApi } from "./api/guestApi";
 import { cmsApi } from "./api/cmsApi";
 import { announcementApi, announcementApiPublic } from "./api/announcementApi";
 import { galleryApi } from "./api/galleryApi";
+import { appSettingsApi } from "./api/appSettingsApi";
 
 // Logger middleware only for explicit debug sessions.
 const loggerMiddleware = () => (next) => (action) => {
@@ -39,6 +40,7 @@ export const store = configureStore({
     [announcementApi.reducerPath]: announcementApi.reducer,
     [announcementApiPublic.reducerPath]: announcementApiPublic.reducer,
     [galleryApi.reducerPath]: galleryApi.reducer,
+    [appSettingsApi.reducerPath]: appSettingsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -54,6 +56,7 @@ export const store = configureStore({
         announcementApi.middleware,
         announcementApiPublic.middleware,
         galleryApi.middleware,
+        appSettingsApi.middleware,
       )
       .concat(isReduxLoggerEnabled ? loggerMiddleware : []),
 });

@@ -10,6 +10,7 @@ export function MobileMenu({
   onClose,
   navItems,
   langOptions,
+  showLanguageSwitcher = false,
   onLogin,
 }) {
   const navigate = useNavigate();
@@ -137,46 +138,48 @@ export function MobileMenu({
         {/* Controls */}
         <Stack spacing={3} alignItems="center">
           {/* Languages */}
-          <Box sx={{ textAlign: "center", width: "100%" }}>
-            <Box
-              sx={{
-                color: "text.secondary",
-                fontSize: "0.8rem",
-                mb: 1.5,
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-              }}
-            >
-              {t("language")}
+          {showLanguageSwitcher && (
+            <Box sx={{ textAlign: "center", width: "100%" }}>
+              <Box
+                sx={{
+                  color: "text.secondary",
+                  fontSize: "0.8rem",
+                  mb: 1.5,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                }}
+              >
+                {t("language")}
+              </Box>
+              <Stack
+                direction="row"
+                spacing={1}
+                justifyContent="center"
+                flexWrap="wrap"
+              >
+                {langOptions.map(({ code, label }) => (
+                  <Button
+                    key={code}
+                    onClick={() => {
+                      if (typeof window !== "undefined") {
+                        window.localStorage.setItem("appLanguage", code);
+                      }
+                      i18n.changeLanguage(code);
+                    }}
+                    variant={activeLang === code ? "contained" : "text"}
+                    size="small"
+                    sx={{
+                      textTransform: "none",
+                      fontWeight: activeLang === code ? 600 : 400,
+                      minWidth: "auto",
+                    }}
+                  >
+                    {label}
+                  </Button>
+                ))}
+              </Stack>
             </Box>
-            <Stack
-              direction="row"
-              spacing={1}
-              justifyContent="center"
-              flexWrap="wrap"
-            >
-              {langOptions.map(({ code, label }) => (
-                <Button
-                  key={code}
-                  onClick={() => {
-                    if (typeof window !== "undefined") {
-                      window.localStorage.setItem("appLanguage", code);
-                    }
-                    i18n.changeLanguage(code);
-                  }}
-                  variant={activeLang === code ? "contained" : "text"}
-                  size="small"
-                  sx={{
-                    textTransform: "none",
-                    fontWeight: activeLang === code ? 600 : 400,
-                    minWidth: "auto",
-                  }}
-                >
-                  {label}
-                </Button>
-              ))}
-            </Stack>
-          </Box>
+          )}
 
           {/* Admin */}
           {isAuthenticated ? (
