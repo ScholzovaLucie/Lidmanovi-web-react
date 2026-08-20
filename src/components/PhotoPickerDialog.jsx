@@ -44,6 +44,7 @@ export default function PhotoPickerDialog({
   location,
   existingPlacements = [],
   singlePhoto = false,
+  onPhotoSelection,
 }) {
   const { enqueueSnackbar } = useSnackbar();
   const [tab, setTab] = useState(0);
@@ -54,6 +55,7 @@ export default function PhotoPickerDialog({
   const [editingPhoto, setEditingPhoto] = useState(null);
   const [uploadSummary, setUploadSummary] = useState(null);
   const fileInputRef = useRef(null);
+  const isDeferredSelection = Boolean(onPhotoSelection);
 
   const existingPhotoIds = existingPlacements
     .map((p) => p.photo?.id)
@@ -157,6 +159,14 @@ export default function PhotoPickerDialog({
 
   const handleAddSelected = async () => {
     if (!selectedIds.length) return;
+    if (isDeferredSelection) {
+      const photo = photos.find((item) => item.id === selectedIds[0]);
+      if (photo) {
+        onPhotoSelection({ type: "existing", photo });
+        handleClose();
+      }
+      return;
+    }
     try {
       await placePhotos(selectedIds);
       enqueueSnackbar("Fotky byly přidány", {
@@ -188,6 +198,16 @@ export default function PhotoPickerDialog({
   };
 
   const handleConfirmUpload = async () => {
+    if (isDeferredSelection) {
+      onPhotoSelection({
+        type: "upload",
+        file: pendingFiles[0],
+        altTextI18n: pendingAltTextI18n,
+      });
+      handleClose();
+      return;
+    }
+
     const { uploaded, errors } = await uploadInBatches({
       category: location,
       files: pendingFiles,
@@ -418,7 +438,7 @@ export default function PhotoPickerDialog({
               ref={fileInputRef}
               type="file"
               accept="image/*"
-              multiple
+              multiple={!singlePhoto}
               hidden
               onChange={handleFilesSelected}
             />
@@ -479,7 +499,7 @@ export default function PhotoPickerDialog({
                     <Stack direction="row" spacing={1.5} justifyContent="flex-end">
                       <Button onClick={handleCancelUpload}>Zrušit</Button>
                       <Button variant="contained" onClick={handleConfirmUpload}>
-                        Nahrát
+                        {isDeferredSelection ? "Použít pro pokoj" : "Nahrát"}
                       </Button>
                     </Stack>
                   </>

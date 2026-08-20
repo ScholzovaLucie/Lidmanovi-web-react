@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { Box, Stack, Typography, Button, Grid } from "@mui/material";
+import { Box, Stack, Typography, Button } from "@mui/material";
 import { Add } from "@mui/icons-material";
+import { useSnackbar } from "notistack";
 import RoomCard from "../../../Reservation/components/RoomCard";
 import {
   useAdminRoomsQuery,
@@ -9,12 +10,17 @@ import {
   useCreateRoomMutation,
   useDeleteRoomMutation,
 } from "../../../../redux/api/roomsApi";
+import {
+  useUploadPhotosMutation,
+  useCreatePhotoPlacementMutation,
+} from "../../../../redux/api/galleryApi";
 import RoomEditDialog from "./components/RoomEditDialog";
 import RoomDeleteDialog from "./components/RoomDeleteDialog";
-import AddRoomCard from "./components/AddRoomCard";
 import { DEFAULT_ROOM_AMENITIES } from "../../../../utils/roomAmenityIcons";
+import { getApiErrorMessage } from "../../../../utils/apiError";
 
 export default function RoomsSection() {
+  const { enqueueSnackbar } = useSnackbar();
   // Check auth token
   const authToken = useSelector((state) => state.app.auth.accessToken);
 
@@ -45,6 +51,9 @@ export default function RoomsSection() {
   const [updateRoom, { isLoading: isUpdating }] = useUpdateRoomMutation();
   const [createRoom, { isLoading: isCreating }] = useCreateRoomMutation();
   const [deleteRoom, { isLoading: isDeleting }] = useDeleteRoomMutation();
+  const [uploadPhotos, { isLoading: isUploadingPhoto }] = useUploadPhotosMutation();
+  const [createPhotoPlacement, { isLoading: isPlacingPhoto }] =
+    useCreatePhotoPlacementMutation();
 
   const rooms = roomsResponse?.results || [];
 
@@ -103,7 +112,31 @@ export default function RoomsSection() {
     });
   };
 
-  const handleSaveRoom = async () => {
+  const savePendingPhoto = async (room, pendingPhoto) => {
+    if (!pendingPhoto) return;
+
+    const location = `pokoj-${room.id}`;
+    let photoId;
+
+    if (pendingPhoto.type === "existing") {
+      photoId = pendingPhoto.photo.id;
+    } else {
+      const uploaded = await uploadPhotos({
+        category: location,
+        files: [pendingPhoto.file],
+        altTextI18n: pendingPhoto.altTextI18n,
+      }).unwrap();
+      const photo = Array.isArray(uploaded) ? uploaded[0] : uploaded;
+      photoId = photo?.id;
+    }
+
+    if (!photoId) throw new Error("Nahraná fotografie neobsahuje identifikátor.");
+
+    await createPhotoPlacement({ photo: photoId, location, order: 0 }).unwrap();
+  };
+
+  const handleSaveRoom = async (pendingPhoto) => {
+    let createdRoom = null;
     try {
       const capacity = parseInt(formData.capacity) || 1;
 
@@ -131,12 +164,25 @@ export default function RoomsSection() {
         await updateRoom({ id: editingRoom.id, ...roomData }).unwrap();
       } else {
         // Creating new room - use POST
-        await createRoom(roomData).unwrap();
+        createdRoom = await createRoom(roomData).unwrap();
+        await savePendingPhoto(createdRoom, pendingPhoto);
       }
 
       handleCloseDialog();
     } catch (error) {
       console.error("Error saving room:", error);
+      if (createdRoom) {
+        setEditingRoom(createdRoom);
+        enqueueSnackbar("Pokoj byl uložen, ale fotku se nepodařilo přidat. Zkuste ji vybrat znovu.", {
+          variant: "error",
+          autoHideDuration: 5000,
+        });
+      } else {
+        enqueueSnackbar(getApiErrorMessage(error, "Pokoj se nepodařilo uložit"), {
+          variant: "error",
+          autoHideDuration: 5000,
+        });
+      }
     }
   };
 
@@ -164,28 +210,24 @@ export default function RoomsSection() {
 
   return (
     <Stack p={{ md: 3 }} spacing={2}>
-      <Stack>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-        >
+      <Stack direction="row" alignItems="flex-start" justifyContent="space-between" spacing={2}>
+        <Stack>
           <Typography variant="h4" gutterBottom>
             Pokoje
           </Typography>
+          <Typography variant="body1">
+            Zde můžete spravovat informace o pokojích, které nabízíte. Přidávejte
+            nové pokoje, upravujte stávající nebo odstraňujte ty, které již
+            nenabízíte. Můžete také nastavit ceny, popisy a fotografie pro každý
+            pokoj.
+          </Typography>
         </Stack>
-        <Typography variant="body1">
-          Zde můžete spravovat informace o pokojích, které nabízíte. Přidávejte
-          nové pokoje, upravujte stávající nebo odstraňujte ty, které již
-          nenabízíte. Můžete také nastavit ceny, popisy a fotografie pro každý
-          pokoj.
-        </Typography>
+        <Button variant="contained" startIcon={<Add />} onClick={handleAddNewRoom} sx={{ whiteSpace: "nowrap" }}>
+          Přidat pokoj
+        </Button>
       </Stack>
 
       <Stack spacing={4}>
-        {/* Add button */}
-        <Stack direction="row" justifyContent="flex-end"></Stack>
-
         {/* Grid pokojů */}
         {isLoading ? (
           <Box sx={{ textAlign: "center", py: 8 }}>
@@ -203,21 +245,22 @@ export default function RoomsSection() {
             </Typography>
           </Box>
         ) : (
-          <Grid container spacing={3}>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 3, alignItems: "stretch" }}>
             {rooms.map((room) => (
-              <Grid key={room.id} size={{ xs: 12, sm: 6, md: 4 }}>
+              <Box
+                key={room.id}
+                sx={{ display: "flex", flexDirection: "column", width: "100%", maxWidth: 370 }}
+              >
                 <RoomCard
                   room={room}
                   isAdminMode={true}
                   onEdit={handleEditRoom}
                   onDelete={handleDeleteRoom}
+                  fillHeight
                 />
-              </Grid>
+              </Box>
             ))}
-            <Grid size={{ xs: 12, sm: 6, md: 4 }} sx={{ display: "flex", flexGrow: 1, maxWidth: 370 }}>
-              <AddRoomCard onClick={handleAddNewRoom} />
-            </Grid>
-          </Grid>
+          </Box>
         )}
       </Stack>
 
@@ -228,7 +271,7 @@ export default function RoomsSection() {
         formData={formData}
         setFormData={setFormData}
         onSave={handleSaveRoom}
-        isUpdating={isUpdating || isCreating}
+        isUpdating={isUpdating || isCreating || isUploadingPhoto || isPlacingPhoto}
       />
 
       <RoomDeleteDialog

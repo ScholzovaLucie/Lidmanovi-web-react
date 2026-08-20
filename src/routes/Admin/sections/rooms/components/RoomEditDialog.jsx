@@ -16,7 +16,7 @@ import {
   Box,
 } from "@mui/material";
 import { Save, Cancel, Edit } from "@mui/icons-material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SpinnerField from "./SpinnerField";
 import RoomAmenitiesEditor from "./RoomAmenitiesEditor";
 import { useGetPhotoPlacementsQuery } from "../../../../../redux/api/galleryApi.js";
@@ -59,6 +59,7 @@ export default function RoomEditDialog({
 }) {
   const [activeTab, setActiveTab] = useState(0);
   const [photoDialogOpen, setPhotoDialogOpen] = useState(false);
+  const [pendingPhoto, setPendingPhoto] = useState(null);
 
   const photoLocation = editingRoom ? `pokoj-${editingRoom.id}` : null;
   const { data: photoData } = useGetPhotoPlacementsQuery(
@@ -70,6 +71,20 @@ export default function RoomEditDialog({
     resolveMediaUrl(
       photoPlacements[0]?.photo?.variants?.card || photoPlacements[0]?.photo?.url,
     ) || `${import.meta.env.BASE_URL}ubytovani/ubytovani1.webp`;
+  const pendingPhotoUrl =
+    pendingPhoto?.type === "upload"
+      ? pendingPhoto.previewUrl
+      : resolveMediaUrl(pendingPhoto?.photo?.variants?.card || pendingPhoto?.photo?.url);
+
+  useEffect(() => {
+    return () => {
+      if (pendingPhoto?.previewUrl) URL.revokeObjectURL(pendingPhoto.previewUrl);
+    };
+  }, [pendingPhoto]);
+
+  useEffect(() => {
+    if (!open) setPendingPhoto(null);
+  }, [open]);
 
   // Jazykové varianty
   const languages = [
@@ -139,6 +154,14 @@ export default function RoomEditDialog({
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
+  };
+
+  const handlePhotoSelection = (selection) => {
+    setPendingPhoto({
+      ...selection,
+      previewUrl:
+        selection.type === "upload" ? URL.createObjectURL(selection.file) : undefined,
+    });
   };
 
   return (
@@ -231,9 +254,30 @@ export default function RoomEditDialog({
               </Button>
             </Stack>
           ) : (
-            <Typography variant="body2" color="text.secondary">
-              Fotku půjde nastavit po uložení pokoje.
-            </Typography>
+            <Stack direction="row" spacing={2} alignItems="center">
+              {pendingPhotoUrl && (
+                <Box
+                  component="img"
+                  src={pendingPhotoUrl}
+                  alt={formData.name || "Náhled vybrané fotky pokoje"}
+                  sx={{
+                    width: 140,
+                    height: 100,
+                    objectFit: "cover",
+                    borderRadius: 1,
+                    border: "1px solid",
+                    borderColor: "divider",
+                  }}
+                />
+              )}
+              <Button
+                variant="outlined"
+                startIcon={<Edit />}
+                onClick={() => setPhotoDialogOpen(true)}
+              >
+                {pendingPhoto ? "Změnit fotku" : "Vybrat fotku"}
+              </Button>
+            </Stack>
           )}
 
           {/* Kapacita */}
@@ -332,7 +376,7 @@ export default function RoomEditDialog({
           Zrušit
         </Button>
         <Button
-          onClick={onSave}
+          onClick={() => onSave(pendingPhoto)}
           variant="contained"
           startIcon={<Save />}
           disabled={
@@ -352,13 +396,18 @@ export default function RoomEditDialog({
         </Button>
       </DialogActions>
 
-      {photoLocation && (
+      {(photoLocation || !editingRoom) && (
         <PhotoPickerDialog
           open={photoDialogOpen}
           onClose={() => setPhotoDialogOpen(false)}
           location={photoLocation}
           existingPlacements={photoPlacements}
           singlePhoto
+          onPhotoSelection={
+            editingRoom
+              ? undefined
+              : handlePhotoSelection
+          }
         />
       )}
     </Dialog>
