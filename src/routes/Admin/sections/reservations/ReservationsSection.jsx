@@ -228,11 +228,11 @@ export default function ReservationsSection() {
           return (
             <Box
               sx={{
-                minWidth: 140,
-                gap: 1,
+                minWidth: 150,
+                gap: 0.5,
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "center",
+                alignItems: "stretch",
               }}
             >
               <Typography
@@ -247,7 +247,7 @@ export default function ReservationsSection() {
                 {isUpdating && (
                   <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
                     <CircularProgress size={14} sx={{ mr: 1 }} />
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="body2">
                       Ukládám...
                     </Typography>
                   </Box>
@@ -257,6 +257,14 @@ export default function ReservationsSection() {
                   value={selectedStatus || ""}
                   onChange={(e) => handleStatusChange(row.id, e.target.value)}
                   disabled={isUpdating}
+                  renderValue={(value) => {
+                    const status = statusOptions.find(
+                      (option) => option.value === value,
+                    );
+                    return getCzechTranslationForReservationStatus(
+                      status?.label || value,
+                    );
+                  }}
                   sx={{
                     backgroundColor: statusColor + "20",
                     "& .MuiSelect-select": {
@@ -289,7 +297,6 @@ export default function ReservationsSection() {
                           "&.Mui-selected:hover": {
                             backgroundColor: optionColor + "40",
                           },
-                          mb: 0.5,
                         }}
                       >
                         <Box
@@ -301,16 +308,14 @@ export default function ReservationsSection() {
                         >
                           <Box
                             sx={{
-                              width: 12,
-                              height: 12,
+                              width: 10,
+                              height: 10,
                               borderRadius: "50%",
                               backgroundColor: optionColor,
                               mr: 1,
                             }}
                           />
-                          <Typography
-                            sx={{ fontWeight: 600, color: optionColor }}
-                          >
+                          <Typography variant="body2" fontWeight={600} color={optionColor}>
                             {getCzechTranslationForReservationStatus(option.label)}
                           </Typography>
                         </Box>
@@ -330,17 +335,12 @@ export default function ReservationsSection() {
           <Box>
             <Typography
               variant="body2"
-              fontWeight="medium"
-              color="text.primary"
+              fontWeight="bold"
               sx={{ whiteSpace: "pre-line" }}
             >
               {`od:\u00A0${dayjs(row.check_in_date).format("DD.MM.YYYY")}\ndo:\u00A0${dayjs(row.check_out_date).format("DD.MM.YYYY")}`}
             </Typography>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              fontWeight="400"
-            >
+            <Typography variant="body2">
               {`${dayjs(row.check_out_date).diff(dayjs(row.check_in_date), "day")}x noc`}
             </Typography>
           </Box>
@@ -350,21 +350,17 @@ export default function ReservationsSection() {
         key: "guest",
         label: "Host",
         render: (row) => (
-          <Typography variant="body2">
-            <Typography variant="body2" fontWeight="medium">
+          <Stack spacing={0.25}>
+            <Typography variant="body2" fontWeight="bold">
               {`${row.primary_guest?.first_name}\u00A0${row.primary_guest?.last_name}`}
             </Typography>
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant="body2">
               {row.primary_guest?.email}
             </Typography>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              display="block"
-            >
+            <Typography variant="body2">
               {row.primary_guest?.phone}
             </Typography>
-          </Typography>
+          </Stack>
         ),
       },
       {
@@ -387,10 +383,10 @@ export default function ReservationsSection() {
         label: "Hosté",
         render: (row) => (
           <Box>
-            <Typography variant="body2" fontWeight="500" color="text.primary">
+            <Typography variant="body2" fontWeight="bold">
               {`${row.num_adults + row.num_children}\u00A0${row.num_adults + row.num_children === 1 ? "Host" : "Hosté"}`}
             </Typography>
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant="body2" sx={{ whiteSpace: "pre-line" }}>
               {`${row.num_adults}\u00A0${row.num_adults > 1 ? "dospělí" : "dospělý"}`}
               {row.num_children
                 ? `\n${row.num_children}\u00A0${row.num_children > 1 ? "děti" : "dítě"}`

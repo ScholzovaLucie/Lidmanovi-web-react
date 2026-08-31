@@ -15,7 +15,7 @@ import {
   Divider,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { ArrowBack, CalendarMonth, People } from "@mui/icons-material";
+import { ArrowBack, CalendarMonth, ConfirmationNumber, People } from "@mui/icons-material";
 import CampaignIcon from "@mui/icons-material/Campaign";
 import BedIcon from "@mui/icons-material/Bed";
 import { useEffect, useRef, useState } from "react";
@@ -34,6 +34,7 @@ import MenuSection from "./sections/menu/MenuSection";
 import ViewHeadlineIcon from "@mui/icons-material/ViewHeadline";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SettingsSection from "./sections/settings/SettingsSection";
+import VouchersSection from "./sections/vouchers/VouchersSection";
 
 // Menu items s reálnými admin komponentami
 const menuItems = [
@@ -44,6 +45,7 @@ const menuItems = [
   { id: "announcement", text: "Oznámení", icon: CampaignIcon },
   { id: "gallery", text: "Fotky", icon: CollectionsIcon },
   { id: "menu", text: "Menu", icon: ViewHeadlineIcon },
+  { id: "vouchers", text: "Poukázky", icon: ConfirmationNumber },
   { id: "settings", text: "Nastavení", icon: SettingsIcon },
 ];
 
@@ -77,6 +79,7 @@ export default function AdminPage() {
       announcement: <AnnouncementSection />,
       gallery: <GallerySection />,
       menu: <MenuSection />,
+      vouchers: <VouchersSection />,
       settings: <SettingsSection />,
     };
     return components[activeComponent] || components.calendar;

@@ -71,6 +71,7 @@ const ReservationPage2 = lazy(
   () => import("./routes/Reservation/ReservationPage.jsx"),
 );
 const Gdpr = lazy(() => import("./routes/Gdpr.jsx"));
+const Vouchers = lazy(() => import("./routes/Vouchers.jsx"));
 
 // Loading component
 const LoadingFallback = () => (
@@ -107,6 +108,7 @@ const router = createBrowserRouter(
         <Route path="/pokoje" element={<Navigate to="/ubytovani" replace />} />
         <Route path="/rezervace" element={<ReservationPage2 />} />
         <Route path="/gdpr" element={<Gdpr />} />
+        <Route path="/poukazy" element={<Vouchers />} />
       </Route>
       <Route
         path="/admin"
