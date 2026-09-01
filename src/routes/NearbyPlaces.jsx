@@ -85,7 +85,22 @@ export default function NearbyPlaces() {
     <>
       <Box sx={{ position: "relative" }}>
         <SubpageBanner
-          eyebrow={t("pageTitle")}
+          eyebrowNode={
+            <EditableTranslationText
+              ns="okoli"
+              i18nKey="eyebrow"
+              align="center"
+              fallback={t("pageTitle")}
+              sx={{
+                mb: 1.2,
+                color: "rgba(255,250,240,0.86)",
+                fontSize: "0.72rem",
+                fontWeight: 600,
+                letterSpacing: "0.35em",
+                textTransform: "uppercase",
+              }}
+            />
+          }
           title={t("pageTitle")}
           titleNode={
             <EditableTranslationText
