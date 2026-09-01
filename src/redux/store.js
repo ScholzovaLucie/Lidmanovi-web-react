@@ -11,6 +11,7 @@ import { announcementApi, announcementApiPublic } from "./api/announcementApi";
 import { galleryApi } from "./api/galleryApi";
 import { appSettingsApi } from "./api/appSettingsApi";
 import { vouchersApi } from "./api/vouchersApi";
+import { nearbyPlacesApi, adminNearbyPlacesApi } from "./api/nearbyPlacesApi";
 
 // Logger middleware only for explicit debug sessions.
 const loggerMiddleware = () => (next) => (action) => {
@@ -43,6 +44,8 @@ export const store = configureStore({
     [galleryApi.reducerPath]: galleryApi.reducer,
     [appSettingsApi.reducerPath]: appSettingsApi.reducer,
     [vouchersApi.reducerPath]: vouchersApi.reducer,
+    [nearbyPlacesApi.reducerPath]: nearbyPlacesApi.reducer,
+    [adminNearbyPlacesApi.reducerPath]: adminNearbyPlacesApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -60,6 +63,8 @@ export const store = configureStore({
         galleryApi.middleware,
         appSettingsApi.middleware,
         vouchersApi.middleware,
+        nearbyPlacesApi.middleware,
+        adminNearbyPlacesApi.middleware,
       )
       .concat(isReduxLoggerEnabled ? loggerMiddleware : []),
 });

@@ -17,6 +17,7 @@ export const navConfig = [
     ],
   },
   { to: "/restaurace", key: "restaurant", fallback: "Restaurace" },
+  { to: "/okoli", key: "nearbyPlaces", fallback: "Místa v okolí" },
   { to: "/galerie", key: "gallery", fallback: "Galerie" },
   { to: "/poukazy", key: "vouchers", fallback: "Poukazy" },
   { to: "/kontakt", key: "contact", fallback: "Kontakt" },

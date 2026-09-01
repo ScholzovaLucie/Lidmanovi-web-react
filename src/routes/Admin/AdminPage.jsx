@@ -35,6 +35,8 @@ import ViewHeadlineIcon from "@mui/icons-material/ViewHeadline";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SettingsSection from "./sections/settings/SettingsSection";
 import VouchersSection from "./sections/vouchers/VouchersSection";
+import PlaceIcon from "@mui/icons-material/Place";
+import NearbyPlacesSection from "./sections/nearbyPlaces/NearbyPlacesSection";
 
 // Menu items s reálnými admin komponentami
 const menuItems = [
@@ -46,6 +48,7 @@ const menuItems = [
   { id: "gallery", text: "Fotky", icon: CollectionsIcon },
   { id: "menu", text: "Menu", icon: ViewHeadlineIcon },
   { id: "vouchers", text: "Poukázky", icon: ConfirmationNumber },
+  { id: "nearbyPlaces", text: "Místa v okolí", icon: PlaceIcon },
   { id: "settings", text: "Nastavení", icon: SettingsIcon },
 ];
 
@@ -80,6 +83,7 @@ export default function AdminPage() {
       gallery: <GallerySection />,
       menu: <MenuSection />,
       vouchers: <VouchersSection />,
+      nearbyPlaces: <NearbyPlacesSection />,
       settings: <SettingsSection />,
     };
     return components[activeComponent] || components.calendar;

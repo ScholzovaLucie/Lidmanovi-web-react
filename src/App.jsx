@@ -66,6 +66,7 @@ const AccommodationPackages = lazy(
 );
 const PriceList = lazy(() => import("./routes/PriceList.jsx"));
 const Galerie = lazy(() => import("./routes/Galerie.jsx"));
+const NearbyPlaces = lazy(() => import("./routes/NearbyPlaces.jsx"));
 const AdminPage = lazy(() => import("./routes/Admin/AdminPage.jsx"));
 const ReservationPage2 = lazy(
   () => import("./routes/Reservation/ReservationPage.jsx"),
@@ -105,6 +106,7 @@ const router = createBrowserRouter(
         <Route path="/pobytove_balicky" element={<AccommodationPackages />} />
         <Route path="/cenik" element={<PriceList />} />
         <Route path="/galerie" element={<Galerie />} />
+        <Route path="/okoli" element={<NearbyPlaces />} />
         <Route path="/pokoje" element={<Navigate to="/ubytovani" replace />} />
         <Route path="/rezervace" element={<ReservationPage2 />} />
         <Route path="/gdpr" element={<Gdpr />} />
