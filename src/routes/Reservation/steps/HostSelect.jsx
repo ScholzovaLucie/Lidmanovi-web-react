@@ -3,7 +3,6 @@ import {
   Button,
   Divider,
   Grid,
-  IconButton,
   Stack,
   Typography,
 } from "@mui/material";
@@ -19,14 +18,13 @@ import IconWithText from "../../../components/IconWithText";
 import { AppCardCustomizable } from "../../../components/containers/AppCard";
 import { useReservationContext } from "../context/ReservationContext";
 import { updateRoom } from "../../../redux/slices/reservation/reservationSlice";
-import useClickSound from "../../../hooks/useClickSound";
 import ReservationAppBar from "../components/ReservationAppBar";
 import { useTranslation } from "react-i18next";
 
 export default function HostSelect() {
   const { t } = useTranslation("rezervace");
   const reservationState = useSelector((state) => state.reservation.values);
-  const { step, increaseStep, decreaseStep, setStep } = useReservationContext();
+  const { increaseStep, decreaseStep } = useReservationContext();
 
   const remainingAdultsToAssign =
     reservationState.num_adults -
@@ -346,40 +344,53 @@ function BedSelect({ title, price, onMinus, onPlus, value }) {
           </Typography>
         </Stack>
 
-        <AppSpinner value={value} onMinus={onMinus} onPlus={onPlus} />
+        <AppSpinner
+          label={title}
+          value={value}
+          onMinus={onMinus}
+          onPlus={onPlus}
+        />
       </Stack>
     </AppCardCustomizable>
   );
 }
 
-function AppSpinner({ value, onMinus, onPlus }) {
-  const playClickSound = useClickSound();
-
+function AppSpinner({ label, value, onMinus, onPlus }) {
   return (
     <Stack direction={"row"} spacing={2} alignItems={"center"}>
-      <IconButton
-        sx={{ backgroundColor: "primary.main", borderRadius: 1 }}
+      <Button
+        variant="contained"
+        aria-label={`${label} -`}
         disabled={onMinus === null}
-        onClick={() => {
-          playClickSound();
-          onMinus();
+        onClick={onMinus}
+        sx={{
+          minWidth: 40,
+          width: 40,
+          height: 40,
+          p: 0,
+          borderRadius: 1,
         }}
       >
         <Remove />
-      </IconButton>
+      </Button>
       <Box minWidth={24}>
         <Typography variant="h5">{value}</Typography>
       </Box>
-      <IconButton
-        sx={{ backgroundColor: "primary.main", borderRadius: 1 }}
+      <Button
+        variant="contained"
+        aria-label={`${label} +`}
         disabled={onPlus === null}
-        onClick={() => {
-          playClickSound();
-          onPlus();
+        onClick={onPlus}
+        sx={{
+          minWidth: 40,
+          width: 40,
+          height: 40,
+          p: 0,
+          borderRadius: 1,
         }}
       >
         <Add />
-      </IconButton>
+      </Button>
     </Stack>
   );
 }

@@ -137,7 +137,7 @@ export default function Header({ onLogin }) {
             onClose={() => setMobileMenuOpen(false)}
             navItems={allNavItems}
             langOptions={langOptions}
-            showLanguageSwitcher
+            showLanguageSwitcher={showLanguageSwitcher}
           />
         </Box>
       </Box>
