@@ -153,8 +153,13 @@ export default function NearbyPlacesSection() {
 
   return (
     <Stack p={{ md: 3 }} spacing={2}>
-      <Stack direction="row" alignItems="flex-start" justifyContent="space-between" spacing={2}>
-        <Stack>
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        alignItems={{ xs: "stretch", sm: "flex-start" }}
+        justifyContent="space-between"
+        spacing={2}
+      >
+        <Stack sx={{ minWidth: 0 }}>
           <Typography variant="h4" gutterBottom>
             Místa v okolí
           </Typography>
@@ -163,7 +168,16 @@ export default function NearbyPlacesSection() {
             Ke každému místu patří obrázek nebo iframe (např. mapa) a odkaz.
           </Typography>
         </Stack>
-        <Button variant="contained" startIcon={<Add />} onClick={handleAddNew} sx={{ whiteSpace: "nowrap" }}>
+        <Button
+          variant="contained"
+          startIcon={<Add />}
+          onClick={handleAddNew}
+          sx={{
+            alignSelf: { xs: "stretch", sm: "flex-start" },
+            flexShrink: 0,
+            whiteSpace: "nowrap",
+          }}
+        >
           Přidat místo
         </Button>
       </Stack>

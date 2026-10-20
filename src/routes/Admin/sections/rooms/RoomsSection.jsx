@@ -210,8 +210,13 @@ export default function RoomsSection() {
 
   return (
     <Stack p={{ md: 3 }} spacing={2}>
-      <Stack direction="row" alignItems="flex-start" justifyContent="space-between" spacing={2}>
-        <Stack>
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        alignItems={{ xs: "stretch", sm: "flex-start" }}
+        justifyContent="space-between"
+        spacing={2}
+      >
+        <Stack sx={{ minWidth: 0 }}>
           <Typography variant="h4" gutterBottom>
             Pokoje
           </Typography>
@@ -222,7 +227,16 @@ export default function RoomsSection() {
             pokoj.
           </Typography>
         </Stack>
-        <Button variant="contained" startIcon={<Add />} onClick={handleAddNewRoom} sx={{ whiteSpace: "nowrap" }}>
+        <Button
+          variant="contained"
+          startIcon={<Add />}
+          onClick={handleAddNewRoom}
+          sx={{
+            alignSelf: { xs: "stretch", sm: "flex-start" },
+            flexShrink: 0,
+            whiteSpace: "nowrap",
+          }}
+        >
           Přidat pokoj
         </Button>
       </Stack>

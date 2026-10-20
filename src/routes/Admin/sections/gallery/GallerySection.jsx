@@ -142,8 +142,13 @@ export default function GallerySection() {
 
   return (
     <Stack p={{ md: 3 }} spacing={2}>
-      <Stack direction="row" alignItems="flex-start" justifyContent="space-between" spacing={2}>
-        <Stack>
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        alignItems={{ xs: "stretch", sm: "flex-start" }}
+        justifyContent="space-between"
+        spacing={2}
+      >
+        <Stack sx={{ minWidth: 0 }}>
           <Typography variant="h4" gutterBottom>
             Fotky
           </Typography>
@@ -166,7 +171,11 @@ export default function GallerySection() {
           }
           disabled={isDeletingAll || isLoading || totalCount === 0}
           onClick={() => setConfirmDeleteAllOpen(true)}
-          sx={{ whiteSpace: "nowrap" }}
+          sx={{
+            alignSelf: { xs: "stretch", sm: "flex-start" },
+            flexShrink: 0,
+            whiteSpace: "nowrap",
+          }}
         >
           Smazat vše
         </Button>

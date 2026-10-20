@@ -1,16 +1,6 @@
 import { useMemo, useState } from "react";
-import {
-  Box,
-  Card,
-  Stack,
-  Typography,
-  IconButton,
-  Divider,
-  Chip,
-} from "@mui/material";
-import { Close, FullscreenExit } from "@mui/icons-material";
+import { Box, Stack, Typography } from "@mui/material";
 import dayjs from "dayjs";
-import { CalendarMonth } from "@mui/icons-material";
 import CustomMuiCalendar from "../../components/CustomMuiCalendar";
 import { useReservationsQuery } from "../../../../redux/api/reservationsApi";
 import { AppCardCustomizable } from "../../../../components/containers/AppCard";
@@ -22,7 +12,6 @@ export default function CalendarSection() {
   const { data: reservationsData, isLoading } = useReservationsQuery();
 
   const calendarEventsFromApi = useMemo(() => {
-    console.log(reservationsData);
     if (!reservationsData?.results) return [];
 
     return reservationsData.results.map((reservation) => ({
@@ -71,23 +60,17 @@ export default function CalendarSection() {
         </Typography>
       </Stack>
 
-      <Stack direction={{ md: "column", lg: "row" }} gap={2}>
-        <AppCardCustomizable props={{ flex: 1 }}>
-          <CustomMuiCalendar
-            events={calendarEventsFromApi}
-            onEventClick={(event) => setSelectedReservation(event)}
-          />
-        </AppCardCustomizable>
+      <AppCardCustomizable>
+        <CustomMuiCalendar
+          events={calendarEventsFromApi}
+          onEventClick={(event) => setSelectedReservation(event)}
+        />
+      </AppCardCustomizable>
 
-        {selectedReservation && (
-          <Stack>
-            <ReservationDetail
-              selectedReservation={selectedReservation}
-              onCrossClick={() => setSelectedReservation(null)}
-            />
-          </Stack>
-        )}
-      </Stack>
+      <ReservationDetail
+        selectedReservation={selectedReservation}
+        onClose={() => setSelectedReservation(null)}
+      />
     </Stack>
   );
 }
