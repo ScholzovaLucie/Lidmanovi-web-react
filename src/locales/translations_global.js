@@ -17,6 +17,7 @@ export const translations_global = {
       gallery: "Galerie",
       vouchers: "Poukazy",
       reservation: "Rezervace",
+      bookStay: "Rezervovat pobyt",
       rooms: "Pokoje",
     },
     auth: {
@@ -59,6 +60,7 @@ export const translations_global = {
       gallery: "Gallery",
       vouchers: "Vouchers",
       reservation: "Reservation",
+      bookStay: "Book your stay",
       rooms: "Rooms",
     },
     auth: {
@@ -101,6 +103,7 @@ export const translations_global = {
       gallery: "Galerie",
       vouchers: "Gutscheine",
       reservation: "Reservierung",
+      bookStay: "Aufenthalt buchen",
       rooms: "Zimmer",
     },
     auth: {
@@ -143,6 +146,7 @@ export const translations_global = {
       gallery: "Galeria",
       vouchers: "Vouchery",
       reservation: "Rezerwacja",
+      bookStay: "Zarezerwuj pobyt",
       rooms: "Pokoje",
     },
     auth: {

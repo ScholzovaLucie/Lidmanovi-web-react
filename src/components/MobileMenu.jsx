@@ -1,9 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Box, Collapse, Stack, Button, Paper, IconButton } from "@mui/material";
+import { Box, Stack, Button, Paper, IconButton } from "@mui/material";
 import { NavLink, useNavigate } from "react-router-dom";
-import { Logout as LogoutIcon, KeyboardArrowDown } from "@mui/icons-material";
+import {
+  ArrowForward,
+  KeyboardArrowDown,
+  Language,
+  Logout as LogoutIcon,
+} from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../hooks/useAuth";
+
+const bookStayFallbacks = {
+  cs: "Rezervovat pobyt",
+  en: "Book your stay",
+  de: "Aufenthalt buchen",
+  pl: "Zarezerwuj pobyt",
+};
 
 export function MobileMenu({
   isOpen,
@@ -11,18 +23,24 @@ export function MobileMenu({
   navItems,
   langOptions,
   showLanguageSwitcher = false,
-  onLogin,
 }) {
   const navigate = useNavigate();
   const { i18n, t } = useTranslation("global");
   const { isAuthenticated, logout } = useAuth();
   const [expandedKey, setExpandedKey] = useState(null);
+  const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
   const activeLang = String(
     i18n.resolvedLanguage || i18n.language || "cs",
   ).split("-")[0];
+  const activeLanguage = langOptions.find(({ code }) => code === activeLang);
+  const primaryNavItems = navItems.filter(({ to }) => to !== "/rezervace");
+  const reservationItem = navItems.find(({ to }) => to === "/rezervace");
 
   useEffect(() => {
-    if (!isOpen) setExpandedKey(null);
+    if (!isOpen) {
+      setExpandedKey(null);
+      setLanguageMenuOpen(false);
+    }
   }, [isOpen]);
 
   const handleLogout = () => {
@@ -35,27 +53,41 @@ export function MobileMenu({
   };
 
   return (
-    <Collapse in={isOpen} timeout="auto" unmountOnExit>
-      <Box
-        component={Paper}
-        sx={{
-          px: 2,
-          py: 3,
-          borderTopLeftRadius: 0,
-          borderTopRightRadius: 0,
-          maxHeight: "calc(100vh - 64px)",
-          overflowY: "auto",
-        }}
-      >
-        {/* Navigation */}
-        <Stack spacing={1} sx={{ mb: 3 }}>
-          {navItems.map(({ to, label, end, children }) => {
+    <Paper
+      square
+      elevation={0}
+      aria-hidden={!isOpen}
+      sx={{
+        position: "fixed",
+        inset: "68px 0 0",
+        display: "flex",
+        flexDirection: "column",
+        bgcolor: "background.paper",
+        opacity: isOpen ? 1 : 0,
+        visibility: isOpen ? "visible" : "hidden",
+        transform: isOpen ? "translateY(0)" : "translateY(-8px)",
+        transition: "opacity 200ms ease, transform 200ms ease, visibility 200ms",
+        pointerEvents: isOpen ? "auto" : "none",
+      }}
+    >
+        <Stack
+          component="nav"
+          aria-label={t("nav.mainMenu", { defaultValue: "Hlavní navigace" })}
+          sx={{
+            flex: "1 1 auto",
+            minHeight: 0,
+            overflowY: "auto",
+            px: 3,
+            py: 2,
+          }}
+        >
+          {primaryNavItems.map(({ to, label, end, children }) => {
             const hasChildren = !!children?.length;
             const isExpanded = expandedKey === to;
 
             return (
               <React.Fragment key={to}>
-                <Stack direction="row" alignItems="center" spacing={0.5}>
+                <Stack direction="row" alignItems="center" minHeight={52}>
                   <Button
                     component={NavLink}
                     to={to}
@@ -63,20 +95,16 @@ export function MobileMenu({
                     onClick={onClose}
                     fullWidth
                     sx={{
-                      justifyContent: "center",
-                      textTransform: "none",
+                      justifyContent: "flex-start",
+                      minHeight: 52,
+                      px: 0,
                       fontWeight: 500,
-                      py: 1.5,
                       fontSize: "1rem",
                       color: "text.primary",
-                      borderRadius: 1.5,
+                      textAlign: "left",
                       "&.active": {
-                        fontWeight: 700,
-                        bgcolor: "rgba(85,116,143,0.08)",
+                        fontWeight: 600,
                         color: "primary.dark",
-                        "&:hover": {
-                          bgcolor: "rgba(85,116,143,0.12)",
-                        },
                       },
                     }}
                   >
@@ -85,13 +113,16 @@ export function MobileMenu({
                   {hasChildren && (
                     <IconButton
                       onClick={() => toggleExpanded(to)}
-                      size="small"
                       aria-label={isExpanded ? "Skrýt podsekce" : "Zobrazit podsekce"}
+                      aria-expanded={isExpanded}
                       sx={{
                         flexShrink: 0,
+                        width: 44,
+                        height: 44,
+                        mr: -1.25,
                         color: "text.secondary",
                         transform: isExpanded ? "rotate(180deg)" : "none",
-                        transition: "transform 150ms ease",
+                        transition: "transform 200ms ease",
                       }}
                     >
                       <KeyboardArrowDown />
@@ -99,89 +130,141 @@ export function MobileMenu({
                   )}
                 </Stack>
                 {hasChildren && (
-                  <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-                    <Stack spacing={0.5} sx={{ pl: 2, pt: 0.5 }}>
-                      {children.map((child) => (
-                        <Button
-                          key={child.to}
-                          component={NavLink}
-                          to={child.to}
-                          end={child.end}
-                          onClick={onClose}
-                          fullWidth
-                          sx={{
-                            justifyContent: "center",
-                            textTransform: "none",
-                            fontWeight: 400,
-                            py: 1,
-                            fontSize: "0.9rem",
-                            color: "text.secondary",
-                            borderRadius: 1.5,
-                            "&.active": {
-                              fontWeight: 600,
-                              bgcolor: "rgba(85,116,143,0.08)",
-                              color: "primary.dark",
-                            },
-                          }}
-                        >
-                          {child.label}
-                        </Button>
-                      ))}
-                    </Stack>
-                  </Collapse>
+                  <Box
+                    sx={{
+                      display: "grid",
+                      gridTemplateRows: isExpanded ? "1fr" : "0fr",
+                      transition: "grid-template-rows 200ms ease",
+                    }}
+                  >
+                    <Box sx={{ minHeight: 0, overflow: "hidden" }}>
+                      <Stack sx={{ pl: 2, pb: isExpanded ? 1 : 0 }}>
+                        {children.map((child) => (
+                          <Button
+                            key={child.to}
+                            component={NavLink}
+                            to={child.to}
+                            end={child.end}
+                            onClick={onClose}
+                            tabIndex={isExpanded ? 0 : -1}
+                            fullWidth
+                            sx={{
+                              justifyContent: "flex-start",
+                              minHeight: 44,
+                              px: 0,
+                              fontWeight: 400,
+                              fontSize: "0.9rem",
+                              color: "text.secondary",
+                              "&.active": {
+                                fontWeight: 600,
+                                color: "primary.dark",
+                              },
+                            }}
+                          >
+                            {child.label}
+                          </Button>
+                        ))}
+                      </Stack>
+                    </Box>
+                  </Box>
                 )}
               </React.Fragment>
             );
           })}
         </Stack>
 
-        {/* Controls */}
-        <Stack spacing={3} alignItems="center">
-          {/* Languages */}
+        <Stack
+          spacing={1.25}
+          sx={{
+            flex: "0 0 auto",
+            px: 3,
+            pt: 2,
+            pb: "max(20px, env(safe-area-inset-bottom))",
+            borderTop: "1px solid",
+            borderColor: "divider",
+          }}
+        >
+          {reservationItem && (
+            <Button
+              component={NavLink}
+              to={reservationItem.to}
+              onClick={onClose}
+              variant="contained"
+              endIcon={<ArrowForward />}
+              fullWidth
+              sx={{
+                minHeight: 52,
+                justifyContent: "center",
+                bgcolor: "primary.dark",
+                fontSize: "1rem",
+                fontWeight: 600,
+                "&:hover, &.active": { bgcolor: "primary.main" },
+              }}
+            >
+              {t("nav.bookStay", {
+                defaultValue: bookStayFallbacks[activeLang] || reservationItem.label,
+              })}
+            </Button>
+          )}
+
           {showLanguageSwitcher && (
-            <Box sx={{ textAlign: "center", width: "100%" }}>
-              <Box
+            <Box>
+              <Button
+                onClick={() => setLanguageMenuOpen((open) => !open)}
+                startIcon={<Language />}
+                endIcon={<KeyboardArrowDown />}
+                aria-expanded={languageMenuOpen}
+                fullWidth
                 sx={{
-                  color: "text.secondary",
-                  fontSize: "0.8rem",
-                  mb: 1.5,
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
+                  minHeight: 48,
+                  px: 0,
+                  justifyContent: "flex-start",
+                  color: "text.primary",
+                  fontWeight: 500,
+                  "& .MuiButton-endIcon": {
+                    ml: "auto",
+                    transform: languageMenuOpen ? "rotate(180deg)" : "none",
+                    transition: "transform 200ms ease",
+                  },
                 }}
               >
-                {t("language")}
-              </Box>
-              <Stack
-                direction="row"
-                spacing={1}
-                justifyContent="center"
-                flexWrap="wrap"
+                {activeLanguage?.label || t("language")}
+              </Button>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateRows: languageMenuOpen ? "1fr" : "0fr",
+                  transition: "grid-template-rows 200ms ease",
+                }}
               >
-                {langOptions.map(({ code, label }) => (
-                  <Button
-                    key={code}
-                    onClick={() => {
-                      if (typeof window !== "undefined") {
-                        window.localStorage.setItem("appLanguage", code);
-                      }
-                      i18n.changeLanguage(code);
-                    }}
-                    variant={activeLang === code ? "contained" : "text"}
-                    size="small"
-                    sx={{
-                      textTransform: "none",
-                      fontWeight: activeLang === code ? 600 : 400,
-                      minWidth: "auto",
-                    }}
-                  >
-                    {label}
-                  </Button>
-                ))}
-              </Stack>
+                <Box sx={{ minHeight: 0, overflow: "hidden" }}>
+                  <Stack direction="row" flexWrap="wrap" sx={{ pb: 0.5, mx: -1 }}>
+                    {langOptions.map(({ code, label }) => (
+                      <Button
+                        key={code}
+                        onClick={() => {
+                          i18n.changeLanguage(code);
+                          setLanguageMenuOpen(false);
+                        }}
+                        tabIndex={languageMenuOpen ? 0 : -1}
+                        aria-current={activeLang === code ? "true" : undefined}
+                        sx={{
+                          minHeight: 44,
+                          color: activeLang === code ? "primary.dark" : "text.secondary",
+                          fontWeight: activeLang === code ? 600 : 400,
+                          textDecoration: activeLang === code ? "underline" : "none",
+                          textUnderlineOffset: "0.35em",
+                        }}
+                      >
+                        {label}
+                      </Button>
+                    ))}
+                  </Stack>
+                </Box>
+              </Box>
             </Box>
           )}
 
-          {/* Admin */}
           {isAuthenticated ? (
             <Stack direction="row" spacing={1.5}>
               <Button
@@ -211,7 +294,6 @@ export function MobileMenu({
             </Stack>
           ) : null}
         </Stack>
-      </Box>
-    </Collapse>
+    </Paper>
   );
 }

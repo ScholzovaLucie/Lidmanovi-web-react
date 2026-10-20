@@ -1,6 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { AppBar, Box, IconButton, Stack, Toolbar } from "@mui/material";
+import {
+  AppBar,
+  Box,
+  IconButton,
+  Stack,
+  Toolbar,
+  useMediaQuery,
+} from "@mui/material";
 import { Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material";
 import { DesktopHeader } from "./DesktopHeader";
 import { MobileMenu } from "./MobileMenu";
@@ -10,12 +17,24 @@ import { useGetAppSettingsQuery } from "../redux/api/appSettingsApi";
 
 export default function Header({ onLogin }) {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const isDesktop = useMediaQuery("(min-width:1300px)");
   const navigate = useNavigate();
   const { t } = useTranslation("global");
   const { data: appSettings, isSuccess: areAppSettingsLoaded } =
     useGetAppSettingsQuery();
   const showLanguageSwitcher =
     areAppSettingsLoaded && appSettings?.["languageSwitcher.enabled"] === true;
+
+  React.useEffect(() => {
+    if (!mobileMenuOpen || isDesktop) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isDesktop, mobileMenuOpen]);
 
   const allNavItems = navConfig.map(({ key, fallback, children, ...rest }) => ({
     ...rest,
@@ -41,8 +60,19 @@ export default function Header({ onLogin }) {
         borderBottom: "1px solid #dfd4c4",
       }}
     >
-      <Box sx={{ px: { xs: 0.5, md: 2 }, py: 0 }}>
-        <Toolbar sx={{ minHeight: "64px", maxHeight: "64px" }}>
+      <Box sx={{ width: "100%" }}>
+        <Toolbar
+          disableGutters
+          sx={{
+            minHeight: 68,
+            maxHeight: 68,
+            px: { xs: 1.5, md: 2 },
+            "@media (min-width:1300px)": {
+              minHeight: 64,
+              maxHeight: 64,
+            },
+          }}
+        >
           {/* Desktop */}
           <DesktopHeader
             onLogin={onLogin}
@@ -65,19 +95,29 @@ export default function Header({ onLogin }) {
               component="img"
               src="logolidman.webp"
               alt="U Lidmanů"
-              onClick={() => navigate("/")}
+              onClick={() => {
+                navigate("/");
+                setMobileMenuOpen(false);
+              }}
               sx={{
-                height: window.innerWidth >= 1300 ? "48px" : "40px",
+                height: 44,
+                maxWidth: "calc(100% - 56px)",
+                objectFit: "contain",
                 cursor: "pointer",
               }}
             />
             <IconButton
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              size={window.innerWidth >= 1300 ? "medium" : "small"}
+              aria-label={
+                mobileMenuOpen
+                  ? t("buttons.close", { defaultValue: "Zavřít" })
+                  : t("nav.openMenu", { defaultValue: "Otevřít menu" })
+              }
+              aria-expanded={mobileMenuOpen}
               sx={{
-                border: "1px solid",
-                borderColor: "#d8cbb8",
-                borderRadius: 0,
+                width: 44,
+                height: 44,
+                color: "text.primary",
               }}
             >
               {mobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
@@ -97,8 +137,7 @@ export default function Header({ onLogin }) {
             onClose={() => setMobileMenuOpen(false)}
             navItems={allNavItems}
             langOptions={langOptions}
-            showLanguageSwitcher={showLanguageSwitcher}
-            onLogin={onLogin}
+            showLanguageSwitcher
           />
         </Box>
       </Box>
